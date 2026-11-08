@@ -1,0 +1,8 @@
+# local directories
+.DS_Store
+references
+
+# developments
+build
+kingdom
+output.log

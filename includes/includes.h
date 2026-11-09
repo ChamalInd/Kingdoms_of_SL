@@ -113,6 +113,7 @@ class Ruler
 		Kingdom kingdom;
 		int firstDieValue = 0;
 		bool placeChosen = false;
+		int score = 0;
 
 	public:
 		Ruler(std::string n, Kingdom& k) : rulerName(n), kingdom(k) {}
@@ -121,7 +122,9 @@ class Ruler
 		Kingdom& getKingdom() { return kingdom; }
 		int getFirstDieValue() const { return firstDieValue; }
 		bool getPlaceChosen() const { return placeChosen; }
+		std::string getRulerName() const { return rulerName; }
 		void printRoundSummary();
+		int calculateScore();
 };
 
 class SimulationManager
@@ -133,6 +136,7 @@ class SimulationManager
 	
 	public:
 		SimulationManager();
+		~SimulationManager();
 		void initializeGame();
 		void gameLoop();
 };

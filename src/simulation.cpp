@@ -73,3 +73,21 @@ void SimulationManager::gameLoop()
 		gameRound++;
 	}
 }
+
+SimulationManager::~SimulationManager()
+{
+	// printing game over message and wounding up
+	std::sort(rulers.begin(), rulers.end(), [](Ruler& a, Ruler& b){
+		return a.calculateScore() > b.calculateScore();
+	});
+	std::cout << std::endl;
+	std::string title = " Game Over after " + std::to_string(gameRound) + " rounds ";
+	printTitle(title, '=');
+
+	std::cout << "Winner : " << rulers[0].getKingdom().getKingdomName() << " (" << rulers[0].getRulerName() << ")" << std::endl << std::endl;
+	std::cout << "Final Score" << std::endl;
+	for (int i = 0; i < NO_OF_KINGDOMS; i++)
+	{
+		std::cout << i + 1 << ". " << std::setw(12) << rulers[i].getKingdom().getKingdomName() << " : " << rulers[i].calculateScore() << std::endl;
+	}
+}

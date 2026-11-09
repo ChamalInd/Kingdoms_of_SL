@@ -9,7 +9,8 @@ SimulationManager::SimulationManager()
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
 		Kingdom kingdom(kingdomNames[i]);
-		kingdom.setCapitalCity(kingdomCapitals[i]);
+		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
+		kingdom.setCapitalCity(capital);
 		Ruler ruler(rulerNames[i], kingdom);
 		rulers.push_back(ruler);
 	}
@@ -43,4 +44,23 @@ void SimulationManager::initializeGame()
 	std::cout << "." << std::endl;
 
 	worldMap.printWorldMap();
+}
+
+void SimulationManager::gameLoop()
+{
+	while (gameRound < 200)
+	{
+		for (Ruler& R : rulers)
+		{
+			Kingdom& kingdom = R.getKingdom();
+			std::string title = " Round " + std::to_string(gameRound) + " : " + kingdom.getKingdomName() + " ";
+			int lPad = (29 - title.length()) / 2;
+			int rPad = 29 - title.length() - lPad;
+			std::cout << std::string(20, '-') << std::string(lPad, '-') << title << std::string(rPad, '-') << std::string(20, '-') << std::endl;
+			// collect productions
+			kingdom.collectProductions();
+
+		}
+		gameRound++;
+	}
 }

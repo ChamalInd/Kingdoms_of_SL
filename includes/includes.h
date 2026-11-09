@@ -50,21 +50,9 @@ class Resources
 		int timberCapacity = 200;
 		int ironCapacity = 100;
 		int goldCapacity = 1000;
-};
-
-class Kingdom
-{
-	private:
-		std::string kingdomName;
-		int population = 1000;
-		int stability = 70;
-		Resources resources;
-		std::vector<std::pair<int, int>> territoryLocations;
 	
 	public:
-		Kingdom(std::string n);
-		void setCapitalCity(std::pair<int, int> capital) { territoryLocations.push_back(capital); }
-		std::string getKingdomName() const { return kingdomName; }
+		void operator+=(const std::vector<int> productionIncrement);
 };
 
 class Territory
@@ -82,6 +70,7 @@ class Territory
 		std::string getTerritoryName() const { return territoryName; }
 		TerrainType getTerritoryType() const { return territoryType; }
 		RulerEnum getTerritoryRuler() const { return territoryRuler; }
+		std::vector<int> getTerritoryProduction() const { return territoryBaseProduction; }
 };
 
 class WorldMap
@@ -91,8 +80,24 @@ class WorldMap
 	
 	public:
 		WorldMap();
+		Territory* getTerritory(int i, int j) { return &worldMap[i][j]; };
 		void printWorldMap();
-		Territory& getATerretory(int i, int j) { return worldMap[i][j]; };
+};
+
+class Kingdom
+{
+	private:
+		std::string kingdomName;
+		int population = 1000;
+		int stability = 70;
+		Resources resources;
+		std::vector<Territory*> ownedTerritories;
+	
+	public:
+		Kingdom(std::string n);
+		void setCapitalCity(Territory* capital) { ownedTerritories.push_back(capital); }
+		std::string getKingdomName() const { return kingdomName; }
+		void collectProductions();
 };
 
 class Ruler
@@ -107,7 +112,7 @@ class Ruler
 		Ruler(std::string n, Kingdom& k) : rulerName(n), kingdom(k) {}
 		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
 		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
-		Kingdom getKingdom() const { return kingdom; }
+		Kingdom& getKingdom() { return kingdom; }
 		int getFirstDieValue() const { return firstDieValue; }
 		bool getPlaceChosen() const { return placeChosen; }
 };
@@ -115,13 +120,14 @@ class Ruler
 class SimulationManager
 {
 	private:
-		std::vector<Ruler> rulers;
 		WorldMap worldMap;
+		std::vector<Ruler> rulers;
 		int gameRound = 0;
 	
 	public:
 		SimulationManager();
 		void initializeGame();
+		void gameLoop();
 };
 
 // global helper functions

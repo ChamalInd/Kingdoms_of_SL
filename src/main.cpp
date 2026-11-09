@@ -4,5 +4,6 @@ int main()
 {
 	srand(SEED);
 	SimulationManager sm;
+	sm.gameLoop();
 	return 0;
 }

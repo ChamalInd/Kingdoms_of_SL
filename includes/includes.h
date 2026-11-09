@@ -62,8 +62,6 @@ class Kingdom
 		int stability = 70;
 		Resources resources;
 		std::vector<std::pair<int, int>> territoryLocations;
-		// armies = no army
-		// barracks = 1 at capital
 	
 	public:
 		Kingdom(std::string n);
@@ -98,6 +96,7 @@ class WorldMap
 	
 	public:
 		WorldMap();
+		void printWorldMap();
 };
 
 class SimulationManager
@@ -105,6 +104,7 @@ class SimulationManager
 	private:
 		std::vector<Kingdom> kingdoms;
 		WorldMap worldMap;
+		int gameRound = 0;
 	
 	public:
 		SimulationManager();

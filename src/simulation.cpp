@@ -37,4 +37,6 @@ void SimulationManager::initializeGame()
 		if (count < NO_OF_KINGDOMS) std::cout << ", ";
 	}
 	std::cout << "." << std::endl;
+
+	worldMap.printWorldMap();
 }

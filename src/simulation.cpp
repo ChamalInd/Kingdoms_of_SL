@@ -2,14 +2,16 @@
 		
 SimulationManager::SimulationManager()
 {
-	// creating kingdoms
+	// creating kingdoms and their rulers
+	const std::string rulerNames[] = {"The Conqueror", "The Agrarian Sage", "The Merchant Prince", "The Strategist"};
 	const std::string kingdomNames[] = {"Anuradhapura", "Ruhuna", "Kotte", "Kandy"};
 	const std::vector<std::pair<int, int>> kingdomCapitals = {std::make_pair(0, 0), std::make_pair(0, 5), std::make_pair(5, 0), std::make_pair(5, 5)};
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
 		Kingdom kingdom(kingdomNames[i]);
 		kingdom.setCapitalCity(kingdomCapitals[i]);
-		kingdoms.push_back(kingdom);
+		Ruler ruler(rulerNames[i], kingdom);
+		rulers.push_back(ruler);
 	}
 
 	initializeGame();
@@ -26,15 +28,15 @@ void SimulationManager::initializeGame()
 
 	std::cout << std::endl << "Each kingdom begins with 1000 Gold, 500 Rice, 200 Timber, 100 Iron." << std::endl;
 	
-	determinePlayerOrder(kingdoms);
-	std::sort(kingdoms.begin(), kingdoms.end(), [](const Kingdom& a, const Kingdom& b) {
+	determinePlayerOrder(rulers);
+	std::sort(rulers.begin(), rulers.end(), [](const Ruler& a, const Ruler& b) {
 		return a.getFirstDieValue() > b.getFirstDieValue();
 	});
 	std::cout << "Turn order : ";
 	int count = 0;
-	for (Kingdom K : kingdoms)
+	for (Ruler R : rulers)
 	{
-		std::cout << K.getKingdomName();
+		std::cout << R.getKingdom().getKingdomName();
 		count++;
 		if (count < NO_OF_KINGDOMS) std::cout << ", ";
 	}

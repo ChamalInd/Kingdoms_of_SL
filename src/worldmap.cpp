@@ -12,7 +12,7 @@ WorldMap::WorldMap()
 		for (int j = 0; j < MAP_DIMENSIONS; j++)
 		{
 			std::string territoryName = "Territory " + std::to_string(territoryID);
-			Ruler ruler = NEUTRAL;
+			RulerEnum ruler = NEUTRAL;
 			TerrainType terrain;
 			std::pair<int, int> location = std::make_pair(i, j);
 

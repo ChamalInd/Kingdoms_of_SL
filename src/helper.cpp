@@ -29,50 +29,50 @@ int rollDie(RollType type)
 	else return die_1 == die_2;
 }
 
-void determinePlayerOrder(std::vector<Kingdom>& kingdoms)
+void determinePlayerOrder(std::vector<Ruler>& rulers)
 {
 	while (true)
 	{
 		std::cout << std::endl;
 
-		for (Kingdom& K : kingdoms)
+		for (Ruler& R : rulers)
 		{	
-			if (K.getPlaceChosen()) continue;
+			if (R.getPlaceChosen()) continue;
 			int dieRoll = rollDie(VALUE);
-			K.setFirstDieValue(dieRoll);
-			std::cout << K.getKingdomName() << " rolls " << dieRoll << "." << std::endl;
+			R.setFirstDieValue(dieRoll);
+			std::cout << R.getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
 		}
 	
 		bool tieFound = false;
 		for (int i = 0; i < NO_OF_KINGDOMS; i++)
 		{
-			if (kingdoms[i].getPlaceChosen()) continue;
+			if (rulers[i].getPlaceChosen()) continue;
 			tieFound = false;
 			for (int j = 0; j < NO_OF_KINGDOMS; j++)
 			{
 				if (i == j) continue;
-				if (kingdoms[j].getPlaceChosen()) continue;
-				if (kingdoms[i].getFirstDieValue() == kingdoms[j].getFirstDieValue()) 
+				if (rulers[j].getPlaceChosen()) continue;
+				if (rulers[i].getFirstDieValue() == rulers[j].getFirstDieValue()) 
 				{ 
 					tieFound = true;
 					break;
 				}
 			}
 
-			if (!tieFound) kingdoms[i].setPlaceChosen(true);
+			if (!tieFound) rulers[i].setPlaceChosen(true);
 		}
 
 
 		int tieCount = 0;
 		std::cout << "Tie between ";
-		for (Kingdom& K : kingdoms)
+		for (Ruler& R : rulers)
 		{
-			if (!K.getPlaceChosen()) 
+			if (!R.getPlaceChosen()) 
 			{
 				tieCount++;
-				std::cout << K.getKingdomName() << " ";
+				std::cout << R.getKingdom().getKingdomName() << " ";
 			}
-			else K.setFirstDieValue(K.getFirstDieValue() * 10);
+			else R.setFirstDieValue(R.getFirstDieValue() * 10);
 		}
 
 		if (tieCount == 0)

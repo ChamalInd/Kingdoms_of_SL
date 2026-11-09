@@ -1,6 +1,6 @@
 #include "../includes/includes.h"
 	
-Territory::Territory(int ID, std::string n, TerrainType t, Ruler r, std::pair<int, int> location)
+Territory::Territory(int ID, std::string n, TerrainType t, RulerEnum r, std::pair<int, int> location)
 {
 	territoryID = ID;
 	territoryName = n;

@@ -15,7 +15,7 @@ enum TerrainType
 	PADDY_PLAIN, HILL_COUNTRY, DRY_ZONE, COAST, JUNGLE, LAKE 
 };
 
-enum Ruler
+enum RulerEnum
 {
 	NEUTRAL = -1, ANURADHAPURA, RUHUNA, KOTTE, KANDY
 };
@@ -56,8 +56,6 @@ class Kingdom
 {
 	private:
 		std::string kingdomName;
-		int firstDieValue = 0;
-		bool placeChosen = false;
 		int population = 1000;
 		int stability = 70;
 		Resources resources;
@@ -65,12 +63,8 @@ class Kingdom
 	
 	public:
 		Kingdom(std::string n);
-		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
-		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
 		void setCapitalCity(std::pair<int, int> capital) { territoryLocations.push_back(capital); }
-		int getFirstDieValue() const { return firstDieValue; }
 		std::string getKingdomName() const { return kingdomName; }
-		bool getPlaceChosen() const { return placeChosen; }
 };
 
 class Territory
@@ -80,14 +74,14 @@ class Territory
 		std::string territoryName;
 		TerrainType territoryType;
 		std::vector<int> territoryBaseProduction;
-		Ruler territoryRuler;
+		RulerEnum territoryRuler;
 		std::vector<std::pair<int, int>> territoryNeighbours;
 	
 	public:
-		Territory(int ID, std::string n, TerrainType, Ruler r, std::pair<int, int>);
+		Territory(int ID, std::string n, TerrainType, RulerEnum r, std::pair<int, int>);
 		std::string getTerritoryName() const { return territoryName; }
 		TerrainType getTerritoryType() const { return territoryType; }
-		Ruler getTerritoryRuler() const { return territoryRuler; }
+		RulerEnum getTerritoryRuler() const { return territoryRuler; }
 };
 
 class WorldMap
@@ -101,10 +95,27 @@ class WorldMap
 		Territory& getATerretory(int i, int j) { return worldMap[i][j]; };
 };
 
+class Ruler
+{
+	private:
+		std::string rulerName;
+		Kingdom kingdom;
+		int firstDieValue = 0;
+		bool placeChosen = false;
+
+	public:
+		Ruler(std::string n, Kingdom& k) : rulerName(n), kingdom(k) {}
+		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
+		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
+		Kingdom getKingdom() const { return kingdom; }
+		int getFirstDieValue() const { return firstDieValue; }
+		bool getPlaceChosen() const { return placeChosen; }
+};
+
 class SimulationManager
 {
 	private:
-		std::vector<Kingdom> kingdoms;
+		std::vector<Ruler> rulers;
 		WorldMap worldMap;
 		int gameRound = 0;
 	
@@ -116,4 +127,4 @@ class SimulationManager
 // global helper functions
 std::vector<int> setTheTerrainCounts();
 int rollDie(RollType type);
-void determinePlayerOrder(std::vector<Kingdom>& kingdoms);
+void determinePlayerOrder(std::vector<Ruler>& rulers);

@@ -7,6 +7,7 @@
 #include <vector>
 #include <iomanip>
 #include <cstdlib>
+#include <utility>
 
 // enumerations
 enum TerrainType
@@ -42,18 +43,24 @@ const std::vector<std::vector<int>> BASE_PRODUCTION = {
 };
 
 // class declarations
+class Resources
+{
+	private:
+		int riceCapacity = 500;
+		int timberCapacity = 200;
+		int ironCapacity = 100;
+		int goldCapacity = 1000;
+};
+
 class Kingdom
 {
 	private:
 		std::string kingdomName;
 		int firstDieValue = 0;
 		bool placeChosen = false;
-		int riceCapacity = 500;
-		int timberCapacity = 200;
-		int ironCapacity = 100;
-		int goldCapacity = 1000;
 		int population = 1000;
 		int stability = 70;
+		Resources resources;
 		std::vector<std::pair<int, int>> territoryLocations;
 		// armies = no army
 		// barracks = 1 at capital
@@ -75,21 +82,29 @@ class Territory
 		TerrainType territoryType;
 		std::vector<int> territoryBaseProduction;
 		Ruler territoryRuler;
-		// Building territoryBuilding;
-		// Army
+		std::vector<std::pair<int, int>> territoryNeighbours;
 	
 	public:
-		Territory(int ID, std::string n, TerrainType, Ruler r);
+		Territory(int ID, std::string n, TerrainType, Ruler r, std::pair<int, int>);
 		std::string getTerritoryName() const { return territoryName; }
 		TerrainType getTerritoryType() const { return territoryType; }
 		Ruler getTerritoryRuler() const { return territoryRuler; }
 };
 
-class SimulationManager
+class WorldMap
 {
 	private:
 		std::vector<std::vector<Territory>> worldMap{MAP_DIMENSIONS};
+	
+	public:
+		WorldMap();
+};
+
+class SimulationManager
+{
+	private:
 		std::vector<Kingdom> kingdoms;
+		WorldMap worldMap;
 	
 	public:
 		SimulationManager();

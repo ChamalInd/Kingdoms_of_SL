@@ -12,7 +12,7 @@ SimulationManager::SimulationManager()
 
 	// creating world map
 	int territoryID = 0;
-	int reservedCount = 4;
+	int reservedCount = NO_OF_KINGDOMS;
 	std::vector<int> terrainCount = setTheTerrainCounts(); 
 	TerrainType terrains[] = {PADDY_PLAIN, HILL_COUNTRY, DRY_ZONE, COAST, JUNGLE, LAKE};
 	
@@ -61,4 +61,33 @@ SimulationManager::SimulationManager()
 			territoryID++;
 		}
 	}
+
+	initializeGame();
+}
+
+void SimulationManager::initializeGame()
+{
+	std::cout << std::string(20, '=') << " KINGDOM OF LANKA Simulation " << std::string(20, '=') << std::endl << std::endl;
+    std::cout << "Seed : " << SEED << std::endl << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << " - The Conqueror" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << " - The Agrarian Sage" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 3 : Kotte" << " - The Merchant Prince" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 4 : Kandy" << " - The Strategist" << std::endl;
+
+	std::cout << std::endl << "Each kingdom begins with 1000 Gold, 500 Rice, 200 Timber, 100 Iron." << std::endl;
+	
+	determinePlayerOrder(kingdoms);
+	std::sort(kingdoms.begin(), kingdoms.end(), [](const Kingdom& a, const Kingdom& b) {
+		return a.getFirstDieValue() > b.getFirstDieValue();
+	});
+	std::cout << "Turn order : ";
+	int count = 0;
+	for (Kingdom K : kingdoms)
+	{
+		std::cout << K.getKingdomName();
+		count++;
+		if (count < NO_OF_KINGDOMS) std::cout << ", ";
+	}
+	std::cout << "." << std::endl;
+
 }

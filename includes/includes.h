@@ -19,6 +19,11 @@ enum Ruler
 	NEUTRAL = -1, ANURADHAPURA, RUHUNA, KOTTE, KANDY
 };
 
+enum RollType
+{
+	VALUE, DOUBLES
+};
+
 // global variables
 #define SEED   time(NULL)
 #define NO_OF_KINGDOMS  4
@@ -36,14 +41,13 @@ const std::vector<std::vector<int>> BASE_PRODUCTION = {
 	{10,      0,    0,    5,            0}   // lake
 };
 
-// global helper functions
-std::vector<int> setTheTerrainCounts();
-
 // class declarations
 class Kingdom
 {
 	private:
 		std::string kingdomName;
+		int firstDieValue = 0;
+		bool placeChosen = false;
 		int riceCapacity = 500;
 		int timberCapacity = 200;
 		int ironCapacity = 100;
@@ -56,6 +60,11 @@ class Kingdom
 	
 	public:
 		Kingdom(std::string n);
+		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
+		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
+		int getFirstDieValue() const { return firstDieValue; }
+		std::string getKingdomName() const { return kingdomName; }
+		bool getPlaceChosen() const { return placeChosen; }
 };
 
 class Territory
@@ -84,4 +93,10 @@ class SimulationManager
 	
 	public:
 		SimulationManager();
+		void initializeGame();
 };
+
+// global helper functions
+std::vector<int> setTheTerrainCounts();
+int rollDie(RollType type);
+void determinePlayerOrder(std::vector<Kingdom>& kingdoms);

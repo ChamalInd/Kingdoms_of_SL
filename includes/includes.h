@@ -2,11 +2,11 @@
 
 // external libraries used
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
 #include <string>
 #include <cstring>
 #include <vector>
+#include <iomanip>
+#include <cstdlib>
 
 // enumerations
 enum TerrainType
@@ -20,7 +20,11 @@ enum Ruler
 };
 
 // global variables
-#define SEED 1
+#define SEED   time(NULL)
+#define NO_OF_KINGDOMS  4
+#define MAP_DIMENSIONS  6
+#define NO_OF_TERRAINS  6
+#define NO_OF_TILES    36
 
 const std::vector<std::vector<int>> BASE_PRODUCTION = {
 // rice, timber, iron, gold, defense bonus
@@ -31,6 +35,9 @@ const std::vector<std::vector<int>> BASE_PRODUCTION = {
 	{ 0,     20,    0,    0,           10},  // jungle
 	{10,      0,    0,    5,            0}   // lake
 };
+
+// global helper functions
+std::vector<int> setTheTerrainCounts();
 
 // class declarations
 class Kingdom
@@ -64,12 +71,15 @@ class Territory
 	
 	public:
 		Territory(int ID, std::string n, TerrainType, Ruler r);
+		std::string getTerritoryName() const { return territoryName; }
+		TerrainType getTerritoryType() const { return territoryType; }
+		Ruler getTerritoryRuler() const { return territoryRuler; }
 };
 
 class SimulationManager
 {
 	private:
-		std::vector<std::vector<Territory>> worldMap;
+		std::vector<std::vector<Territory>> worldMap{MAP_DIMENSIONS};
 		std::vector<Kingdom> kingdoms;
 	
 	public:

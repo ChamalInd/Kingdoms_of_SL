@@ -67,6 +67,7 @@ class Kingdom
 		Kingdom(std::string n);
 		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
 		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
+		void setCapitalCity(std::pair<int, int> capital) { territoryLocations.push_back(capital); }
 		int getFirstDieValue() const { return firstDieValue; }
 		std::string getKingdomName() const { return kingdomName; }
 		bool getPlaceChosen() const { return placeChosen; }
@@ -97,6 +98,7 @@ class WorldMap
 	public:
 		WorldMap();
 		void printWorldMap();
+		Territory& getATerretory(int i, int j) { return worldMap[i][j]; };
 };
 
 class SimulationManager

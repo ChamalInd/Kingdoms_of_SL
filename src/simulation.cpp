@@ -4,9 +4,11 @@ SimulationManager::SimulationManager()
 {
 	// creating kingdoms
 	const std::string kingdomNames[] = {"Anuradhapura", "Ruhuna", "Kotte", "Kandy"};
+	const std::vector<std::pair<int, int>> kingdomCapitals = {std::make_pair(0, 0), std::make_pair(0, 5), std::make_pair(5, 0), std::make_pair(5, 5)};
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
 		Kingdom kingdom(kingdomNames[i]);
+		kingdom.setCapitalCity(kingdomCapitals[i]);
 		kingdoms.push_back(kingdom);
 	}
 

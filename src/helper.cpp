@@ -29,6 +29,13 @@ int rollDie(RollType type)
 	else return die_1 == die_2;
 }
 
+void printTitle(std::string title, char decorator)
+{
+	int lPad = (MESSAGE_WIDTH - title.length()) / 2;
+	int rPad = MESSAGE_WIDTH - title.length() - lPad;
+	std::cout << std::string(lPad, decorator) << title << std::string(rPad, decorator) << std::endl;
+}
+
 void determinePlayerOrder(std::vector<Ruler>& rulers)
 {
 	while (true)

@@ -20,7 +20,7 @@ SimulationManager::SimulationManager()
 
 void SimulationManager::initializeGame()
 {
-	std::cout << std::string(20, '=') << " KINGDOM OF LANKA Simulation " << std::string(20, '=') << std::endl << std::endl;
+	printTitle(" KINGDOM OF LANKA Simulation ", '=');
     std::cout << "Seed : " << SEED << std::endl << std::endl;
 	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << " - The Conqueror" << std::endl;
 	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << " - The Agrarian Sage" << std::endl;
@@ -48,18 +48,27 @@ void SimulationManager::initializeGame()
 
 void SimulationManager::gameLoop()
 {
+
 	while (gameRound < 200)
 	{
 		for (Ruler& R : rulers)
 		{
 			Kingdom& kingdom = R.getKingdom();
-			std::string title = " Round " + std::to_string(gameRound) + " : " + kingdom.getKingdomName() + " ";
-			int lPad = (29 - title.length()) / 2;
-			int rPad = 29 - title.length() - lPad;
-			std::cout << std::string(20, '-') << std::string(lPad, '-') << title << std::string(rPad, '-') << std::string(20, '-') << std::endl;
+			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom.getKingdomName() + " ";
+			std::cout << std::endl;
+			printTitle(title, '-');
 			// collect productions
 			kingdom.collectProductions();
+		}
 
+		// printing round summary
+		std::string title = " Round " + std::to_string(gameRound + 1) + " Summary ";
+		std::cout << std::endl;
+		printTitle(title, '=');
+		for (Ruler R : rulers)
+		{
+			R.printRoundSummary();
+			std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
 		}
 		gameRound++;
 	}

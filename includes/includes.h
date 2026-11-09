@@ -31,6 +31,7 @@ enum RollType
 #define MAP_DIMENSIONS  6
 #define NO_OF_TERRAINS  6
 #define NO_OF_TILES    36
+#define MESSAGE_WIDTH  70
 
 const std::vector<std::vector<int>> BASE_PRODUCTION = {
 // rice, timber, iron, gold, defense bonus
@@ -53,6 +54,7 @@ class Resources
 	
 	public:
 		void operator+=(const std::vector<int> productionIncrement);
+		std::vector<int> getResources() const;
 };
 
 class Territory
@@ -97,6 +99,10 @@ class Kingdom
 		Kingdom(std::string n);
 		void setCapitalCity(Territory* capital) { ownedTerritories.push_back(capital); }
 		std::string getKingdomName() const { return kingdomName; }
+		int getPopulation() const { return population; }
+		int getStability() const { return stability; }
+		int getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
+		std::vector<int> getResources() const { return resources.getResources(); }
 		void collectProductions();
 };
 
@@ -115,6 +121,7 @@ class Ruler
 		Kingdom& getKingdom() { return kingdom; }
 		int getFirstDieValue() const { return firstDieValue; }
 		bool getPlaceChosen() const { return placeChosen; }
+		void printRoundSummary();
 };
 
 class SimulationManager
@@ -133,4 +140,5 @@ class SimulationManager
 // global helper functions
 std::vector<int> setTheTerrainCounts();
 int rollDie(RollType type);
+void printTitle(std::string title, char decorator);
 void determinePlayerOrder(std::vector<Ruler>& rulers);

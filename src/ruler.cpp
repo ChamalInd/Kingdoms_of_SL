@@ -17,23 +17,45 @@ int Ruler::calculateScore()
 	return score;
 }
 
+std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
+{
+	std::vector<Territory*> potentialTerritories;
+	std::vector<Territory*> ownedTerritories = kingdom.getOwnedTerritories();	
+
+	for (auto& T : ownedTerritories)
+	{
+		std::vector<std::pair<int, int>> territories = T->getTerritoryNeighbours();
+		for (auto& P : territories)
+		{
+			Territory* territory = worldMap.getTerritory(P.first, P.second);
+			auto found = std::find(potentialTerritories.begin(), potentialTerritories.end(), territory);
+			if (found == potentialTerritories.end() && territory->getTerritoryRuler() == NEUTRAL)
+			{
+				potentialTerritories.push_back(territory);
+			}
+		}
+	}
+
+	return potentialTerritories;
+}
 
 void Conqueror::playTurn(WorldMap& worldMap) 
 {
-
+	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
+	std::cout << potentialTerritories[0]->getTerritoryName() << std::endl;
 }
 
 void AgrarianSage::playTurn(WorldMap& worldMap) 
 {
-
+	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 }
 
 void MerchantPrince::playTurn(WorldMap& worldMap) 
 {
-
+	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 }
 
 void Strategist::playTurn(WorldMap& worldMap) 
 {
-
+	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 }

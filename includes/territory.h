@@ -20,4 +20,5 @@ class Territory
 		TerrainType getTerritoryType() const { return territoryType; }
 		RulerEnum getTerritoryRuler() const { return territoryRuler; }
 		std::vector<int> getTerritoryProduction() const { return territoryBaseProduction; }
+		std::vector<std::pair<int, int>> getTerritoryNeighbours() const { return territoryNeighbours; }
 };

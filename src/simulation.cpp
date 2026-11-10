@@ -78,7 +78,7 @@ void SimulationManager::gameLoop()
 			// event check
 			// to be implemented
 			// ruler turns
-			// R.playTurn(worldMap);
+			R->playTurn(worldMap);
 		}
 
 		// printing round summary

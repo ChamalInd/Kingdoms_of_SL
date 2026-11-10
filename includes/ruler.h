@@ -27,6 +27,7 @@ class Ruler
 		void printRoundSummary();
 		int calculateScore();
 		virtual void playTurn(WorldMap& worldMap) = 0;
+		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
 };
 
 class Conqueror : public Ruler

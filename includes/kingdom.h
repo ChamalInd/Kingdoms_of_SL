@@ -22,6 +22,7 @@ class Kingdom
 		int getStability() const { return stability; }
 		int getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
 		std::vector<int> getResources() const { return resources.getResources(); }
+		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }
 		
 		void collectProductions();
 		void upkeepAndConsumption();

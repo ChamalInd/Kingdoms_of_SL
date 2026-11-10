@@ -16,7 +16,7 @@ void Kingdom::collectProductions()
 			int reduction = 0;
 			if (stability < 30)
 			{
-				reduction = baseProduction[i] * 0.25;
+				reduction = baseProduction[i] * (25 / 100);
 			}
 			resourceIncrements[i] += (baseProduction[i] - reduction);
 		}
@@ -35,21 +35,21 @@ void Kingdom::upkeepAndConsumption()
 	// consume rice
 	int consumption = population / 20;
 
-	if (consumption < currentResources[0])
+	if (consumption <= currentResources[0])
 	{
 		resourceIncrement[0] = 0 - (population / 20);
 	}
 
 	if ((consumption * 2) <= currentResources[0])
 	{
-		population += population * 0.2;
+		population += population * (2 / 100);
 		updateStability(1);
 	}
 	
-	if (consumption > currentResources[0])
+	if (consumption >= currentResources[0])
 	{
 		resourceIncrement[0] = 0 - currentResources[0];
-		population -= population * 0.5;
+		population -= population * (5 / 100);
 		updateStability(-10);
 	}
 
@@ -65,13 +65,13 @@ void Kingdom::upkeepAndConsumption()
 
 void Kingdom::updateStability(int rate)
 {
-	stability += rate;
+	stability = std::clamp(stability + rate, 0, 100);
 
-	if (stability == 0)
+	if (stability <= 0)
 	{
-		if (getNoOfTerritoriesOwned() > 0)
+		if (getNoOfTerritoriesOwned() > 1)
 		{
-			int randomTerritory = rand() % getNoOfTerritoriesOwned() + 1;
+			int randomTerritory = rand() % (getNoOfTerritoriesOwned() - 1) + 1;
 			ownedTerritories[randomTerritory]->setTerritoryRuler(NEUTRAL);
 			ownedTerritories.erase(ownedTerritories.begin() + randomTerritory);
 		}

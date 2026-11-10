@@ -4,10 +4,10 @@
 class Resources
 {
 	private:
-		int riceCapacity = 500;
-		int timberCapacity = 200;
-		int ironCapacity = 100;
-		int goldCapacity = 1000;
+		int riceStock = 500;
+		int timberStock = 200;
+		int ironStock = 100;
+		int goldStock = 1000;
 	
 	public:
 		std::vector<int> getResources() const;

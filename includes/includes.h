@@ -3,6 +3,9 @@
 // external libraries used
 #include <iostream>
 #include <string>
+#include <memory>
+#include <algorithm>
+#include <ctime>
 #include <cstring>
 #include <vector>
 #include <iomanip>

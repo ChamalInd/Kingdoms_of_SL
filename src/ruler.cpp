@@ -5,7 +5,7 @@ void Ruler::printRoundSummary()
 	std::cout << kingdom.getKingdomName() << " (" << rulerName << ")" << std::endl;
 	std::vector<int> resources = kingdom.getResources();
 
-	std::cout << "Gold: " << resources[0] << " | Rice: " << resources[1] << " | Timber: " << resources[2] << " | Iron: " << resources[3] << std::endl;
+	std::cout << "Gold: " << resources[3] << " | Rice: " << resources[0] << " | Timber: " << resources[1] << " | Iron: " << resources[2] << std::endl;
 	std::cout << "Population: " << kingdom.getPopulation() << " | Stability: " << kingdom.getStability() << std::endl;
 	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << "0" << " | Units: " << "0" << std::endl;
 }
@@ -13,7 +13,7 @@ void Ruler::printRoundSummary()
 int Ruler::calculateScore()
 {
 	std::vector<int> resources = kingdom.getResources();
-	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * 0) + (3 * 0) + (resources[0] / 50) + (kingdom.getPopulation() / 100);
+	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * 0) + (3 * 0) + (resources[3] / 50) + (kingdom.getPopulation() / 100);
 	return score;
 }
 
@@ -39,23 +39,83 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 
+int Ruler::calculateTheTerritoryClaimCost()
+{
+	return 100 + 25 * kingdom.getNoOfTerritoriesOwned();
+}
+
+void Ruler::claimTerritory(Territory* territory)
+{
+	int cost = calculateTheTerritoryClaimCost();
+	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
+	std::vector<int> resourceIncrement = {0, 0, 0, 0 - cost};
+	kingdom.getResourceObject() += resourceIncrement;
+	territory->setTerritoryRuler(rulerEnum);
+	kingdom.claimTerritory(territory);
+
+	std::cout << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
+	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << cost << " Gold." << std::endl;
+}
+
 void Conqueror::playTurn(WorldMap& worldMap) 
 {
+	std::vector<int> currentResources = kingdom.getResources();
+	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	std::cout << potentialTerritories[0]->getTerritoryName() << std::endl;
+	if (!potentialTerritories.empty() && (currentResources[3] / 0.4) > calculateTheTerritoryClaimCost()) // saves 60% of gold for military purpose
+	{
+		int number = rand() % potentialTerritories.size();
+		claimTerritory(potentialTerritories[number]);
+	}
 }
 
 void AgrarianSage::playTurn(WorldMap& worldMap) 
 {
+	std::vector<int> currentResources = kingdom.getResources();
+	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
+	if (!potentialTerritories.empty() && currentResources[3] > calculateTheTerritoryClaimCost())
+	{
+		bool claimed = false;
+		for (Territory* T : potentialTerritories)
+		{
+			if (T->getTerritoryType() == PADDY_PLAIN)
+			{
+				claimTerritory(T);
+				claimed = true;
+				break;
+			}
+		}
+		if (!claimed)
+		{
+			int number = rand() % potentialTerritories.size();
+			claimTerritory(potentialTerritories[number]);
+		}
+	}
 }
 
 void MerchantPrince::playTurn(WorldMap& worldMap) 
 {
+	std::vector<int> currentResources = kingdom.getResources();
+	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
+	if (!potentialTerritories.empty() && (currentResources[3] - 1500) > calculateTheTerritoryClaimCost())
+	{
+		int number = rand() % potentialTerritories.size();
+		claimTerritory(potentialTerritories[number]);
+	}
+
 }
 
 void Strategist::playTurn(WorldMap& worldMap) 
 {
+	std::vector<int> currentResources = kingdom.getResources();
+	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
+	if (!potentialTerritories.empty() && currentResources[3] > calculateTheTerritoryClaimCost())
+	{
+		int number = rand() % potentialTerritories.size();
+		claimTerritory(potentialTerritories[number]);
+	}
+
 }

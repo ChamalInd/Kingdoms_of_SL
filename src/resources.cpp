@@ -11,10 +11,10 @@ void Resources::operator+=(const std::vector<int> productionIncrement)
 std::vector<int> Resources::getResources() const
 {
 	std::vector<int> resources;
-	resources.push_back(goldCapacity);
 	resources.push_back(riceCapacity);
 	resources.push_back(timberCapacity);
 	resources.push_back(ironCapacity);
+	resources.push_back(goldCapacity);
 
 	return resources;
 }

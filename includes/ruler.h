@@ -8,12 +8,13 @@ class Ruler
 	protected:
 		std::string rulerName;
 		Kingdom kingdom;
+		RulerEnum rulerEnum;
 		int firstDieValue = 0;
 		bool placeChosen = false;
 		int score = 0;
 
 	public:
-		Ruler(std::string n, Kingdom& k) : rulerName(n), kingdom(k) {}
+		Ruler(std::string n, Kingdom& k, RulerEnum r) : rulerName(n), kingdom(k), rulerEnum(r) {}
 		virtual ~Ruler() = default;
 		
 		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
@@ -28,12 +29,14 @@ class Ruler
 		int calculateScore();
 		virtual void playTurn(WorldMap& worldMap) = 0;
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
+		int calculateTheTerritoryClaimCost();
+		void claimTerritory(Territory* territory);
 };
 
 class Conqueror : public Ruler
 {
 	public:
-		Conqueror(std::string n, Kingdom& k) : Ruler(n, k) {}
+		Conqueror(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
 
 		void playTurn(WorldMap& worldMap) override;
 };
@@ -41,7 +44,7 @@ class Conqueror : public Ruler
 class AgrarianSage : public Ruler
 {
 	public:
-		AgrarianSage(std::string n, Kingdom& k) : Ruler(n, k) {}
+		AgrarianSage(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
 
 		void playTurn(WorldMap& worldMap) override;
 };
@@ -49,7 +52,7 @@ class AgrarianSage : public Ruler
 class MerchantPrince : public Ruler
 {
 	public:
-		MerchantPrince(std::string n, Kingdom& k) : Ruler(n, k) {}
+		MerchantPrince(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
 
 		void playTurn(WorldMap& worldMap) override;
 };
@@ -57,7 +60,7 @@ class MerchantPrince : public Ruler
 class Strategist : public Ruler
 {
 	public:
-		Strategist(std::string n, Kingdom& k) : Ruler(n, k) {}
+		Strategist(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
 
 		void playTurn(WorldMap& worldMap) override;
 };

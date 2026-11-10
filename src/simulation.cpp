@@ -5,26 +5,27 @@ SimulationManager::SimulationManager()
 	// creating kingdoms and their rulers
 	const std::string rulerNames[] = {"The Conqueror", "The Agrarian Sage", "The Merchant Prince", "The Strategist"};
 	const std::string kingdomNames[] = {"Anuradhapura", "Ruhuna", "Kotte", "Kandy"};
+	const RulerEnum enums[] = {ANURADHAPURA, RUHUNA, KOTTE, KANDY};
 	const std::vector<std::pair<int, int>> kingdomCapitals = {std::make_pair(0, 0), std::make_pair(0, 5), std::make_pair(5, 0), std::make_pair(5, 5)};
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
 		Kingdom kingdom(kingdomNames[i]);
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
-		kingdom.setCapitalCity(capital);
+		kingdom.claimTerritory(capital);
 
 		switch (i)
 		{
 			case 0:
-				rulers.push_back(std::make_unique<Conqueror>(rulerNames[i], kingdom));
+				rulers.push_back(std::make_unique<Conqueror>(rulerNames[i], kingdom, enums[i]));
 				break;
 			case 1:
-				rulers.push_back(std::make_unique<AgrarianSage>(rulerNames[i], kingdom));
+				rulers.push_back(std::make_unique<AgrarianSage>(rulerNames[i], kingdom, enums[i]));
 				break;
 			case 2:
-				rulers.push_back(std::make_unique<MerchantPrince>(rulerNames[i], kingdom));
+				rulers.push_back(std::make_unique<MerchantPrince>(rulerNames[i], kingdom, enums[i]));
 				break;
 			case 3:
-				rulers.push_back(std::make_unique<Strategist>(rulerNames[i], kingdom));
+				rulers.push_back(std::make_unique<Strategist>(rulerNames[i], kingdom, enums[i]));
 				break;
 		}
 	}

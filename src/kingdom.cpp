@@ -35,20 +35,20 @@ void Kingdom::upkeepAndConsumption()
 	// consume rice
 	int consumption = population / 20;
 
-	if (consumption < currentResources[1])
+	if (consumption < currentResources[0])
 	{
 		resourceIncrement[0] = 0 - (population / 20);
 	}
 
-	if ((consumption * 2) <= currentResources[1])
+	if ((consumption * 2) <= currentResources[0])
 	{
 		population += population * 0.2;
 		updateStability(1);
 	}
 	
-	if (consumption > currentResources[1])
+	if (consumption > currentResources[0])
 	{
-		resourceIncrement[0] = 0 - currentResources[1];
+		resourceIncrement[0] = 0 - currentResources[0];
 		population -= population * 0.5;
 		updateStability(-10);
 	}
@@ -59,7 +59,7 @@ void Kingdom::upkeepAndConsumption()
 	resources += resourceIncrement;
 
 	std::cout << kingdomName << " population consumed: Rice " << resourceIncrement[0] << "." << std::endl;
-	std::cout << kingdomName << " population paid taxes: Gold +" << resourceIncrement[1] << "." << std::endl;
+	std::cout << kingdomName << " population paid taxes: Gold +" << resourceIncrement[3] << "." << std::endl;
 	
 }
 

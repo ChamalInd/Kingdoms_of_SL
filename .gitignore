@@ -5,4 +5,4 @@ references
 # developments
 build
 kingdom
-output.log
+simulation_log.txt

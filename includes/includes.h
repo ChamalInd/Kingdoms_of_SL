@@ -104,6 +104,7 @@ class Kingdom
 		int getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		void collectProductions();
+		void upkeepAndConsumption();
 };
 
 class Ruler

@@ -59,6 +59,8 @@ void SimulationManager::gameLoop()
 			printTitle(title, '-');
 			// collect productions
 			kingdom.collectProductions();
+			// upkeep and consumption
+			kingdom.upkeepAndConsumption();
 		}
 
 		// printing round summary

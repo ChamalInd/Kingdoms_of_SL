@@ -16,7 +16,7 @@ void Kingdom::collectProductions()
 			int reduction = 0;
 			if (stability < 30)
 			{
-				reduction = baseProduction[i] * (25 / 100);
+				reduction = baseProduction[i] * 25 / 100;
 			}
 			resourceIncrements[i] += (baseProduction[i] - reduction);
 		}
@@ -42,14 +42,14 @@ void Kingdom::upkeepAndConsumption()
 
 	if ((consumption * 2) <= currentResources[0])
 	{
-		population += population * (2 / 100);
+		population += population * 2 / 100;
 		updateStability(1);
 	}
 	
-	if (consumption >= currentResources[0])
+	if (consumption > currentResources[0])
 	{
 		resourceIncrement[0] = 0 - currentResources[0];
-		population -= population * (5 / 100);
+		population -= population * 5 / 100;
 		updateStability(-10);
 	}
 

@@ -62,7 +62,7 @@ void Conqueror::playTurn(WorldMap& worldMap)
 	std::vector<int> currentResources = kingdom.getResources();
 	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	if (!potentialTerritories.empty() && (currentResources[3] * (40 / 100)) >= calculateTheTerritoryClaimCost()) // saves 60% of gold for military purpose
+	if (!potentialTerritories.empty() && (currentResources[3] * 40 / 100) >= calculateTheTerritoryClaimCost()) // saves 60% of gold for military purpose
 	{
 		int number = rand() % potentialTerritories.size();
 		claimTerritory(potentialTerritories[number]);

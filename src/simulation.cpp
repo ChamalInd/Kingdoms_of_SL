@@ -1,4 +1,4 @@
-#include "../includes/includes.h"
+#include "../includes/simulation.h"
 		
 SimulationManager::SimulationManager()
 {
@@ -11,8 +11,22 @@ SimulationManager::SimulationManager()
 		Kingdom kingdom(kingdomNames[i]);
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
 		kingdom.setCapitalCity(capital);
-		Ruler ruler(rulerNames[i], kingdom);
-		rulers.push_back(ruler);
+
+		switch (i)
+		{
+			case 0:
+				rulers.push_back(std::make_unique<Conqueror>(rulerNames[i], kingdom));
+				break;
+			case 1:
+				rulers.push_back(std::make_unique<AgrarianSage>(rulerNames[i], kingdom));
+				break;
+			case 2:
+				rulers.push_back(std::make_unique<MerchantPrince>(rulerNames[i], kingdom));
+				break;
+			case 3:
+				rulers.push_back(std::make_unique<Strategist>(rulerNames[i], kingdom));
+				break;
+		}
 	}
 
 	initializeGame();
@@ -30,14 +44,14 @@ void SimulationManager::initializeGame()
 	std::cout << std::endl << "Each kingdom begins with 1000 Gold, 500 Rice, 200 Timber, 100 Iron." << std::endl;
 	
 	determinePlayerOrder(rulers);
-	std::sort(rulers.begin(), rulers.end(), [](const Ruler& a, const Ruler& b) {
-		return a.getFirstDieValue() > b.getFirstDieValue();
+	std::sort(rulers.begin(), rulers.end(), [](const std::unique_ptr<Ruler>& a, const std::unique_ptr<Ruler>& b) {
+		return a->getFirstDieValue() > b->getFirstDieValue();
 	});
 	std::cout << "Turn order : ";
 	int count = 0;
-	for (Ruler R : rulers)
+	for (auto& R : rulers)
 	{
-		std::cout << R.getKingdom().getKingdomName();
+		std::cout << R->getKingdom().getKingdomName();
 		count++;
 		if (count < NO_OF_KINGDOMS) std::cout << ", ";
 	}
@@ -51,9 +65,9 @@ void SimulationManager::gameLoop()
 
 	while (gameRound < 200)
 	{
-		for (Ruler& R : rulers)
+		for (auto& R : rulers)
 		{
-			Kingdom& kingdom = R.getKingdom();
+			Kingdom& kingdom = R->getKingdom();
 			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom.getKingdomName() + " ";
 			std::cout << std::endl;
 			printTitle(title, '-');
@@ -61,15 +75,19 @@ void SimulationManager::gameLoop()
 			kingdom.collectProductions();
 			// upkeep and consumption
 			kingdom.upkeepAndConsumption();
+			// event check
+			// to be implemented
+			// ruler turns
+			// R.playTurn(worldMap);
 		}
 
 		// printing round summary
 		std::string title = " Round " + std::to_string(gameRound + 1) + " Summary ";
 		std::cout << std::endl;
 		printTitle(title, '=');
-		for (Ruler R : rulers)
+		for (auto& R : rulers)
 		{
-			R.printRoundSummary();
+			R->printRoundSummary();
 			std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
 		}
 		gameRound++;
@@ -79,17 +97,17 @@ void SimulationManager::gameLoop()
 SimulationManager::~SimulationManager()
 {
 	// printing game over message and wounding up
-	std::sort(rulers.begin(), rulers.end(), [](Ruler& a, Ruler& b){
-		return a.calculateScore() > b.calculateScore();
+	std::sort(rulers.begin(), rulers.end(), [](std::unique_ptr<Ruler>& a, std::unique_ptr<Ruler>& b){
+		return a->calculateScore() > b->calculateScore();
 	});
 	std::cout << std::endl;
 	std::string title = " Game Over after " + std::to_string(gameRound) + " rounds ";
 	printTitle(title, '=');
 
-	std::cout << "Winner : " << rulers[0].getKingdom().getKingdomName() << " (" << rulers[0].getRulerName() << ")" << std::endl << std::endl;
+	std::cout << "Winner : " << rulers[0]->getKingdom().getKingdomName() << " (" << rulers[0]->getRulerName() << ")" << std::endl << std::endl;
 	std::cout << "Final Score" << std::endl;
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
-		std::cout << i + 1 << ". " << std::setw(12) << rulers[i].getKingdom().getKingdomName() << " : " << rulers[i].calculateScore() << std::endl;
+		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom().getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
 	}
 }

@@ -1,4 +1,4 @@
-#include "../includes/includes.h"
+#include "../includes/kingdom.h"
 
 Kingdom::Kingdom(std::string n)
 {

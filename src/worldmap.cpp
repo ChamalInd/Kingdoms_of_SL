@@ -1,4 +1,4 @@
-#include "../includes/includes.h"
+#include "../includes/worldmap.h"
 
 WorldMap::WorldMap()
 {

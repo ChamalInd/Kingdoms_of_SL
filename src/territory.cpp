@@ -1,4 +1,4 @@
-#include "../includes/includes.h"
+#include "../includes/territory.h"
 	
 Territory::Territory(int ID, std::string n, TerrainType t, RulerEnum r, std::pair<int, int> location)
 {

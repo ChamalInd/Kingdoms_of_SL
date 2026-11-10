@@ -1,4 +1,4 @@
-#include "../includes/includes.h"
+#include "../includes/ruler.h"
 
 std::vector<int> setTheTerrainCounts()
 {
@@ -36,50 +36,50 @@ void printTitle(std::string title, char decorator)
 	std::cout << std::string(lPad, decorator) << title << std::string(rPad, decorator) << std::endl;
 }
 
-void determinePlayerOrder(std::vector<Ruler>& rulers)
+void determinePlayerOrder(std::vector<std::unique_ptr<Ruler>>& rulers)
 {
 	while (true)
 	{
 		std::cout << std::endl;
 
-		for (Ruler& R : rulers)
+		for (int i = 0; i < NO_OF_KINGDOMS; i++)
 		{	
-			if (R.getPlaceChosen()) continue;
+			if (rulers[i]->getPlaceChosen()) continue;
 			int dieRoll = rollDie(VALUE);
-			R.setFirstDieValue(dieRoll);
-			std::cout << R.getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
+			rulers[i]->setFirstDieValue(dieRoll);
+			std::cout << rulers[i]->getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
 		}
 	
 		bool tieFound = false;
 		for (int i = 0; i < NO_OF_KINGDOMS; i++)
 		{
-			if (rulers[i].getPlaceChosen()) continue;
+			if (rulers[i]->getPlaceChosen()) continue;
 			tieFound = false;
 			for (int j = 0; j < NO_OF_KINGDOMS; j++)
 			{
 				if (i == j) continue;
-				if (rulers[j].getPlaceChosen()) continue;
-				if (rulers[i].getFirstDieValue() == rulers[j].getFirstDieValue()) 
+				if (rulers[j]->getPlaceChosen()) continue;
+				if (rulers[i]->getFirstDieValue() == rulers[j]->getFirstDieValue()) 
 				{ 
 					tieFound = true;
 					break;
 				}
 			}
 
-			if (!tieFound) rulers[i].setPlaceChosen(true);
+			if (!tieFound) rulers[i]->setPlaceChosen(true);
 		}
 
 
 		int tieCount = 0;
 		std::cout << "Tie between ";
-		for (Ruler& R : rulers)
+		for (int i = 0; i < NO_OF_KINGDOMS; i++)
 		{
-			if (!R.getPlaceChosen()) 
+			if (!rulers[i]->getPlaceChosen()) 
 			{
 				tieCount++;
-				std::cout << R.getKingdom().getKingdomName() << " ";
+				std::cout << rulers[i]->getKingdom().getKingdomName() << " ";
 			}
-			else R.setFirstDieValue(R.getFirstDieValue() * 10);
+			else rulers[i]->setFirstDieValue(rulers[i]->getFirstDieValue() * 10);
 		}
 
 		if (tieCount == 0)

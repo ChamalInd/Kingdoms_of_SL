@@ -93,9 +93,11 @@ void SimulationManager::gameLoop()
 		}
 		gameRound++;
 	}
+
+	endGame();
 }
 
-SimulationManager::~SimulationManager()
+void SimulationManager::endGame()
 {
 	// printing game over message and wounding up
 	std::sort(rulers.begin(), rulers.end(), [](std::unique_ptr<Ruler>& a, std::unique_ptr<Ruler>& b){

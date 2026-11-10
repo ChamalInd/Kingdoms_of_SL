@@ -12,8 +12,8 @@ class SimulationManager
 	
 	public:
 		SimulationManager();
-		~SimulationManager();
 		
 		void initializeGame();
 		void gameLoop();
+		void endGame();
 };

@@ -57,65 +57,32 @@ void Ruler::claimTerritory(Territory* territory)
 	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << cost << " Gold." << std::endl;
 }
 
-void Conqueror::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
+void Ruler::claimPhase(WorldMap& worldMap)
 {
-	std::vector<int> currentResources = kingdom.getResources();
-	// claiming territories
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	if (!potentialTerritories.empty() && (currentResources[3] * 40 / 100) >= calculateTheTerritoryClaimCost()) // saves 60% of gold for military purpose
+	if (potentialTerritories.empty() || claimBudget() < calculateTheTerritoryClaimCost())
 	{
-		int number = rand() % potentialTerritories.size();
-		claimTerritory(potentialTerritories[number]);
+		return;
 	}
-}
 
-void AgrarianSage::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
-{
-	std::vector<int> currentResources = kingdom.getResources();
-	// claiming territories
-	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	if (!potentialTerritories.empty() && currentResources[3] >= calculateTheTerritoryClaimCost())
+	int highestScore = scoreTerritory(potentialTerritories[0]);
+	std::vector<Territory*> potentialClaims;
+	for (Territory* T : potentialTerritories)
 	{
-		bool claimed = false;
-		for (Territory* T : potentialTerritories)
+		int s = scoreTerritory(T);
+		if (s > highestScore) 
 		{
-			if (T->getTerritoryType() == PADDY_PLAIN)
-			{
-				claimTerritory(T);
-				claimed = true;
-				break;
-			}
+			highestScore = s;
+			potentialClaims.clear();
 		}
-		if (!claimed)
-		{
-			int number = rand() % potentialTerritories.size();
-			claimTerritory(potentialTerritories[number]);
-		}
+		if (s == highestScore) potentialClaims.push_back(T);
 	}
+
+	claimTerritory(potentialClaims[rand() % potentialClaims.size()]);
 }
 
-void MerchantPrince::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
-	std::vector<int> currentResources = kingdom.getResources();
-	// claiming territories
-	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	if (!potentialTerritories.empty() && (currentResources[3] - 1500) >= calculateTheTerritoryClaimCost())
-	{
-		int number = rand() % potentialTerritories.size();
-		claimTerritory(potentialTerritories[number]);
-	}
-
-}
-
-void Strategist::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
-{
-	std::vector<int> currentResources = kingdom.getResources();
-	// claiming territories
-	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-	if (!potentialTerritories.empty() && currentResources[3] >= calculateTheTerritoryClaimCost())
-	{
-		int number = rand() % potentialTerritories.size();
-		claimTerritory(potentialTerritories[number]);
-	}
-
+	claimPhase(worldMap);
+	
 }

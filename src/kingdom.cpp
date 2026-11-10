@@ -74,6 +74,8 @@ void Kingdom::updateStability(int rate)
 			int randomTerritory = rand() % (getNoOfTerritoriesOwned() - 1) + 1;
 			ownedTerritories[randomTerritory]->setTerritoryRuler(NEUTRAL);
 			ownedTerritories.erase(ownedTerritories.begin() + randomTerritory);
+			std::cout << "Stability of " << kingdomName << " has reached 0. Rebellion in ";
+			std::cout << ownedTerritories[randomTerritory]->getTerritoryName() << "! " << kingdomName << " loses control." << std::endl;
 		}
 		stability = 30;
 	}

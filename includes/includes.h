@@ -28,6 +28,11 @@ enum RollType
 	VALUE, DOUBLES
 };
 
+enum BuildingType 
+{
+	PADDY_FARM, IRRIGATION_LAKE, MINE, SAWMILL, MARKET, TEMPLE, BARRACKS, FORT
+};
+
 // structures
 struct RulerDetails
 {
@@ -36,7 +41,7 @@ struct RulerDetails
 };
 
 // global variables
-#define SEED   time(NULL)
+#define SEED            1 // time(NULL)
 #define NO_OF_KINGDOMS  4
 #define MAP_DIMENSIONS  6
 #define NO_OF_TERRAINS  6
@@ -56,8 +61,10 @@ const std::vector<std::vector<int>> BASE_PRODUCTION = {
 // class declarations
 class Resources;
 class Territory;
+class Building;
 class Kingdom;
 class Ruler;
+class WorldMap;
 class SimulationManager;
 
 // global helper functions

@@ -48,7 +48,7 @@ WorldMap::WorldMap()
 					
 			// creating the territory object
 			Territory territory(territoryID, territoryName, terrain, ruler, location);
-			worldMap[i].push_back(territory);
+			worldMap[i].push_back(std::move(territory));
 			
 			territoryID++;
 		}

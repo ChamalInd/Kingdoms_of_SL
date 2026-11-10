@@ -1,5 +1,6 @@
 #pragma once
 #include "includes.h"
+#include "building.h"
 
 class Territory
 {
@@ -10,6 +11,7 @@ class Territory
 		std::vector<int> territoryBaseProduction;
 		RulerEnum territoryRuler;
 		std::vector<std::pair<int, int>> territoryNeighbours;
+		std::unique_ptr<Building> buildingBuilt = nullptr;
 	
 	public:
 		Territory(int ID, std::string n, TerrainType, RulerEnum r, std::pair<int, int>);
@@ -21,4 +23,7 @@ class Territory
 		RulerEnum getTerritoryRuler() const { return territoryRuler; }
 		std::vector<int> getTerritoryProduction() const { return territoryBaseProduction; }
 		std::vector<std::pair<int, int>> getTerritoryNeighbours() const { return territoryNeighbours; }
+
+		void buildAProperty(std::unique_ptr<Building> newBuilding) { buildingBuilt = std::move(newBuilding); }
+		void destroyAProperty() { buildingBuilt = nullptr; }
 };

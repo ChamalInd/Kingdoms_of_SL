@@ -28,6 +28,13 @@ enum RollType
 	VALUE, DOUBLES
 };
 
+// structures
+struct RulerDetails
+{
+	int noOfTerritoriesOwn;
+	int armyStrength;
+};
+
 // global variables
 #define SEED   time(NULL)
 #define NO_OF_KINGDOMS  4

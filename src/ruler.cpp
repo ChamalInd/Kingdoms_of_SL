@@ -57,7 +57,7 @@ void Ruler::claimTerritory(Territory* territory)
 	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << cost << " Gold." << std::endl;
 }
 
-void Conqueror::playTurn(WorldMap& worldMap) 
+void Conqueror::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
 	std::vector<int> currentResources = kingdom.getResources();
 	// claiming territories
@@ -69,7 +69,7 @@ void Conqueror::playTurn(WorldMap& worldMap)
 	}
 }
 
-void AgrarianSage::playTurn(WorldMap& worldMap) 
+void AgrarianSage::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
 	std::vector<int> currentResources = kingdom.getResources();
 	// claiming territories
@@ -94,7 +94,7 @@ void AgrarianSage::playTurn(WorldMap& worldMap)
 	}
 }
 
-void MerchantPrince::playTurn(WorldMap& worldMap) 
+void MerchantPrince::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
 	std::vector<int> currentResources = kingdom.getResources();
 	// claiming territories
@@ -107,7 +107,7 @@ void MerchantPrince::playTurn(WorldMap& worldMap)
 
 }
 
-void Strategist::playTurn(WorldMap& worldMap) 
+void Strategist::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
 	std::vector<int> currentResources = kingdom.getResources();
 	// claiming territories

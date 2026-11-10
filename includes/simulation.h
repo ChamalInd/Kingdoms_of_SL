@@ -16,4 +16,5 @@ class SimulationManager
 		void initializeGame();
 		void gameLoop();
 		void endGame();
+		std::vector<RulerDetails> calculateRulerDetails();
 };

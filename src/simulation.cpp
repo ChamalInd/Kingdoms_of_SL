@@ -79,7 +79,8 @@ void SimulationManager::gameLoop()
 			// event check
 			// to be implemented
 			// ruler turns
-			R->playTurn(worldMap);
+			std::vector<RulerDetails> rd = calculateRulerDetails();
+			R->playTurn(worldMap, rd);
 		}
 
 		// printing round summary
@@ -113,4 +114,19 @@ void SimulationManager::endGame()
 	{
 		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom().getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
 	}
+}
+		
+std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
+{
+	std::vector<RulerDetails> rulerDetails;
+
+	for (auto& R : rulers)
+	{
+		RulerDetails rd;
+		rd.noOfTerritoriesOwn = R->getKingdom().getNoOfTerritoriesOwned();
+		rd.armyStrength = 0;
+		rulerDetails.push_back(rd);
+	}
+
+	return rulerDetails;
 }

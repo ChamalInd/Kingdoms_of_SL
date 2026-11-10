@@ -11,7 +11,15 @@ void Kingdom::collectProductions()
 	for (Territory* T : ownedTerritories)
 	{
 		std::vector<int> baseProduction = T->getTerritoryProduction();
-		for (int i = 0; i < 4; i++) resourceIncrements[i] += baseProduction[i];
+		for (int i = 0; i < 4; i++) 
+		{
+			int reduction = 0;
+			if (stability < 30)
+			{
+				reduction = baseProduction[i] * 0.25;
+			}
+			resourceIncrements[i] += (baseProduction[i] - reduction);
+		}
 	}
 
 	resources += resourceIncrements;
@@ -32,16 +40,17 @@ void Kingdom::upkeepAndConsumption()
 		resourceIncrement[0] = 0 - (population / 20);
 	}
 
-	if ((consumption * 2) < currentResources[1])
+	if ((consumption * 2) <= currentResources[1])
 	{
 		population += population * 0.2;
+		updateStability(1);
 	}
 	
 	if (consumption > currentResources[1])
 	{
 		resourceIncrement[0] = 0 - currentResources[1];
 		population -= population * 0.5;
-		stability -= 10;
+		updateStability(-10);
 	}
 
 	// taxes
@@ -52,4 +61,20 @@ void Kingdom::upkeepAndConsumption()
 	std::cout << kingdomName << " population consumed: Rice " << resourceIncrement[0] << "." << std::endl;
 	std::cout << kingdomName << " population paid taxes: Gold +" << resourceIncrement[1] << "." << std::endl;
 	
+}
+
+void Kingdom::updateStability(int rate)
+{
+	stability += rate;
+
+	if (stability == 0)
+	{
+		if (getNoOfTerritoriesOwned() > 0)
+		{
+			int randomTerritory = rand() % getNoOfTerritoriesOwned() + 1;
+			ownedTerritories[randomTerritory]->setTerritoryRuler(NEUTRAL);
+			ownedTerritories.erase(ownedTerritories.begin() + randomTerritory);
+		}
+		stability = 30;
+	}
 }

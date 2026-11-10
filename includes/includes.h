@@ -69,6 +69,7 @@ class Territory
 	
 	public:
 		Territory(int ID, std::string n, TerrainType, RulerEnum r, std::pair<int, int>);
+		void setTerritoryRuler(RulerEnum newRuler) { territoryRuler = newRuler; }
 		std::string getTerritoryName() const { return territoryName; }
 		TerrainType getTerritoryType() const { return territoryType; }
 		RulerEnum getTerritoryRuler() const { return territoryRuler; }
@@ -105,6 +106,7 @@ class Kingdom
 		std::vector<int> getResources() const { return resources.getResources(); }
 		void collectProductions();
 		void upkeepAndConsumption();
+		void updateStability(int rate);
 };
 
 class Ruler

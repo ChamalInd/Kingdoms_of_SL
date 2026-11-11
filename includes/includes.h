@@ -34,6 +34,11 @@ enum BuildingType
 	PADDY_FARM, IRRIGATION_LAKE, MINE, SAWMILL, MARKET, TEMPLE, BARRACKS, FORT
 };
 
+enum BuildingStatus
+{
+	OPEN, CLOSE
+};
+
 // structures
 struct RulerDetails
 {

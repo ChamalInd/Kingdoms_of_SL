@@ -47,7 +47,7 @@ void Ruler::claimTerritory(Territory* territory, int claimCost)
 	territory->setTerritoryRuler(rulerEnum);
 	kingdom.claimTerritory(territory);
 
-	std::cout << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
+	std::cout << std::endl << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
 	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
 
 }
@@ -59,7 +59,7 @@ void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& b
 	kingdom.getResourceObject() += buildingCost;
 	kingdom.increaseSpecificBuildingCount(territory->getTerritoryBuilding()->getBuildingType());
 
-	std::cout << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". ";
+	std::cout << std::endl << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". Cost: ";
 	if (std::abs(buildingCost[3]) > 0) std::cout << std::abs(buildingCost[3]) << " Gold";
 	if (std::abs(buildingCost[1]) > 0) std::cout << ", " << std::abs(buildingCost[1]) << " Timber";
 	if (std::abs(buildingCost[2]) > 0) std::cout << ", " << std::abs(buildingCost[2]) << " Iron";

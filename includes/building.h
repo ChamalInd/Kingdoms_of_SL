@@ -12,15 +12,19 @@ class Building
 		int upkeepCost;
 		BuildingType buildingType;
 		int buildingHealth = 100;
+		BuildingStatus buildingStatus = OPEN;
 	
 	public:
 		virtual ~Building() = default;
+
+		void setBuildingStatus(BuildingStatus newStatus) { buildingStatus = newStatus; }
 
 		std::string getBuildingName() const { return buildingName; }
 		std::vector<TerrainType> getAllowedTerrains() const { return allowedTerrains; }
 		std::vector<int> getBuildingCost() const { return buildingCost; }
 		int getUpkeepCost() const { return upkeepCost; }
 		BuildingType getBuildingType() const { return buildingType; }
+		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
 		void performEffect();
 };

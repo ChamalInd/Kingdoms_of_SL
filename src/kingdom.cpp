@@ -34,7 +34,8 @@ void Kingdom::collectProductions()
 
 	resources += resourceIncrements;
 
-	std::cout << kingdomName << " produced: Gold +" << resourceIncrements[3] << ", Rice +" << resourceIncrements[0] << ", Timber +" << resourceIncrements[1] << ", Iron +" << resourceIncrements[2] << "." << std::endl;
+	std::cout << kingdomName << " produced: Gold +" << resourceIncrements[3] << ", Rice +";
+	std::cout << resourceIncrements[0] << ", Timber +" << resourceIncrements[1] << ", Iron +" << resourceIncrements[2] << "." << std::endl << std::endl;
 }
 		
 void Kingdom::upkeepAndConsumption()
@@ -47,7 +48,7 @@ void Kingdom::upkeepAndConsumption()
 
 	if (consumption <= currentResources[0])
 	{
-		resourceIncrement[0] = 0 - (population / 20);
+		resourceIncrement[0] = -consumption;
 	}
 
 	if ((consumption * 2) <= currentResources[0])
@@ -67,9 +68,60 @@ void Kingdom::upkeepAndConsumption()
 	resourceIncrement[3] = population / 25;
 
 	resources += resourceIncrement;
+	
+	std::cout << kingdomName << " population consumed: " << std::abs(resourceIncrement[0]) << " Rice." << std::endl;
+	std::cout << kingdomName << " population paid taxes: " << resourceIncrement[3] << " Gold." << std::endl << std::endl;
+	
+	// upkeeps
+	resourceIncrement = {0, 0, 0, 0};
+	currentResources = resources.getResources();
+	
+	int goldUpkeep = 0;
+	int riceUpkeep = 0;
+	int highestGoldUpkeep = 0;
+	int highestGoldUpkeepIndex = 0;
 
-	std::cout << kingdomName << " population consumed: Rice " << resourceIncrement[0] << "." << std::endl;
-	std::cout << kingdomName << " population paid taxes: Gold +" << resourceIncrement[3] << "." << std::endl;
+	for (size_t i = 0; i < ownedTerritories.size(); i++)
+	{
+		if (ownedTerritories[i]->getTerritoryBuilding() == nullptr) continue;
+		int upkeep = ownedTerritories[i]->getTerritoryBuilding()->getUpkeepCost();
+		goldUpkeep += upkeep;
+		if (upkeep > highestGoldUpkeep && ownedTerritories[i]->getTerritoryBuilding()->getBuildingStatus() == OPEN)
+		{
+			highestGoldUpkeep = upkeep;
+			highestGoldUpkeepIndex = i; 
+		}
+	}
+
+	if ((goldUpkeep + buildingUpkeepDebt) <= currentResources[3])
+	{
+		resourceIncrement[3] = -(goldUpkeep + buildingUpkeepDebt);
+		std::cout << kingdomName << " paid building upkeep: " << std::abs(resourceIncrement[3]) << " Gold." << std::endl;	
+	
+		if (buildingUpkeepDebt > 0) std::cout << kingdomName << " cleared there building upkeep debt." << std::endl;
+
+		buildingUpkeepDebt = 0;
+		
+		for (Territory* T : ownedTerritories)
+		{
+			if (T->getTerritoryBuilding() == nullptr) continue;
+			if (T->getTerritoryBuilding()->getBuildingStatus() == OPEN) continue;
+			T->getTerritoryBuilding()->setBuildingStatus(OPEN);
+			std::cout << "\t" << T->getTerritoryBuilding()->getBuildingName() << " on " << T->getTerritoryName() << " is now open." << std::endl;
+		}
+
+	}
+	else
+	{
+		resourceIncrement[3] = -currentResources[3];
+		ownedTerritories[highestGoldUpkeepIndex]->getTerritoryBuilding()->setBuildingStatus(CLOSE);
+		std::cout << kingdomName << " not enough Gold to pay upkeep of buildings." << std::endl;
+		buildingUpkeepDebt = buildingUpkeepDebt + goldUpkeep + currentResources[3];
+		std::cout << "\t" << ownedTerritories[highestGoldUpkeepIndex]->getTerritoryBuilding()->getBuildingName();
+		std::cout << " on " << ownedTerritories[highestGoldUpkeepIndex]->getTerritoryName() << " is now closed due to upkeep debt." << std::endl;
+	}
+	
+	resources += resourceIncrement;
 	
 }
 

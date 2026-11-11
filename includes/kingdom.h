@@ -11,6 +11,7 @@ class Kingdom
 		int stability = 70;
 		Resources resources;
 		std::vector<Territory*> ownedTerritories;
+		int buildingUpkeepDebt = 0;
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
 	
 	public:

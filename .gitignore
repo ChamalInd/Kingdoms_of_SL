@@ -3,6 +3,7 @@
 references
 
 # developments
+.tasks
 build
 kingdom
 simulation_log.txt

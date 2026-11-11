@@ -7,7 +7,7 @@ void Ruler::printRoundSummary()
 
 	std::cout << "Gold: " << resources[3] << " | Rice: " << resources[0] << " | Timber: " << resources[1] << " | Iron: " << resources[2] << std::endl;
 	std::cout << "Population: " << kingdom.getPopulation() << " | Stability: " << kingdom.getStability() << std::endl;
-	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << "0" << " | Units: " << "0" << std::endl;
+	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << kingdom.getNoOfBuildingsBuilt() << " | Units: " << "0" << std::endl;
 }
 
 int Ruler::calculateScore()

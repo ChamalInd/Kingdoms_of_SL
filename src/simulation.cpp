@@ -76,7 +76,7 @@ void SimulationManager::gameLoop()
 			std::cout << std::endl;
 			printTitle(title, '-');
 			// collect productions
-			kingdom.collectProductions(worldMap);
+			kingdom.collectProductions(worldMap, R->getRulerEnum());
 			// upkeep and consumption
 			kingdom.upkeepAndConsumption();
 			// event check

@@ -29,7 +29,7 @@ class Kingdom
 		
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
-		void collectProductions(WorldMap& worldMap);
+		void collectProductions(WorldMap& worldMap, RulerEnum ruler);
 		void upkeepAndConsumption();
 		void updateStability(int rate);
 };

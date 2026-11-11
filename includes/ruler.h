@@ -18,6 +18,8 @@ class Ruler
 		virtual int scoreBuilding(const BuildingType) const { return 0; }
 
 	private:
+		void claimTerritory(Territory* territory, int claimCost);
+		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase();
 
@@ -32,13 +34,12 @@ class Ruler
 		int getFirstDieValue() const { return firstDieValue; }
 		bool getPlaceChosen() const { return placeChosen; }
 		std::string getRulerName() const { return rulerName; }
+		RulerEnum getRulerEnum() const { return rulerEnum; }
 		
 		void printRoundSummary();
 		int calculateScore();
 		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
-		void claimTerritory(Territory* territory, int claimCost);
-		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 };
 
 class Conqueror : public Ruler

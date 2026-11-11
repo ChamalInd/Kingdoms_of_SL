@@ -46,6 +46,12 @@ struct RulerDetails
 	int armyStrength;
 };
 
+struct BuildingEffect
+{
+	std::vector<int> resourceIncrement;
+	int stabilityIncrement;
+};
+
 // global variables
 #define SEED            1 // time(NULL)
 #define NO_OF_KINGDOMS  4

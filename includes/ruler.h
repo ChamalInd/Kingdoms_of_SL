@@ -14,8 +14,8 @@ class Ruler
 		int score = 0;
 
 		virtual int claimBudget() const = 0;
-		virtual int scoreTerritory(const Territory* T) const { return 0; }
-		virtual int scoreBuilding(const BuildingType type) const { return 0; }
+		virtual int scoreTerritory(const Territory*) const { return 0; }
+		virtual int scoreBuilding(const BuildingType) const { return 0; }
 
 	private:
 		void claimPhase(WorldMap& worldMap);

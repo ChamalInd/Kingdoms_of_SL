@@ -1,5 +1,7 @@
 #pragma once
 #include "includes.h"
+#include "territory.h"
+#include "worldmap.h"
 
 // buildingCost = {rice, timber, iron, gold}
 
@@ -13,6 +15,9 @@ class Building
 		BuildingType buildingType;
 		int buildingHealth = 100;
 		BuildingStatus buildingStatus = OPEN;
+
+		virtual std::vector<int> getResourceIncrements(Territory*, WorldMap&) const { return {0, 0, 0, 0}; } 
+		virtual int getStabilityIncrements() const { return 0; } 
 	
 	public:
 		virtual ~Building() = default;
@@ -26,7 +31,7 @@ class Building
 		BuildingType getBuildingType() const { return buildingType; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
-		void performEffect();
+		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap);
 };
 
 class PaddyFarm : public Building
@@ -40,6 +45,8 @@ class PaddyFarm : public Building
 			buildingCost = {0, -50, 0, -100};
 			upkeepCost = 5;
 		}
+	protected:	
+		std::vector<int> getResourceIncrements(Territory*, WorldMap&) const override { return {30, 0, 0, 0}; } 
 };
 
 class IrrigationTank : public Building
@@ -53,6 +60,8 @@ class IrrigationTank : public Building
 			buildingCost = {0, -100, 0, -200};
 			upkeepCost = 10;
 		}
+	protected:	
+		std::vector<int> getResourceIncrements(Territory* parentTerritory, WorldMap& map) const override;
 };
 
 class Mine : public Building
@@ -66,6 +75,8 @@ class Mine : public Building
 			buildingCost = {0, -50, 0, -150};
 			upkeepCost = 10;
 		}
+	protected:	
+		std::vector<int> getResourceIncrements(Territory*, WorldMap&) const override { return {0, 0, 20, 0}; } 
 };
 
 class SawMill : public Building
@@ -79,6 +90,8 @@ class SawMill : public Building
 			buildingCost = {0, 0, 0, -100};
 			upkeepCost = 5;
 		}
+	protected:	
+		std::vector<int> getResourceIncrements(Territory*, WorldMap&) const override { return {0, 20, 0, 0}; } 
 };
 
 class Market : public Building
@@ -92,6 +105,8 @@ class Market : public Building
 			buildingCost = {0, -50, 0, -200};
 			upkeepCost = 10;
 		}
+	protected:	
+		std::vector<int> getResourceIncrements(Territory*, WorldMap&) const override { return {0, 0, 0, 40}; } 
 };
 
 class Temple : public Building
@@ -105,6 +120,8 @@ class Temple : public Building
 			buildingCost = {0, -100, 0, -250};
 			upkeepCost = 15;
 		}
+	protected:	
+		int getStabilityIncrements() const override { return 3; } 
 };
 
 class Barracks : public Building
@@ -118,6 +135,7 @@ class Barracks : public Building
 			buildingCost = {0, -100, -50, -200};
 			upkeepCost = 10;
 		}
+	protected:	
 };
 
 class Fort : public Building
@@ -131,6 +149,7 @@ class Fort : public Building
 			buildingCost = {0, -150, -100, -300};
 			upkeepCost = 20;
 		}
+	protected:	
 };
 
 class Builder

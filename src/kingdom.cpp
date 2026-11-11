@@ -15,7 +15,7 @@ int Kingdom::getNoOfBuildingsBuilt() const
 	return buildingCount;
 }
 
-void Kingdom::collectProductions()
+void Kingdom::collectProductions(WorldMap& worldMap)
 {
 	std::vector<int> resourceIncrements = {0, 0, 0, 0};
 	for (Territory* T : ownedTerritories)
@@ -29,6 +29,12 @@ void Kingdom::collectProductions()
 				reduction = baseProduction[i] * 25 / 100;
 			}
 			resourceIncrements[i] += (baseProduction[i] - reduction);
+		}
+		if (T->getTerritoryBuilding() != nullptr && T->getTerritoryBuilding()->getBuildingStatus() == OPEN)
+		{
+			BuildingEffect effect = T->getTerritoryBuilding()->performEffect(T, worldMap);
+			for (int i = 0; i < 4; i++) resourceIncrements[i] += effect.resourceIncrement[i];
+			updateStability(effect.stabilityIncrement);
 		}
 	}
 
@@ -77,7 +83,6 @@ void Kingdom::upkeepAndConsumption()
 	currentResources = resources.getResources();
 	
 	int goldUpkeep = 0;
-	int riceUpkeep = 0;
 	int highestGoldUpkeep = 0;
 	int highestGoldUpkeepIndex = 0;
 

@@ -15,9 +15,11 @@ class Ruler
 
 		virtual int claimBudget() const = 0;
 		virtual int scoreTerritory(const Territory* T) const { return 0; }
+		virtual int scoreBuilding(const BuildingType type) const { return 0; }
 
 	private:
-		void claimPhase(WorldMap& worldMap);
+		void claimTerritory(WorldMap& worldMap);
+		void constructBuildings();
 
 	public:
 		Ruler(std::string n, Kingdom& k, RulerEnum r) : rulerName(n), kingdom(k), rulerEnum(r) {}
@@ -35,8 +37,6 @@ class Ruler
 		int calculateScore();
 		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
-		int calculateTheTerritoryClaimCost();
-		void claimTerritory(Territory* territory);
 };
 
 class Conqueror : public Ruler
@@ -46,6 +46,12 @@ class Conqueror : public Ruler
 	
 	protected:
 		int claimBudget() const override { return kingdom.getResources()[3] * 40 / 100; }
+		int scoreBuilding(const BuildingType type) const override 
+		{
+			if (type == BARRACKS && kingdom.getNoOfTerritoriesOwned() % 2 == 0 && kingdom.getSpecificBuildingCount(type) < 4) return 10;
+			else if (type == TEMPLE) return 0;
+			else return 5;
+		}
 };
 
 class AgrarianSage : public Ruler
@@ -56,6 +62,13 @@ class AgrarianSage : public Ruler
 	protected:
 		int claimBudget() const override { return kingdom.getResources()[3]; }
 		int scoreTerritory(const Territory* T) const override { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
+		int scoreBuilding(const BuildingType type) const override 
+		{
+			if (type == PADDY_FARM) return 10; 
+			else if (type == IRRIGATION_LAKE) return 9;
+			else if (type == TEMPLE && kingdom.getNoOfTerritoriesOwned() % 4 == 0) return 8;
+			else return 0;
+		}
 };
 
 class MerchantPrince : public Ruler
@@ -66,6 +79,11 @@ class MerchantPrince : public Ruler
 	protected:
 		int claimBudget() const override { return kingdom.getResources()[3] - 1500; }
 		int scoreTerritory(const Territory* T) const override { return T->getTerritoryType() == COAST ? 10 : 0; }
+		int scoreBuilding(const BuildingType type) const override 
+		{
+			if (type == MARKET) return 10; 
+			else return 0;
+		}
 
 };
 
@@ -76,4 +94,10 @@ class Strategist : public Ruler
 
 	protected:
 		int claimBudget() const override { return kingdom.getResources()[3]; }
+		int scoreBuilding(const BuildingType type) const override 
+		{
+			if (type == PADDY_FARM) return 10;
+			else if (type == TEMPLE) return 9;
+			else return 0;
+		}
 };

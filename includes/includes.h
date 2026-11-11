@@ -6,6 +6,7 @@
 #include <memory>
 #include <algorithm>
 #include <ctime>
+#include <cmath>
 #include <cstring>
 #include <vector>
 #include <iomanip>

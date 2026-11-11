@@ -11,6 +11,7 @@ class Kingdom
 		int stability = 70;
 		Resources resources;
 		std::vector<Territory*> ownedTerritories;
+		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
 	
 	public:
 		Kingdom(std::string n);
@@ -22,8 +23,10 @@ class Kingdom
 		Resources& getResourceObject() { return resources; }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }
+		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
 		
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
+		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
 		void collectProductions();
 		void upkeepAndConsumption();
 		void updateStability(int rate);

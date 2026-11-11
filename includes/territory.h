@@ -11,7 +11,7 @@ class Territory
 		std::vector<int> territoryBaseProduction;
 		RulerEnum territoryRuler;
 		std::vector<std::pair<int, int>> territoryNeighbours;
-		std::unique_ptr<Building> buildingBuilt = nullptr;
+		std::unique_ptr<Building> territoryBuilding = nullptr;
 	
 	public:
 		Territory(int ID, std::string n, TerrainType, RulerEnum r, std::pair<int, int>);
@@ -23,7 +23,8 @@ class Territory
 		RulerEnum getTerritoryRuler() const { return territoryRuler; }
 		std::vector<int> getTerritoryProduction() const { return territoryBaseProduction; }
 		std::vector<std::pair<int, int>> getTerritoryNeighbours() const { return territoryNeighbours; }
+		std::unique_ptr<Building>& getTerritoryBuilding() { return territoryBuilding; }
 
-		void buildAProperty(std::unique_ptr<Building> newBuilding) { buildingBuilt = std::move(newBuilding); }
-		void destroyAProperty() { buildingBuilt = nullptr; }
+		void buildAProperty(std::unique_ptr<Building>& newBuilding) { territoryBuilding = std::move(newBuilding); }
+		void destroyAProperty() { territoryBuilding = nullptr; }
 };

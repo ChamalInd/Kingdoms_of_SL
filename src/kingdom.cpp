@@ -5,6 +5,16 @@ Kingdom::Kingdom(std::string n)
 	kingdomName = n;
 }
 
+int Kingdom::getNoOfBuildingsBuilt() const
+{
+	int buildingCount = 0;
+	for (Territory* T : ownedTerritories)
+	{
+		if (T->getTerritoryBuilding() != nullptr) buildingCount++;
+	}
+	return buildingCount;
+}
+
 void Kingdom::collectProductions()
 {
 	std::vector<int> resourceIncrements = {0, 0, 0, 0};

@@ -91,7 +91,7 @@ class SawMill : public Building
 			upkeepCost = 5;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {0, 20, 0, 0}; } 
+		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {0, 30, 0, 0}; } 
 };
 
 class Market : public Building

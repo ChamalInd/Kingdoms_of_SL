@@ -39,6 +39,11 @@ enum BuildingStatus
 	OPEN, CLOSE
 };
 
+enum UnitType
+{
+	SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT
+};
+
 // structures
 struct RulerDetails
 {

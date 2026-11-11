@@ -1,0 +1,49 @@
+#include "../includes/army.h"
+
+int Army::getArmyAttack() const 
+{
+	if (units.empty()) return 0;
+	int attackPoints = 0;
+	for (auto& u : units)
+	{
+		if (u->getHP() < 0) continue;
+		attackPoints += u->getAttack();
+	}
+	return attackPoints;
+}
+
+int Army::getArmyDefence() const 
+{
+	if (units.empty()) return 0;
+	int defencePoints = 0;
+	for (auto& u : units)
+	{	
+		if (u->getHP() < 0) continue;
+		defencePoints += u->getDefence();
+	}
+	return defencePoints;
+}
+		
+int Army::getMove() const 
+{
+	if (units.empty()) return 0;
+	int move = 2;
+	for (auto& u : units)
+	{	
+		if (u->getHP() < 0) continue;
+		if (u->getMove() < move) move = u->getMove(); 
+	}
+	return move;
+}
+
+int Army::getUpkeep() const
+{
+	if (units.empty()) return 0;
+	int upkeep = 2;
+	for (auto& u : units)
+	{	
+		if (u->getHP() < 0) continue;
+		upkeep += u->getUnitUpkeep(); 
+	}
+	return upkeep;
+}

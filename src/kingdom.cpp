@@ -36,7 +36,7 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 			BuildingEffect effect = T->getTerritoryBuilding()->performEffect(T, worldMap, ruler);
 			for (int i = 0; i < 4; i++) 
 			{
-				if (stability < 30) resourceIncrements[i] += effect.resourceIncrement[i] * 25 / 100;
+				if (stability < 30) resourceIncrements[i] += effect.resourceIncrement[i] * 75 / 100;
 				else resourceIncrements[i] += effect.resourceIncrement[i];
 			}
 			stabilityIncrement += effect.stabilityIncrement;

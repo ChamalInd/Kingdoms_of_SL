@@ -59,6 +59,13 @@ void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& b
 	kingdom.getResourceObject() += buildingCost;
 	kingdom.increaseSpecificBuildingCount(territory->getTerritoryBuilding()->getBuildingType());
 
+	if (territory->getTerritoryBuilding()->getBuildingType() == BARRACKS)
+	{
+		kingdom.increaseArmyCount();
+		territory->addAnArmy(std::make_unique<Army>(kingdom.getArmyCount()));
+		kingdom.claimBarracks(territory);
+	}
+
 	std::cout << std::endl << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". Cost: ";
 	if (std::abs(buildingCost[3]) > 0) std::cout << std::abs(buildingCost[3]) << " Gold";
 	if (std::abs(buildingCost[1]) > 0) std::cout << ", " << std::abs(buildingCost[1]) << " Timber";

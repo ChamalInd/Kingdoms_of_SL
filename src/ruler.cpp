@@ -39,7 +39,34 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 
-void Ruler::claimTerritory(WorldMap& worldMap)
+void Ruler::claimTerritory(Territory* territory, int claimCost)
+{
+	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
+	std::vector<int> resourceIncrement = {0, 0, 0, 0 - claimCost};
+	kingdom.getResourceObject() += resourceIncrement;
+	territory->setTerritoryRuler(rulerEnum);
+	kingdom.claimTerritory(territory);
+
+	std::cout << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
+	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
+
+}
+
+void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
+{
+	territory->buildAProperty(building);
+	std::vector<int> buildingCost = territory->getTerritoryBuilding()->getBuildingCost();
+	kingdom.getResourceObject() += buildingCost;
+	kingdom.increaseSpecificBuildingCount(territory->getTerritoryBuilding()->getBuildingType());
+
+	std::cout << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". ";
+	if (std::abs(buildingCost[3]) > 0) std::cout << std::abs(buildingCost[3]) << " Gold";
+	if (std::abs(buildingCost[1]) > 0) std::cout << ", " << std::abs(buildingCost[1]) << " Timber";
+	if (std::abs(buildingCost[2]) > 0) std::cout << ", " << std::abs(buildingCost[2]) << " Iron";
+	std::cout << "." << std::endl;
+}
+
+void Ruler::claimPhase(WorldMap& worldMap)
 {
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 	int claimCost = 100 + 25 * kingdom.getNoOfTerritoriesOwned();
@@ -59,23 +86,19 @@ void Ruler::claimTerritory(WorldMap& worldMap)
 	}
 
 	Territory* territory = potentialClaims[rand() % potentialClaims.size()];
-
-	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
-	std::vector<int> resourceIncrement = {0, 0, 0, 0 - claimCost};
-	kingdom.getResourceObject() += resourceIncrement;
-	territory->setTerritoryRuler(rulerEnum);
-	kingdom.claimTerritory(territory);
-
-	std::cout << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
-	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
+	claimTerritory(territory, claimCost);
 }
 
-void Ruler::constructBuildings()
+void Ruler::buildPhase(int gameRound)
 {
+	if (gameRound == 0)
+	{
+		Territory* territory = kingdom.getOwnedTerritories()[0];
+		std::unique_ptr<Building> building = Builder::createBuilding(BARRACKS);
+		constructBuilding(territory, building);
+		return;
+	}
 	std::vector<int> buildingBudget = kingdom.getResources();
-
-	// not enough budget
-	if (buildingBudget[1] < 50 || buildingBudget[2] < 50 || buildingBudget[3] < 100) return; 
 
 	std::vector<Territory*> potentialTerritories;
 
@@ -93,7 +116,7 @@ void Ruler::constructBuildings()
 	std::vector<BuildingType> buildingTypes = {PADDY_FARM, IRRIGATION_LAKE, MINE, SAWMILL, MARKET, TEMPLE, BARRACKS, FORT};
 	std::unique_ptr<Building> building;
 	Territory* territory = nullptr;
-	
+
 	while (!buildingTypes.empty())
 	{
 		BuildingType selected = buildingTypes[0];
@@ -111,10 +134,14 @@ void Ruler::constructBuildings()
 		}
 
 		building = Builder::createBuilding(selected);
+		if (building == nullptr)
+		{
+			buildingTypes.erase(buildingTypes.begin() + index);
+			continue;
+		}
 		std::vector<TerrainType> allowedTerrains = building->getAllowedTerrains();
 		std::vector<int> buildingCost = building->getBuildingCost();
 
-		
 		if (buildingBudget[1] < std::abs(buildingCost[1]) || buildingBudget[2] < std::abs(buildingCost[2]) || buildingBudget[3] < std::abs(buildingCost[3]))
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);
@@ -138,19 +165,11 @@ void Ruler::constructBuildings()
 	}
 
 	if (territory == nullptr) return;
-
-	territory->buildAProperty(building);
-	std::vector<int> buildingCost = territory->getTerritoryBuilding()->getBuildingCost();
-	kingdom.getResourceObject() += buildingCost;
-	std::cout << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". ";
-	if (std::abs(buildingCost[3]) > 0) std::cout << std::abs(buildingCost[3]) << " Gold";
-	if (std::abs(buildingCost[1]) > 0) std::cout << ", " << std::abs(buildingCost[1]) << " Timber";
-	if (std::abs(buildingCost[2]) > 0) std::cout << ", " << std::abs(buildingCost[2]) << " Iron";
-	std::cout << "." << std::endl;
+	constructBuilding(territory, building);
 }
 
-void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, int gameRound) 
 {
-	claimTerritory(worldMap);
-	constructBuildings();
+	claimPhase(worldMap);
+	buildPhase(gameRound);
 }

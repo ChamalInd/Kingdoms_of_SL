@@ -10,6 +10,7 @@ class Building
 		std::vector<TerrainType> allowedTerrains;
 		std::vector<int> buildingCost;
 		int upkeepCost;
+		BuildingType buildingType;
 		int buildingHealth = 100;
 	
 	public:
@@ -19,6 +20,7 @@ class Building
 		std::vector<TerrainType> getAllowedTerrains() const { return allowedTerrains; }
 		std::vector<int> getBuildingCost() const { return buildingCost; }
 		int getUpkeepCost() const { return upkeepCost; }
+		BuildingType getBuildingType() const { return buildingType; }
 		
 		void performEffect();
 };
@@ -29,6 +31,7 @@ class PaddyFarm : public Building
 		PaddyFarm()
 		{
 			buildingName = "Paddy Farm";
+			buildingType = PADDY_FARM;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE};
 			buildingCost = {0, -50, 0, -100};
 			upkeepCost = 5;
@@ -41,6 +44,7 @@ class IrrigationTank : public Building
 		IrrigationTank()
 		{
 			buildingName = "Irrigation Tank";
+			buildingType = IRRIGATION_LAKE;
 			allowedTerrains = {LAKE};
 			buildingCost = {0, -100, 0, -200};
 			upkeepCost = 10;
@@ -53,6 +57,7 @@ class Mine : public Building
 		Mine()
 		{
 			buildingName = "Mine";
+			buildingType = MINE;
 			allowedTerrains = {HILL_COUNTRY};
 			buildingCost = {0, -50, 0, -150};
 			upkeepCost = 10;
@@ -65,6 +70,7 @@ class SawMill : public Building
 		SawMill()
 		{
 			buildingName = "Sawmill";
+			buildingType = SAWMILL;
 			allowedTerrains = {HILL_COUNTRY, JUNGLE};
 			buildingCost = {0, 0, 0, -100};
 			upkeepCost = 5;
@@ -77,6 +83,7 @@ class Market : public Building
 		Market()
 		{
 			buildingName = "Market";
+			buildingType = MARKET;
 			allowedTerrains = {COAST, DRY_ZONE};
 			buildingCost = {0, -50, 0, -200};
 			upkeepCost = 10;
@@ -89,6 +96,7 @@ class Temple : public Building
 		Temple()
 		{
 			buildingName = "Temple";
+			buildingType = TEMPLE;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 			buildingCost = {0, -100, 0, -250};
 			upkeepCost = 15;
@@ -101,6 +109,7 @@ class Barracks : public Building
 		Barracks()
 		{
 			buildingName = "Barracks";
+			buildingType = BARRACKS;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 			buildingCost = {0, -100, -50, -200};
 			upkeepCost = 10;
@@ -113,6 +122,7 @@ class Fort : public Building
 		Fort()
 		{
 			buildingName = "Fort";
+			buildingType = FORT;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 			buildingCost = {0, -150, -100, -300};
 			upkeepCost = 20;
@@ -143,6 +153,7 @@ class Builder
 				case FORT:
 					return std::make_unique<Fort>();
 			}
+			return nullptr;
 		}
 };
 

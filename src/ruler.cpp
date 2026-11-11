@@ -89,15 +89,8 @@ void Ruler::claimPhase(WorldMap& worldMap)
 	claimTerritory(territory, claimCost);
 }
 
-void Ruler::buildPhase(int gameRound)
+void Ruler::buildPhase()
 {
-	if (gameRound == 0)
-	{
-		Territory* territory = kingdom.getOwnedTerritories()[0];
-		std::unique_ptr<Building> building = Builder::createBuilding(BARRACKS);
-		constructBuilding(territory, building);
-		return;
-	}
 	std::vector<int> buildingBudget = kingdom.getResources();
 
 	std::vector<Territory*> potentialTerritories;
@@ -168,8 +161,8 @@ void Ruler::buildPhase(int gameRound)
 	constructBuilding(territory, building);
 }
 
-void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, int gameRound) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
 {
 	claimPhase(worldMap);
-	buildPhase(gameRound);
+	buildPhase();
 }

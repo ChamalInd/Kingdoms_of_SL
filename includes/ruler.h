@@ -19,7 +19,7 @@ class Ruler
 
 	private:
 		void claimPhase(WorldMap& worldMap);
-		void buildPhase(int gameRound);
+		void buildPhase();
 
 	public:
 		Ruler(std::string n, Kingdom& k, RulerEnum r) : rulerName(n), kingdom(k), rulerEnum(r) {}
@@ -35,7 +35,7 @@ class Ruler
 		
 		void printRoundSummary();
 		int calculateScore();
-		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, int gameRound);
+		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
 		void claimTerritory(Territory* territory, int claimCost);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);

@@ -11,6 +11,9 @@ SimulationManager::SimulationManager()
 	{
 		Kingdom kingdom(kingdomNames[i]);
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
+		std::unique_ptr<Building> building = Builder::createBuilding(BARRACKS);
+		capital->buildAProperty(building);
+		kingdom.increaseSpecificBuildingCount(BARRACKS);
 		kingdom.claimTerritory(capital);
 
 		switch (i)
@@ -80,7 +83,7 @@ void SimulationManager::gameLoop()
 			// to be implemented
 			// ruler turns
 			std::vector<RulerDetails> rd = calculateRulerDetails();
-			R->playTurn(worldMap, rd, gameRound);
+			R->playTurn(worldMap, rd);
 		}
 
 		// printing round summary

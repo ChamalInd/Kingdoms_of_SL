@@ -87,7 +87,7 @@ void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit
 
 	std::cout << kingdom.getKingdomName() << " recruited ";
 	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
-	std::cout << " at " << territory->getTerritoryName() << ". Cost: " << std::endl;
+	std::cout << " at " << territory->getTerritoryName() << ". Cost: ";
 	std::cout << totalRecruitementCost[3] << " Gold, " << totalRecruitementCost[2] << " Iron." << std::endl;
 }
 

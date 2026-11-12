@@ -7,7 +7,6 @@ class Unit
 {
 	protected:
 		std::string unitName;
-		UnitType unitType;
 		int attack;
 		int defence;
 		int hp;
@@ -16,8 +15,11 @@ class Unit
 		int unitUpkeep;
 
 	public:
+		Unit(std::string n, int a, int d, int h, int m, Resources c, int u) : unitName(n), attack(a), defence(d), hp(h), move(m), unitCost(c), unitUpkeep(u) {}
+		virtual ~Unit() = default;
+		
 		std::string getUnitName() const { return unitName; } 
-		UnitType getUnitType() const { return unitType; } 
+		virtual UnitType getUnitType() const = 0;
 		int getAttack() const { return attack; } 
 		int getDefence() const { return defence; } 
 		int getHP() const { return hp; } 
@@ -29,63 +31,27 @@ class Unit
 class Spearman : public Unit
 {
 	public:
-		Spearman()
-		{
-			unitName = "Spearman";
-			unitType = SPEARMAN;
-			attack = 6;
-			defence = 8;
-			hp = 30;
-			move = 1;
-			unitCost = Resources({0, 0, 10, 40});
-			unitUpkeep = 2;
-		};
+		Spearman() : Unit("Spearman", 6, 8, 30, 1, Resources({0, 0, 10, 40}), 2) {}
+		UnitType getUnitType() const override { return SPEARMAN; }
 };
 
 class Archer : public Unit
 {
 	public:
-		Archer()
-		{
-			unitName = "Archer";
-			unitType = ARCHER;
-			attack = 9;
-			defence = 4;
-			hp = 20;
-			move = 1;
-			unitCost = Resources({0, 0, 5, 50});
-			unitUpkeep = 2;
-		};
+		Archer() : Unit("Archer", 9, 4, 20, 1, Resources({0, 0, 5, 50}), 2) {}
+		UnitType getUnitType() const override { return ARCHER; }
 };
 
 class Cavalry : public Unit
 {
 	public:
-		Cavalry()
-		{
-			unitName = "Cavalry";
-			unitType = CAVALRY;
-			attack = 12;
-			defence = 6;
-			hp = 30;
-			move = 2;
-			unitCost = Resources({0, 0, 20, 90});
-			unitUpkeep = 4;
-		};
+		Cavalry() : Unit("Cavalry", 12, 6, 30, 2, Resources({0, 0, 20, 90}), 4) {}
+		UnitType getUnitType() const override { return CAVALRY; }
 };
 
 class WarElephant : public Unit
 {
 	public:
-		WarElephant()
-		{
-			unitName = "War Elephant";
-			unitType = WAR_ELEPHANT;
-			attack = 18;
-			defence = 12;
-			hp = 60;
-			move = 1;
-			unitCost = Resources({0, 0, 40, 200});
-			unitUpkeep = 8;
-		};
+		WarElephant() : Unit("War Elephant", 18, 12, 60, 1, Resources({0, 0, 40, 200}), 8) {}
+		UnitType getUnitType() const override { return WAR_ELEPHANT; }
 };

@@ -21,22 +21,7 @@ SimulationManager::SimulationManager()
 		capital->addAnArmy(std::make_unique<Army>(kingdom.getArmyCount()));
 	
 		kingdom.claimTerritory(capital);
-
-		switch (i)
-		{
-			case 0:
-				rulers.push_back(std::make_unique<Conqueror>(rulerNames[i], kingdom, enums[i]));
-				break;
-			case 1:
-				rulers.push_back(std::make_unique<AgrarianSage>(rulerNames[i], kingdom, enums[i]));
-				break;
-			case 2:
-				rulers.push_back(std::make_unique<MerchantPrince>(rulerNames[i], kingdom, enums[i]));
-				break;
-			case 3:
-				rulers.push_back(std::make_unique<Strategist>(rulerNames[i], kingdom, enums[i]));
-				break;
-		}
+		rulers.push_back(RulerMaker::createRulers(rulerNames[i], kingdom, enums[i]));
 	}
 
 	initializeGame();

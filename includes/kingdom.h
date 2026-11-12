@@ -33,6 +33,8 @@ class Kingdom
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
 		void increaseArmyCount() { armyCount++; }
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler);
-		void upkeepAndConsumption();
+		void populationActivities();
+		void buildingUpkeep();
+		void armyUpkeep();
 		void updateStability(int rate);
 };

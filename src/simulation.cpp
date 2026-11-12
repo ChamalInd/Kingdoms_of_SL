@@ -84,7 +84,9 @@ void SimulationManager::gameLoop()
 			// collect productions
 			kingdom.collectProductions(worldMap, R->getRulerEnum());
 			// upkeep and consumption
-			kingdom.upkeepAndConsumption();
+			kingdom.populationActivities();
+			kingdom.buildingUpkeep();
+			kingdom.armyUpkeep();
 			// event check
 			// to be implemented
 			// ruler turns

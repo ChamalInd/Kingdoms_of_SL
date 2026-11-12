@@ -48,3 +48,7 @@ int Army::getUpkeep() const
 	return upkeep;
 }
 
+int Army::getArmyStrength(int defenceBonus) const
+{
+	return getArmyAttack() + getArmyDefence() * (100 + defenceBonus) / 100;
+}

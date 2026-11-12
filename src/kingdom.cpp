@@ -50,7 +50,7 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 	std::cout << ", Timber +" << resourceIncrements.getTimberStock() << ", Iron +" << resourceIncrements.getIronStock() << "." << std::endl << std::endl;
 }
 		
-void Kingdom::upkeepAndConsumption()
+void Kingdom::populationActivities()
 {
 	int riceConsumption = 0; 
 	int taxIncome = 0;
@@ -86,8 +86,11 @@ void Kingdom::upkeepAndConsumption()
 	
 	std::cout << kingdomName << " population consumed: " << riceConsumption << " Rice." << std::endl;
 	std::cout << kingdomName << " population paid taxes: " << taxIncome << " Gold." << std::endl << std::endl;
-	
-	// upkeeps
+
+}
+		
+void Kingdom::buildingUpkeep()
+{
 	int currentGoldStock = resources.getGoldStock();
 	int upkeepCost = 0;
 
@@ -139,6 +142,39 @@ void Kingdom::upkeepAndConsumption()
 	
 	resources.subFromStock(3, upkeepCost);
 	
+}
+
+void Kingdom::armyUpkeep()
+{
+	int riceStock = resources.getRiceStock();
+	int totalRiceUpkeep = 0;
+	int armyStrength = INT_MAX;
+	int weekestArmy = 0;
+
+	for (size_t i = 0; i < ownedTerritories.size(); i++)
+	{
+		Territory* T = ownedTerritories[i]; 
+		if (T->getTerritoryArmy() == nullptr) continue;
+		totalRiceUpkeep += T->getTerritoryArmy()->getUpkeep(); 
+		if (armyStrength > T->getTerritoryArmy()->getArmyStrength())
+		{
+			armyStrength = T->getTerritoryArmy()->getArmyStrength();
+			weekestArmy = i;
+		}
+	}
+
+	if (riceStock >= totalRiceUpkeep)
+	{
+		std::cout << kingdomName << " paid army upkeep: " << totalRiceUpkeep << " Rice." << std::endl;
+		resources.subFromStock(0, totalRiceUpkeep);
+	}
+	else
+	{
+		std::cout << kingdomName << " not enough Rice to pay upkeep of army." << std::endl;
+		std::cout << "Army at " << ownedTerritories[weekestArmy]->getTerritoryName() << " deserted." << std::endl;
+		resources.subFromStock(0, riceStock);
+		ownedTerritories[weekestArmy]->getTerritoryArmy()->desertArmy();
+	}
 }
 
 void Kingdom::updateStability(int rate)

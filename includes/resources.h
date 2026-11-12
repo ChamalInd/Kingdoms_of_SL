@@ -4,7 +4,7 @@
 class Resources
 {
 	private:
-		std::vector<int> resourcesStock;
+		std::vector<int> resourcesStock = {0, 0, 0, 0};
 	
 	public:
 		Resources() = default;
@@ -19,9 +19,8 @@ class Resources
 		void addToStock(int index, int value) { resourcesStock[index] += value; }
 		void subFromStock(int index, int value) { resourcesStock[index] -= value; }
 		
-		void operator+=(Resources& other);
-		void operator-=(Resources& other);
-		bool operator<(Resources& other);
-		bool operator>(Resources& other);
+		void operator+=(const Resources& other);
+		void operator-=(const Resources& other);
+		bool operator>=(const Resources& other);
 		int operator[](int index) const { return resourcesStock[index]; }
 };

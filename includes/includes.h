@@ -3,6 +3,7 @@
 // external libraries used
 #include <iostream>
 #include <string>
+#include <climits>
 #include <memory>
 #include <algorithm>
 #include <ctime>

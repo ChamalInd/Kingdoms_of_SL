@@ -158,7 +158,7 @@ void Ruler::buildPhase()
 		std::vector<TerrainType> allowedTerrains = building->getAllowedTerrains();
 		Resources buildingCost = building->getBuildingCost();
 
-		if (kingdom.getResourceObject() < buildingCost)
+		if (!(kingdom.getResourceObject() >= buildingCost))
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);
 			continue;
@@ -191,7 +191,7 @@ void Ruler::recruitePhase()
 	std::vector<Territory*> ownedTerritories = kingdom.getOwnedTerritories();
 	std::vector<int> recruitementBudget = kingdom.getResources();
 	Resources totalRecruitementCost = Resources({0, 0, 0, 0});
-	int unitCount = 0;
+	int unitCount = INT_MAX;
 	int armyIndex = -1;
 
 	for (size_t i = 0; i < ownedTerritories.size(); i++)
@@ -246,7 +246,7 @@ void Ruler::recruitePhase()
 		Resources unitCost = unit->getUnitCost();
 		totalRecruitementCost += unitCost;
 
-		if (totalRecruitementCost > kingdom.getResourceObject())
+		if (!(kingdom.getResourceObject() >= totalRecruitementCost))
 		{
 			totalRecruitementCost -= unitCost;
 			unitTypes.erase(unitTypes.begin() + unitIndex);

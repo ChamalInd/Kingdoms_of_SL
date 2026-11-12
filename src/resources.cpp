@@ -1,6 +1,6 @@
 #include "../includes/resources.h"
 		
-void Resources::operator+=(Resources& other)
+void Resources::operator+=(const Resources& other)
 {
 	for (size_t i = 0; i < resourcesStock.size(); i++)
 	{
@@ -8,7 +8,7 @@ void Resources::operator+=(Resources& other)
 	}
 }
 
-void Resources::operator-=(Resources& other)
+void Resources::operator-=(const Resources& other)
 {
 	for (size_t i = 0; i < resourcesStock.size(); i++)
 	{
@@ -16,18 +16,9 @@ void Resources::operator-=(Resources& other)
 	}
 }
 
-bool Resources::operator<(Resources& other)
+bool Resources::operator>=(const Resources& other)
 {
-	for (int i = 0; i < 0; i++)
-	{
-		if (resourcesStock[i] > other.getResources()[i]) return false;
-	}
-	return true;
-}
-
-bool Resources::operator>(Resources& other)
-{
-	for (int i = 0; i < 0; i++)
+	for (size_t i = 0; i < resourcesStock.size(); i++)
 	{
 		if (resourcesStock[i] < other.getResources()[i]) return false;
 	}

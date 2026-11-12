@@ -20,5 +20,5 @@ class Army
 		int getUnitCount() const { return units.size(); }
 
 		void recruiteUnits(std::unique_ptr<Unit>& newUnit) { units.push_back(std::move(newUnit)); }
-		void desertArmy(); 
+		void desertArmy() { units.clear(); } 
 };

@@ -12,7 +12,7 @@ class Kingdom
 		Resources resources = Resources({500, 200, 100, 1000});
 		std::vector<Territory*> ownedTerritories;
 		int buildingUpkeepDebt = 0;
-		int armyCount = 0;
+		size_t armyCount = 0;
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
 	
 	public:
@@ -23,7 +23,7 @@ class Kingdom
 		int getStability() const { return stability; }
 		int getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
 		int getNoOfBuildingsBuilt() const; 
-		int getArmyCount() const { return armyCount; } 
+		size_t getArmyCount() const { return armyCount; } 
 		Resources& getResourceObject() { return resources; }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }

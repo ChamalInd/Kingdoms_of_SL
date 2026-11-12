@@ -58,7 +58,7 @@ class Conqueror : public Ruler
 		int scoreBuilding(const BuildingType type) const override 
 		{
 			if (type == BARRACKS && kingdom.getNoOfTerritoriesOwned() % 2 == 0 && kingdom.getSpecificBuildingCount(type) < 4) return 10;
-			else if (type == TEMPLE) return 0;
+			else if (type == TEMPLE) return -1;
 			else return 5;
 		}
 		int scoreUnits(const UnitType unit) const override

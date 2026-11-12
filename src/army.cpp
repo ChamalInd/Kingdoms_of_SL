@@ -54,34 +54,3 @@ int Army::getArmyStrength(int defenceBonus) const
 	else return getArmyAttack() + getArmyDefence() * (100 + defenceBonus) / 100;
 }
 		
-void Army::desertArmy()
-{
-	if (units.empty()) return;
-	UnitType weekestUnit = NONE;
-	int weekestStrength = INT_MAX;
-
-	for (auto& u : units)
-	{
-		if (u->getAttack() + u->getDefence() < weekestStrength)
-		{
-			weekestStrength = u->getAttack() + u->getDefence();
-			weekestUnit = u->getUnitType();
-		}
-	}
-
-	if (weekestUnit == NONE) return;
-	
-	std::vector<int> weekestIndices;
-
-	for (size_t i = 0; i < units.size(); i++)
-	{
-		if (units[i]->getUnitType() == weekestUnit) weekestIndices.push_back(i);
-	}
-	
-	if (weekestIndices.empty()) return;
-
-	for (int index : weekestIndices)
-	{
-		units.erase(units.begin() + index);
-	}
-}

@@ -171,6 +171,7 @@ void Kingdom::buildingUpkeep()
 void Kingdom::armyUpkeep()
 {
 	int riceStock = resources.getRiceStock();
+	std::vector<int> armiesTried;
 
 	while (true)
 	{
@@ -182,6 +183,7 @@ void Kingdom::armyUpkeep()
 		{
 			Territory* T = ownedTerritories[i]; 
 			if (T->getTerritoryArmy() == nullptr) continue;
+			if (T->getTerritoryArmy()->getUnitCount() <= 0) continue;
 			totalRiceUpkeep += T->getTerritoryArmy()->getUpkeep(); 
 			if (armyStrength > T->getTerritoryArmy()->getArmyStrength())
 			{
@@ -192,7 +194,15 @@ void Kingdom::armyUpkeep()
 
 		if (weekestArmy == -1) break;
 		if (totalRiceUpkeep == 0) break;
-
+		
+		auto found = std::find(armiesTried.begin(), armiesTried.end(), ownedTerritories[weekestArmy]->getTerritoryArmy()->getArmyNumber());
+		if (found != armiesTried.end())
+		{
+			if (armiesTried.size() == armyCount) break;
+			else continue;
+		}
+		else armiesTried.push_back(ownedTerritories[weekestArmy]->getTerritoryArmy()->getArmyNumber());
+		
 		if (riceStock >= totalRiceUpkeep)
 		{
 			std::cout << kingdomName << " paid army upkeep: " << totalRiceUpkeep << " Rice." << std::endl;
@@ -201,8 +211,8 @@ void Kingdom::armyUpkeep()
 		}
 		else
 		{
-			std::cout << kingdomName << " does not enough Rice to pay upkeep of army." << std::endl;
-			std::cout << "Units at " << ownedTerritories[weekestArmy]->getTerritoryName() << " deserted." << std::endl;
+			std::cout << kingdomName << " does not enough Rice to pay upkeep of army. ";
+			std::cout << "army at " << ownedTerritories[weekestArmy]->getTerritoryName() << " deserted." << std::endl;
 			ownedTerritories[weekestArmy]->getTerritoryArmy()->desertArmy();
 		}
 	}

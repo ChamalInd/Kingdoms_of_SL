@@ -29,15 +29,18 @@ SimulationManager::SimulationManager()
 
 void SimulationManager::initializeGame()
 {
-	printTitle(" KINGDOM OF LANKA Simulation ", '=');
-    std::cout << "Seed : " << SEED << std::endl << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << " - The Conqueror" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << " - The Agrarian Sage" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 3 : Kotte" << " - The Merchant Prince" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 4 : Kandy" << " - The Strategist" << std::endl;
+	std::cout << std::string(70, '=') << std::endl;
+	printTitle(" KINGDOM OF LANKA Simulation ", ' ');
+//    std::cout << "Seed : " << SEED << std::endl;
+	std::cout << std::string(70, '=') << std::endl << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << std::setw(22) << " - The Conqueror" << " Capital at (0, 0)" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << std::setw(22) << " - The Agrarian Sage" << " Capital at (0, 5)" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 3 : Kotte" << std::setw(22) << " - The Merchant Prince" << " Capital at (5, 0)" << std::endl;
+	std::cout << std::left << std::setw(24) << "Kingdom 4 : Kandy" << std::setw(22) << " - The Strategist" << " Capital at (5, 0)" << std::endl;
 
 	std::cout << std::endl << "Each kingdom begins with 1000 Gold, 500 Rice, 200 Timber, 100 Iron." << std::endl;
-	
+	std::cout << "Population: 1000 | Stability: 70" << std::endl;
+
 	determinePlayerOrder(rulers);
 	std::sort(rulers.begin(), rulers.end(), [](const std::unique_ptr<Ruler>& a, const std::unique_ptr<Ruler>& b) {
 		return a->getFirstDieValue() > b->getFirstDieValue();
@@ -51,8 +54,6 @@ void SimulationManager::initializeGame()
 		if (count < NO_OF_KINGDOMS) std::cout << ", ";
 	}
 	std::cout << "." << std::endl;
-
-	worldMap.printWorldMap();
 }
 
 void SimulationManager::gameLoop()
@@ -60,6 +61,10 @@ void SimulationManager::gameLoop()
 
 	while (gameRound < 200)
 	{
+		std::cout << std::endl << std::string(MESSAGE_WIDTH, '=') << std::endl;
+		printTitle(" Round " + std::to_string(gameRound + 1), ' ');
+		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
+
 		for (auto& R : rulers)
 		{
 			Kingdom& kingdom = R->getKingdom();
@@ -88,6 +93,7 @@ void SimulationManager::gameLoop()
 			R->printRoundSummary();
 			std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
 		}
+		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
 		gameRound++;
 	}
 

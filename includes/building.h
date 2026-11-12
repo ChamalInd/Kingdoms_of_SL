@@ -31,6 +31,7 @@ class Building
 		std::vector<TerrainType> getAllowedTerrains() const { return allowedTerrains; }
 		Resources getBuildingCost() const { return buildingCost; }
 		int getUpkeepCost() const { return upkeepCost; }
+		int getBuildingHealth() const { return buildingHealth; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		virtual BuildingType getBuildingType() const = 0;
 		
@@ -45,7 +46,11 @@ class PaddyFarm : public Building
 		BuildingType getBuildingType() const override { return PADDY_FARM; }
 
 	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({30, 0, 0, 0}); } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
+		{ 
+			if (buildingHealth <= 50) return Resources({15, 0, 0, 0});
+			return Resources({30, 0, 0, 0}); 
+		} 
 };
 
 class IrrigationTank : public Building
@@ -65,7 +70,11 @@ class Mine : public Building
 		BuildingType getBuildingType() const override { return MINE; }
 
 	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 0, 20, 0}); } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
+		{
+			if (buildingHealth <= 50) Resources({0, 0, 10, 0});
+			return Resources({0, 0, 20, 0}); 
+		} 
 };
 
 class SawMill : public Building
@@ -75,7 +84,11 @@ class SawMill : public Building
 		BuildingType getBuildingType() const override { return SAWMILL; }
 
 	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 30, 0, 0}); } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
+		{ 
+			if (buildingHealth <= 50) return Resources({0, 15, 0, 0});
+			return Resources({0, 30, 0, 0}); 
+		} 
 };
 
 class Market : public Building
@@ -85,7 +98,11 @@ class Market : public Building
 		BuildingType getBuildingType() const override { return MARKET; }
 
 	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 0, 0, 40}); } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
+		{ 
+			if (buildingHealth <= 50) return Resources({0, 0, 0, 20}); 
+			return Resources({0, 0, 0, 40}); 
+		} 
 };
 
 class Temple : public Building

@@ -26,5 +26,7 @@ Resources IrrigationTank::getResourceIncrements(Territory* parentTerritory, Worl
 		resources[0] = resources[0] * 50 / 100;
 	}
 
+	if (buildingHealth <= 50) resources[0] /= 2;
+
 	return Resources(resources);
 }

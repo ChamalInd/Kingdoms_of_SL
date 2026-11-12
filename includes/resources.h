@@ -17,7 +17,7 @@ class Resources
 		int getGoldStock() const { return resourcesStock[3]; }
 		
 		void addToStock(int index, int value) { resourcesStock[index] += value; }
-		void subFromStock(int index, int value) { resourcesStock[index] -= value; }
+		void subFromStock(int index, int value) { resourcesStock[index] = std::max(resourcesStock[index] - value, 0); }
 		
 		void operator+=(const Resources& other);
 		void operator-=(const Resources& other);

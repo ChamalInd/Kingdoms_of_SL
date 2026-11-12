@@ -39,7 +39,7 @@ int Army::getMove() const
 int Army::getUpkeep() const
 {
 	if (units.empty()) return 0;
-	int upkeep = 2;
+	int upkeep = 0;
 	for (auto& u : units)
 	{	
 		if (u->getHP() <= 0) continue;

@@ -121,6 +121,13 @@ std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
 		RulerDetails rd;
 		rd.noOfTerritoriesOwn = R->getKingdom().getNoOfTerritoriesOwned();
 		rd.armyStrength = 0;
+		
+		for (auto& T : R->getKingdom().getOwnedTerritories())
+		{
+			if (T->getTerritoryArmy() == nullptr) continue;
+			rd.armyStrength += T->getTerritoryArmy()->getArmyStrength(0);
+		}
+
 		rulerDetails.push_back(rd);
 	}
 

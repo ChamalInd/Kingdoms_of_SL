@@ -14,7 +14,7 @@ void Ruler::printRoundSummary()
 int Ruler::calculateScore()
 {
 	int goldStock = kingdom.getResourceObject().getGoldStock();
-	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * 0) + (3 * 0) + (goldStock / 50) + (kingdom.getPopulation() / 100);
+	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * kingdom.getNoOfBuildingsBuilt()) + (3 * kingdom.getUnitCount()) + (goldStock / 50) + (kingdom.getPopulation() / 100);
 	return score;
 }
 

@@ -3,6 +3,8 @@
 #include "kingdom.h"
 #include "worldmap.h"
 #include "unit.h"
+#include "resources.h"
+#include "structs_enums.h"
 
 class Ruler
 {
@@ -22,7 +24,7 @@ class Ruler
 	private:
 		void claimTerritory(Territory* territory, int claimCost);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
-		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, std::vector<int> totalRecruitementCost);
+		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost);
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase();
 		void recruitePhase();

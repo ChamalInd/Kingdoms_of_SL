@@ -9,7 +9,7 @@ class Kingdom
 		std::string kingdomName;
 		int population = 1000;
 		int stability = 70;
-		Resources resources;
+		Resources resources = Resources({500, 200, 100, 1000});
 		std::vector<Territory*> ownedTerritories;
 		int buildingUpkeepDebt = 0;
 		int armyCount = 0;

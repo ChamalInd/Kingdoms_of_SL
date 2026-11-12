@@ -14,13 +14,12 @@ std::vector<int> setTheTerrainCounts()
 	return counts;
 }
 
-int rollDie(RollType type)
+int rollDie()
 {
 	int die_1 = rand() % 6 + 1;
 	int die_2 = rand() % 6 + 1;
 
-	if (type == VALUE) return die_1 + die_2;
-	else return die_1 == die_2;
+	return die_1 + die_2;
 }
 
 void printTitle(std::string title, char decorator)
@@ -39,7 +38,7 @@ void determinePlayerOrder(std::vector<std::unique_ptr<Ruler>>& rulers)
 		for (int i = 0; i < NO_OF_KINGDOMS; i++)
 		{	
 			if (rulers[i]->getPlaceChosen()) continue;
-			int dieRoll = rollDie(VALUE);
+			int dieRoll = rollDie();
 			rulers[i]->setFirstDieValue(dieRoll);
 			std::cout << rulers[i]->getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
 		}

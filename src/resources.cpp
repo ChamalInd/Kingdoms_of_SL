@@ -1,20 +1,35 @@
 #include "../includes/resources.h"
 		
-void Resources::operator+=(const std::vector<int> productionIncrement)
+void Resources::operator+=(Resources& other)
 {
-	riceStock += productionIncrement[0];
-	timberStock += productionIncrement[1];
-	ironStock += productionIncrement[2];
-	goldStock += productionIncrement[3];
+	for (size_t i = 0; i < resourcesStock.size(); i++)
+	{
+		resourcesStock[i] += other.getResources()[i];
+	}
 }
 
-std::vector<int> Resources::getResources() const
+void Resources::operator-=(Resources& other)
 {
-	std::vector<int> resources;
-	resources.push_back(riceStock);
-	resources.push_back(timberStock);
-	resources.push_back(ironStock);
-	resources.push_back(goldStock);
+	for (size_t i = 0; i < resourcesStock.size(); i++)
+	{
+		resourcesStock[i] -= other.getResources()[i];
+	}
+}
 
-	return resources;
+bool Resources::operator<(Resources& other)
+{
+	for (int i = 0; i < 0; i++)
+	{
+		if (resourcesStock[i] > other.getResources()[i]) return false;
+	}
+	return true;
+}
+
+bool Resources::operator>(Resources& other)
+{
+	for (int i = 0; i < 0; i++)
+	{
+		if (resourcesStock[i] < other.getResources()[i]) return false;
+	}
+	return true;
 }

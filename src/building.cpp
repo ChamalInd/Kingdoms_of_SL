@@ -10,7 +10,7 @@ BuildingEffect Building::performEffect(Territory* parentTerritory, WorldMap& wor
 	return effect;
 }
 
-std::vector<int> IrrigationTank::getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const
+Resources IrrigationTank::getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const
 {
 	std::vector<std::pair<int, int>> neighbours = parentTerritory->getTerritoryNeighbours();
 	std::vector<int> resources = {0, 0, 0, 0};
@@ -26,5 +26,5 @@ std::vector<int> IrrigationTank::getResourceIncrements(Territory* parentTerritor
 		resources[0] = resources[0] * 50 / 100;
 	}
 
-	return resources;
+	return Resources(resources);
 }

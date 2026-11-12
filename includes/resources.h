@@ -4,13 +4,24 @@
 class Resources
 {
 	private:
-		int riceStock = 500;
-		int timberStock = 200;
-		int ironStock = 100;
-		int goldStock = 1000;
+		std::vector<int> resourcesStock;
 	
 	public:
-		std::vector<int> getResources() const;
+		Resources() = default;
+		Resources(std::vector<int> newStock) : resourcesStock(newStock) {}
+
+		std::vector<int> getResources() const { return resourcesStock; }
+		int getRiceStock() const { return resourcesStock[0]; }
+		int getTimberStock() const { return resourcesStock[1]; }
+		int getIronStock() const { return resourcesStock[2]; }
+		int getGoldStock() const { return resourcesStock[3]; }
 		
-		void operator+=(const std::vector<int> productionIncrement);
+		void addToStock(int index, int value) { resourcesStock[index] += value; }
+		void subFromStock(int index, int value) { resourcesStock[index] -= value; }
+		
+		void operator+=(Resources& other);
+		void operator-=(Resources& other);
+		bool operator<(Resources& other);
+		bool operator>(Resources& other);
+		int operator[](int index) const { return resourcesStock[index]; }
 };

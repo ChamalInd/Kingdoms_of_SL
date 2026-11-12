@@ -1,5 +1,7 @@
 #pragma once
 #include "includes.h"
+#include "resources.h"
+#include "structs_enums.h"
 
 class Unit
 {
@@ -10,7 +12,7 @@ class Unit
 		int defence;
 		int hp;
 		int move;
-		std::vector<int> unitCost;
+		Resources unitCost;
 		int unitUpkeep;
 
 	public:
@@ -20,7 +22,7 @@ class Unit
 		int getDefence() const { return defence; } 
 		int getHP() const { return hp; } 
 		int getMove() const { return move; } 
-		std::vector<int> getUnitCost() const { return unitCost; } 
+		Resources getUnitCost() const { return unitCost; } 
 		int getUnitUpkeep() const { return unitUpkeep; } 
 };
 
@@ -35,7 +37,7 @@ class Spearman : public Unit
 			defence = 8;
 			hp = 30;
 			move = 1;
-			unitCost = {0, 0, 10, 40};
+			unitCost = Resources({0, 0, 10, 40});
 			unitUpkeep = 2;
 		};
 };
@@ -51,7 +53,7 @@ class Archer : public Unit
 			defence = 4;
 			hp = 20;
 			move = 1;
-			unitCost = {0, 0, 5, 50};
+			unitCost = Resources({0, 0, 5, 50});
 			unitUpkeep = 2;
 		};
 };
@@ -67,7 +69,7 @@ class Cavalry : public Unit
 			defence = 6;
 			hp = 30;
 			move = 2;
-			unitCost = {0, 0, 20, 90};
+			unitCost = Resources({0, 0, 20, 90});
 			unitUpkeep = 4;
 		};
 };
@@ -83,7 +85,7 @@ class WarElephant : public Unit
 			defence = 12;
 			hp = 60;
 			move = 1;
-			unitCost = {0, 0, 40, 200};
+			unitCost = Resources({0, 0, 40, 200});
 			unitUpkeep = 8;
 		};
 };

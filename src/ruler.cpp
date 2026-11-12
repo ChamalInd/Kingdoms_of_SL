@@ -3,17 +3,18 @@
 void Ruler::printRoundSummary()
 {
 	std::cout << kingdom.getKingdomName() << " (" << rulerName << ")" << std::endl;
-	std::vector<int> resources = kingdom.getResources();
+	Resources resources = kingdom.getResourceObject();
 
-	std::cout << "Gold: " << resources[3] << " | Rice: " << resources[0] << " | Timber: " << resources[1] << " | Iron: " << resources[2] << std::endl;
+	std::cout << "Gold: " << resources.getGoldStock() << " | Rice: " << resources.getRiceStock();
+	std::cout << " | Timber: " << resources.getTimberStock() << " | Iron: " << resources.getIronStock() << std::endl;
 	std::cout << "Population: " << kingdom.getPopulation() << " | Stability: " << kingdom.getStability() << std::endl;
 	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << kingdom.getNoOfBuildingsBuilt() << " | Units: " << "0" << std::endl;
 }
 
 int Ruler::calculateScore()
 {
-	std::vector<int> resources = kingdom.getResources();
-	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * 0) + (3 * 0) + (resources[3] / 50) + (kingdom.getPopulation() / 100);
+	int goldStock = kingdom.getResourceObject().getGoldStock();
+	score = (20 * kingdom.getNoOfTerritoriesOwned()) + (5 * 0) + (3 * 0) + (goldStock / 50) + (kingdom.getPopulation() / 100);
 	return score;
 }
 
@@ -42,8 +43,7 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 void Ruler::claimTerritory(Territory* territory, int claimCost)
 {
 	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
-	std::vector<int> resourceIncrement = {0, 0, 0, 0 - claimCost};
-	kingdom.getResourceObject() += resourceIncrement;
+	kingdom.getResourceObject().subFromStock(3, claimCost);
 	territory->setTerritoryRuler(rulerEnum);
 	kingdom.claimTerritory(territory);
 
@@ -55,8 +55,8 @@ void Ruler::claimTerritory(Territory* territory, int claimCost)
 void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
 {
 	territory->buildAProperty(building);
-	std::vector<int> buildingCost = territory->getTerritoryBuilding()->getBuildingCost();
-	kingdom.getResourceObject() += buildingCost;
+	Resources buildingCost = territory->getTerritoryBuilding()->getBuildingCost();
+	kingdom.getResourceObject() -= buildingCost;
 	kingdom.increaseSpecificBuildingCount(territory->getTerritoryBuilding()->getBuildingType());
 
 	if (territory->getTerritoryBuilding()->getBuildingType() == BARRACKS)
@@ -66,13 +66,13 @@ void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& b
 	}
 
 	std::cout << std::endl << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". Cost: ";
-	if (std::abs(buildingCost[3]) > 0) std::cout << std::abs(buildingCost[3]) << " Gold";
-	if (std::abs(buildingCost[1]) > 0) std::cout << ", " << std::abs(buildingCost[1]) << " Timber";
-	if (std::abs(buildingCost[2]) > 0) std::cout << ", " << std::abs(buildingCost[2]) << " Iron";
+	if (buildingCost.getGoldStock() > 0) std::cout << buildingCost.getGoldStock() << " Gold";
+	if (buildingCost.getTimberStock() > 0) std::cout << ", " << buildingCost.getTimberStock() << " Timber";
+	if (buildingCost.getIronStock() > 0) std::cout << ", " << buildingCost.getIronStock() << " Iron";
 	std::cout << "." << std::endl;
 }
 
-void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, std::vector<int> totalRecruitementCost)
+void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost)
 {
 	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
 	std::vector<int> unitCount = {0, 0, 0, 0};
@@ -83,11 +83,12 @@ void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit
 		territory->getTerritoryArmy()->recruiteUnits(u);
 	}
 
-	kingdom.getResourceObject() += totalRecruitementCost;
+	kingdom.getResourceObject() -= totalRecruitementCost;
 
 	std::cout << kingdom.getKingdomName() << " recruited ";
 	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
-	std::cout << " at " << territory->getTerritoryName() << "." << std::endl;
+	std::cout << " at " << territory->getTerritoryName() << ". Cost: " << std::endl;
+	std::cout << totalRecruitementCost[3] << " Gold, " << totalRecruitementCost[2] << " Iron." << std::endl;
 }
 
 void Ruler::claimPhase(WorldMap& worldMap)
@@ -115,8 +116,6 @@ void Ruler::claimPhase(WorldMap& worldMap)
 
 void Ruler::buildPhase()
 {
-	std::vector<int> buildingBudget = kingdom.getResources();
-
 	std::vector<Territory*> potentialTerritories;
 
 	for (Territory* T : kingdom.getOwnedTerritories())
@@ -157,9 +156,9 @@ void Ruler::buildPhase()
 			continue;
 		}
 		std::vector<TerrainType> allowedTerrains = building->getAllowedTerrains();
-		std::vector<int> buildingCost = building->getBuildingCost();
+		Resources buildingCost = building->getBuildingCost();
 
-		if (buildingBudget[1] < std::abs(buildingCost[1]) || buildingBudget[2] < std::abs(buildingCost[2]) || buildingBudget[3] < std::abs(buildingCost[3]))
+		if (kingdom.getResourceObject() < buildingCost)
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);
 			continue;
@@ -191,7 +190,7 @@ void Ruler::recruitePhase()
 	if (kingdom.getArmyCount() == 0) return;
 	std::vector<Territory*> ownedTerritories = kingdom.getOwnedTerritories();
 	std::vector<int> recruitementBudget = kingdom.getResources();
-	std::vector<int> totalRecruitementCost = {0, 0, 0, 0};
+	Resources totalRecruitementCost = Resources({0, 0, 0, 0});
 	int unitCount = 0;
 	int armyIndex = -1;
 
@@ -244,12 +243,12 @@ void Ruler::recruitePhase()
 			continue;
 		}
 		
-		std::vector<int> unitCost = unit->getUnitCost();
-		for (int i = 0; i < 4; i++) totalRecruitementCost[i] -= unitCost[i];
+		Resources unitCost = unit->getUnitCost();
+		totalRecruitementCost += unitCost;
 
-		if (std::abs(totalRecruitementCost[2]) > recruitementBudget[2] || std::abs(totalRecruitementCost[3]) > recruitementBudget[3])
+		if (totalRecruitementCost > kingdom.getResourceObject())
 		{
-			for (int i = 0; i < 4; i++) totalRecruitementCost[i] += unitCost[i];
+			totalRecruitementCost -= unitCost;
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}

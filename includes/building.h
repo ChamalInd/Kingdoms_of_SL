@@ -3,6 +3,8 @@
 #include "territory.h"
 #include "worldmap.h"
 #include "unit.h"
+#include "resources.h"
+#include "structs_enums.h"
 
 // buildingCost = {rice, timber, iron, gold}
 
@@ -11,13 +13,13 @@ class Building
 	protected:
 		std::string buildingName;
 		std::vector<TerrainType> allowedTerrains;
-		std::vector<int> buildingCost;
+		Resources buildingCost;
 		int upkeepCost;
 		BuildingType buildingType;
 		int buildingHealth = 100;
 		BuildingStatus buildingStatus = OPEN;
 
-		virtual std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const { return {0, 0, 0, 0}; } 
+		virtual Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const { return Resources({0, 0, 0, 0}); } 
 		virtual int getStabilityIncrements() const { return 0; } 
 	
 	public:
@@ -27,7 +29,7 @@ class Building
 
 		std::string getBuildingName() const { return buildingName; }
 		std::vector<TerrainType> getAllowedTerrains() const { return allowedTerrains; }
-		std::vector<int> getBuildingCost() const { return buildingCost; }
+		Resources getBuildingCost() const { return buildingCost; }
 		int getUpkeepCost() const { return upkeepCost; }
 		BuildingType getBuildingType() const { return buildingType; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
@@ -44,11 +46,11 @@ class PaddyFarm : public Building
 			buildingName = "Paddy Farm";
 			buildingType = PADDY_FARM;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE};
-			buildingCost = {0, -50, 0, -100};
+			buildingCost = Resources({0, 50, 0, 100});
 			upkeepCost = 5;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {30, 0, 0, 0}; } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({30, 0, 0, 0}); } 
 };
 
 class IrrigationTank : public Building
@@ -59,11 +61,11 @@ class IrrigationTank : public Building
 			buildingName = "Irrigation Tank";
 			buildingType = IRRIGATION_LAKE;
 			allowedTerrains = {LAKE};
-			buildingCost = {0, -100, 0, -200};
+			buildingCost = Resources({0, 100, 0, 200});
 			upkeepCost = 10;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const override;
+		Resources getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const override;
 };
 
 class Mine : public Building
@@ -74,11 +76,11 @@ class Mine : public Building
 			buildingName = "Mine";
 			buildingType = MINE;
 			allowedTerrains = {HILL_COUNTRY};
-			buildingCost = {0, -50, 0, -150};
+			buildingCost = Resources({0, 50, 0, 150});
 			upkeepCost = 10;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {0, 0, 20, 0}; } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 0, 20, 0}); } 
 };
 
 class SawMill : public Building
@@ -89,11 +91,11 @@ class SawMill : public Building
 			buildingName = "Sawmill";
 			buildingType = SAWMILL;
 			allowedTerrains = {HILL_COUNTRY, JUNGLE};
-			buildingCost = {0, 0, 0, -100};
+			buildingCost = Resources({0, 0, 0, 100});
 			upkeepCost = 5;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {0, 30, 0, 0}; } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 30, 0, 0}); } 
 };
 
 class Market : public Building
@@ -104,11 +106,11 @@ class Market : public Building
 			buildingName = "Market";
 			buildingType = MARKET;
 			allowedTerrains = {COAST, DRY_ZONE};
-			buildingCost = {0, -50, 0, -200};
+			buildingCost = Resources({0, 50, 0, 200});
 			upkeepCost = 10;
 		}
 	protected:	
-		std::vector<int> getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return {0, 0, 0, 40}; } 
+		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override { return Resources({0, 0, 0, 40}); } 
 };
 
 class Temple : public Building
@@ -119,7 +121,7 @@ class Temple : public Building
 			buildingName = "Temple";
 			buildingType = TEMPLE;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
-			buildingCost = {0, -100, 0, -250};
+			buildingCost = Resources({0, 100, 0, 250});
 			upkeepCost = 15;
 		}
 	protected:	
@@ -134,7 +136,7 @@ class Barracks : public Building
 			buildingName = "Barracks";
 			buildingType = BARRACKS;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
-			buildingCost = {0, -100, -50, -200};
+			buildingCost = Resources({0, 100, 50, 200});
 			upkeepCost = 10;
 		}
 		std::unique_ptr<Unit> createUnit(UnitType unit) override
@@ -163,7 +165,7 @@ class Fort : public Building
 			buildingName = "Fort";
 			buildingType = FORT;
 			allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
-			buildingCost = {0, -150, -100, -300};
+			buildingCost = Resources({0, 150, 100, 300});
 			upkeepCost = 20;
 		}
 	protected:	

@@ -17,7 +17,7 @@ int Kingdom::getNoOfBuildingsBuilt() const
 
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 {
-	std::vector<int> resourceIncrements = {0, 0, 0, 0};
+	Resources resourceIncrements = Resources({0, 0, 0, 0});
 	int stabilityIncrement = 0;
 	for (Territory* T : ownedTerritories)
 	{
@@ -29,15 +29,15 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 			{
 				reduction = baseProduction[i] * 25 / 100;
 			}
-			resourceIncrements[i] += (baseProduction[i] - reduction);
+			resourceIncrements.addToStock(i, (baseProduction[i] - reduction));
 		}
 		if (T->getTerritoryBuilding() != nullptr && T->getTerritoryBuilding()->getBuildingStatus() == OPEN)
 		{
 			BuildingEffect effect = T->getTerritoryBuilding()->performEffect(T, worldMap, ruler);
 			for (int i = 0; i < 4; i++) 
 			{
-				if (stability < 30) resourceIncrements[i] += effect.resourceIncrement[i] * 75 / 100;
-				else resourceIncrements[i] += effect.resourceIncrement[i];
+				if (stability < 30) resourceIncrements.addToStock(i, effect.resourceIncrement[i] * 75 / 100);
+				else resourceIncrements.addToStock(i, effect.resourceIncrement[i]);
 			}
 			stabilityIncrement += effect.stabilityIncrement;
 		}
@@ -46,49 +46,51 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 	resources += resourceIncrements;
 	updateStability(stabilityIncrement);
 
-	std::cout << kingdomName << " produced: Gold +" << resourceIncrements[3] << ", Rice +";
-	std::cout << resourceIncrements[0] << ", Timber +" << resourceIncrements[1] << ", Iron +" << resourceIncrements[2] << "." << std::endl << std::endl;
+	std::cout << kingdomName << " produced: Gold +" << resourceIncrements.getGoldStock() << ", Rice +" << resourceIncrements.getRiceStock();
+	std::cout << ", Timber +" << resourceIncrements.getTimberStock() << ", Iron +" << resourceIncrements.getIronStock() << "." << std::endl << std::endl;
 }
 		
 void Kingdom::upkeepAndConsumption()
 {
-	std::vector<int> resourceIncrement = {0, 0, 0, 0};
-	std::vector<int> currentResources = resources.getResources();
+	int riceConsumption = 0; 
+	int taxIncome = 0;
+	int currentRiceStock = resources.getRiceStock();	
 
 	// consume rice
 	int consumption = population / 20;
 
-	if (consumption <= currentResources[0])
+	if (consumption <= currentRiceStock)
 	{
-		resourceIncrement[0] = -consumption;
+		riceConsumption = consumption;
 	}
 
-	if ((consumption * 2) <= currentResources[0])
+	if ((consumption * 2) <= currentRiceStock)
 	{
 		population += population * 2 / 100;
 		updateStability(1);
 	}
 	
-	if (consumption > currentResources[0])
+	if (consumption > currentRiceStock)
 	{
-		resourceIncrement[0] = 0 - currentResources[0];
+		riceConsumption = currentRiceStock;
 		population -= population * 5 / 100;
 		updateStability(-10);
 		std::cout << kingdomName << " is starving! Population falls by 5%. Stability - 10." << std::endl;
 	}
 
 	// taxes
-	resourceIncrement[3] = population / 25;
+	taxIncome = population / 25;
 
-	resources += resourceIncrement;
+	resources.subFromStock(0, riceConsumption);
+	resources.addToStock(3, taxIncome);
 	
-	std::cout << kingdomName << " population consumed: " << std::abs(resourceIncrement[0]) << " Rice." << std::endl;
-	std::cout << kingdomName << " population paid taxes: " << resourceIncrement[3] << " Gold." << std::endl << std::endl;
+	std::cout << kingdomName << " population consumed: " << riceConsumption << " Rice." << std::endl;
+	std::cout << kingdomName << " population paid taxes: " << taxIncome << " Gold." << std::endl << std::endl;
 	
 	// upkeeps
-	resourceIncrement = {0, 0, 0, 0};
-	currentResources = resources.getResources();
-	
+	int currentGoldStock = resources.getGoldStock();
+	int upkeepCost = 0;
+
 	int goldUpkeep = 0;
 	int highestGoldUpkeep = 0;
 	int highestGoldUpkeepIndex = -1;
@@ -105,10 +107,10 @@ void Kingdom::upkeepAndConsumption()
 		}
 	}
 
-	if ((goldUpkeep + buildingUpkeepDebt) <= currentResources[3])
+	if ((goldUpkeep + buildingUpkeepDebt) <= currentGoldStock)
 	{
-		resourceIncrement[3] = -(goldUpkeep + buildingUpkeepDebt);
-		std::cout << kingdomName << " paid building upkeep: " << std::abs(resourceIncrement[3]) << " Gold." << std::endl;	
+		upkeepCost = goldUpkeep + buildingUpkeepDebt;
+		std::cout << kingdomName << " paid building upkeep: " << upkeepCost << " Gold." << std::endl;	
 	
 		if (buildingUpkeepDebt > 0) std::cout << kingdomName << " cleared their building upkeep debt." << std::endl;
 
@@ -124,8 +126,8 @@ void Kingdom::upkeepAndConsumption()
 	}
 	else 
 	{
-		resourceIncrement[3] = -currentResources[3];
-		buildingUpkeepDebt += goldUpkeep + resourceIncrement[3];
+		upkeepCost = currentGoldStock;
+		buildingUpkeepDebt += goldUpkeep - upkeepCost;
 		std::cout << kingdomName << " not enough Gold to pay upkeep of buildings." << std::endl;
 		if (highestGoldUpkeepIndex != -1) 
 		{
@@ -135,7 +137,7 @@ void Kingdom::upkeepAndConsumption()
 		}
 	}
 	
-	resources += resourceIncrement;
+	resources.subFromStock(3, upkeepCost);
 	
 }
 

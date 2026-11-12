@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "ruler.h"
 #include "worldmap.h"
+#include "structs_enums.h"
 
 class SimulationManager
 {

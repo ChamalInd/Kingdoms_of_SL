@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "building.h"
 #include "army.h"
+#include "structs_enums.h"
 
 class Territory
 {

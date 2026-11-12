@@ -47,3 +47,4 @@ int Army::getUpkeep() const
 	}
 	return upkeep;
 }
+

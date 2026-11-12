@@ -11,10 +11,12 @@ class Army
 	public:
 		Army(int n) : armyNumber(n) {}
 
+		int getArmyNumber() const { return armyNumber; }
 		int getArmyAttack() const;
 		int getArmyDefence() const; 
 		int getMove() const;
 		int getUpkeep() const;
+		int getUnitCount() const { return units.size(); }
 
 		void recruiteUnits(std::unique_ptr<Unit>& newUnit) { units.push_back(std::move(newUnit)); }
 };

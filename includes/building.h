@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "territory.h"
 #include "worldmap.h"
+#include "unit.h"
 
 // buildingCost = {rice, timber, iron, gold}
 
@@ -32,6 +33,7 @@ class Building
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
 		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler);
+		virtual std::unique_ptr<Unit> createUnit(UnitType) {return nullptr; } 
 };
 
 class PaddyFarm : public Building
@@ -135,7 +137,22 @@ class Barracks : public Building
 			buildingCost = {0, -100, -50, -200};
 			upkeepCost = 10;
 		}
-	protected:	
+		std::unique_ptr<Unit> createUnit(UnitType unit) override
+		{
+			switch (unit)
+			{
+				case SPEARMAN:
+					return std::make_unique<Spearman>();
+				case ARCHER:
+					return std::make_unique<Archer>();
+				case CAVALRY:
+					return std::make_unique<Cavalry>();
+				case WAR_ELEPHANT:
+					return std::make_unique<WarElephant>();
+				default:
+					return nullptr;
+			}
+		}
 };
 
 class Fort : public Building

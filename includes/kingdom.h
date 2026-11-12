@@ -11,7 +11,6 @@ class Kingdom
 		int stability = 70;
 		Resources resources;
 		std::vector<Territory*> ownedTerritories;
-		std::vector<Territory*> barracksTerritories;
 		int buildingUpkeepDebt = 0;
 		int armyCount = 0;
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -28,11 +27,9 @@ class Kingdom
 		Resources& getResourceObject() { return resources; }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }
-		std::vector<Territory*> getBarracksTerritories() const { return barracksTerritories; }
 		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
 		
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
-		void claimBarracks(Territory* territory) { barracksTerritories.push_back(territory); }
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
 		void increaseArmyCount() { armyCount++; }
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler);

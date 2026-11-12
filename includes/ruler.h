@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "kingdom.h"
 #include "worldmap.h"
+#include "unit.h"
 
 class Ruler
 {
@@ -16,12 +17,15 @@ class Ruler
 		virtual int claimBudget() const = 0;
 		virtual int scoreTerritory(const Territory*) const { return 0; }
 		virtual int scoreBuilding(const BuildingType) const { return 0; }
+		virtual int scoreUnits(const UnitType) const { return 0; }
 
 	private:
 		void claimTerritory(Territory* territory, int claimCost);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
+		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units);
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase();
+		void recruitePhase();
 
 	public:
 		Ruler(std::string n, Kingdom& k, RulerEnum r) : rulerName(n), kingdom(k), rulerEnum(r) {}
@@ -55,6 +59,12 @@ class Conqueror : public Ruler
 			else if (type == TEMPLE) return 0;
 			else return 5;
 		}
+		int scoreUnits(const UnitType unit) const override
+		{
+			if (unit == WAR_ELEPHANT) return 10;
+			if (unit == CAVALRY) return 9;
+			else return 0;
+		}
 };
 
 class AgrarianSage : public Ruler
@@ -72,6 +82,11 @@ class AgrarianSage : public Ruler
 			else if (type == TEMPLE && kingdom.getNoOfTerritoriesOwned() % 4 == 0) return 8;
 			else return 0;
 		}
+		int scoreUnits(const UnitType unit) const override
+		{
+			if (unit == SPEARMAN) return 10;
+			else return -1;
+		}
 };
 
 class MerchantPrince : public Ruler
@@ -86,6 +101,12 @@ class MerchantPrince : public Ruler
 		{
 			if (type == MARKET) return 10; 
 			else return 0;
+		}
+		int scoreUnits(const UnitType unit) const override
+		{
+			if (unit == ARCHER) return 10;
+			else if (unit == WAR_ELEPHANT) return 9;
+			else return -1;
 		}
 
 };
@@ -102,5 +123,10 @@ class Strategist : public Ruler
 			if (type == PADDY_FARM) return 10;
 			else if (type == TEMPLE) return 9;
 			else return 0;
+		}
+		int scoreUnits(const UnitType unit) const override
+		{
+			if (unit == SPEARMAN) return 10;
+			else return -1;
 		}
 };

@@ -86,10 +86,7 @@ void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit
 	kingdom.getResourceObject() += totalRecruitementCost;
 
 	std::cout << kingdom.getKingdomName() << " recruited ";
-	if (unitCount[0] > 0) std::cout << unitCount[0] << " " << unitNames[0];
-	if (unitCount[1] > 0) std::cout << unitCount[1] << " " << unitNames[1];
-	if (unitCount[2] > 0) std::cout << unitCount[2] << " " << unitNames[2];
-	if (unitCount[3] > 0) std::cout << unitCount[3] << " " << unitNames[3];
+	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
 	std::cout << " at " << territory->getTerritoryName() << "." << std::endl;
 }
 
@@ -196,7 +193,7 @@ void Ruler::recruitePhase()
 	std::vector<int> recruitementBudget = kingdom.getResources();
 	std::vector<int> totalRecruitementCost = {0, 0, 0, 0};
 	int unitCount = 0;
-	int armyIndex = 0;
+	int armyIndex = -1;
 
 	for (size_t i = 0; i < ownedTerritories.size(); i++)
 	{
@@ -209,6 +206,8 @@ void Ruler::recruitePhase()
 			armyIndex = i;
 		}
 	}
+
+	if (armyIndex == -1) return;
 	
 	Territory* selectedTerritory = ownedTerritories[armyIndex];
 
@@ -250,7 +249,7 @@ void Ruler::recruitePhase()
 
 		if (std::abs(totalRecruitementCost[2]) > recruitementBudget[2] || std::abs(totalRecruitementCost[3]) > recruitementBudget[3])
 		{
-			for (int i = 0; i < 4; i++) totalRecruitementCost[i] -= unitCost[i];
+			for (int i = 0; i < 4; i++) totalRecruitementCost[i] += unitCost[i];
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}

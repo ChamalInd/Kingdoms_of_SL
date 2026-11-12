@@ -83,7 +83,7 @@ class WarElephant : public Unit
 			defence = 12;
 			hp = 60;
 			move = 1;
-			unitCost = {0, 0, 40, 100};
+			unitCost = {0, 0, 40, 200};
 			unitUpkeep = 8;
 		};
 };

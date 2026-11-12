@@ -22,7 +22,7 @@ class Ruler
 	private:
 		void claimTerritory(Territory* territory, int claimCost);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
-		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units);
+		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, std::vector<int> totalRecruitementCost);
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase();
 		void recruitePhase();

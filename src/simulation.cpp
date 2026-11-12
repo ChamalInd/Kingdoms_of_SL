@@ -10,10 +10,16 @@ SimulationManager::SimulationManager()
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
 		Kingdom kingdom(kingdomNames[i]);
+
+		// preparing capital with a barracks and an army
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
 		std::unique_ptr<Building> building = Builder::createBuilding(BARRACKS);
 		capital->buildAProperty(building);
 		kingdom.increaseSpecificBuildingCount(BARRACKS);
+		
+		kingdom.increaseArmyCount();
+		capital->addAnArmy(std::make_unique<Army>(kingdom.getArmyCount()));
+	
 		kingdom.claimTerritory(capital);
 
 		switch (i)

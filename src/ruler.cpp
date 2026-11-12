@@ -72,6 +72,27 @@ void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& b
 	std::cout << "." << std::endl;
 }
 
+void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, std::vector<int> totalRecruitementCost)
+{
+	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
+	std::vector<int> unitCount = {0, 0, 0, 0};
+
+	for (auto& u : units)
+	{
+		unitCount[u->getUnitType()] += 1;
+		territory->getTerritoryArmy()->recruiteUnits(u);
+	}
+
+	kingdom.getResourceObject() += totalRecruitementCost;
+
+	std::cout << kingdom.getKingdomName() << " recruited ";
+	if (unitCount[0] > 0) std::cout << unitCount[0] << " " << unitNames[0];
+	if (unitCount[1] > 0) std::cout << unitCount[1] << " " << unitNames[1];
+	if (unitCount[2] > 0) std::cout << unitCount[2] << " " << unitNames[2];
+	if (unitCount[3] > 0) std::cout << unitCount[3] << " " << unitNames[3];
+	std::cout << " at " << territory->getTerritoryName() << "." << std::endl;
+}
+
 void Ruler::claimPhase(WorldMap& worldMap)
 {
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
@@ -167,16 +188,13 @@ void Ruler::buildPhase()
 	constructBuilding(territory, building);
 }
 
-void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units)
-{
-
-}
 
 void Ruler::recruitePhase()
 {
-	if (kingdom.getArmyCount() > 0) return;
+	if (kingdom.getArmyCount() == 0) return;
 	std::vector<Territory*> ownedTerritories = kingdom.getOwnedTerritories();
 	std::vector<int> recruitementBudget = kingdom.getResources();
+	std::vector<int> totalRecruitementCost = {0, 0, 0, 0};
 	int unitCount = 0;
 	int armyIndex = 0;
 
@@ -184,6 +202,7 @@ void Ruler::recruitePhase()
 	{
 		if (ownedTerritories[i]->getTerritoryBuilding() == nullptr) continue;
 		if (ownedTerritories[i]->getTerritoryBuilding()->getBuildingType() != BARRACKS) continue;
+		if (ownedTerritories[i]->getTerritoryBuilding()->getBuildingStatus() == CLOSE) continue;
 		if (ownedTerritories[i]->getTerritoryArmy()->getUnitCount() < unitCount)
 		{
 			unitCount = ownedTerritories[i]->getTerritoryArmy()->getUnitCount(); 
@@ -227,8 +246,11 @@ void Ruler::recruitePhase()
 		}
 		
 		std::vector<int> unitCost = unit->getUnitCost();
-		if (unitCost[2] > recruitementBudget[2] || unitCost[3] > recruitementBudget[3])
+		for (int i = 0; i < 4; i++) totalRecruitementCost[i] -= unitCost[i];
+
+		if (std::abs(totalRecruitementCost[2]) > recruitementBudget[2] || std::abs(totalRecruitementCost[3]) > recruitementBudget[3])
 		{
+			for (int i = 0; i < 4; i++) totalRecruitementCost[i] -= unitCost[i];
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}
@@ -236,10 +258,10 @@ void Ruler::recruitePhase()
 
 		if (selectedUnits.size() == 5) break;
 	}
-	
+
 	if (selectedUnits.empty()) return;
 
-	recruiteUnits(selectedTerritory, selectedUnits);
+	recruiteUnits(selectedTerritory, selectedUnits, totalRecruitementCost);
 }
 
 void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 

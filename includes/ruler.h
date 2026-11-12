@@ -2,9 +2,14 @@
 #include "includes.h"
 #include "kingdom.h"
 #include "worldmap.h"
+#include "building.h"
 #include "unit.h"
-#include "resources.h"
-#include "structs_enums.h"
+
+struct RulerDetails
+{
+	int noOfTerritoriesOwn;
+	int armyStrength;
+};
 
 class Ruler
 {

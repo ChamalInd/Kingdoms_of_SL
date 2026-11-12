@@ -1,10 +1,16 @@
 #pragma once
 #include "includes.h"
-#include "territory.h"
-#include "worldmap.h"
-#include "unit.h"
 #include "resources.h"
-#include "structs_enums.h"
+#include "unit.h"
+
+class Territory;
+class WorldMap;
+
+struct BuildingEffect
+{
+	Resources resourceIncrement;
+	int stabilityIncrement;
+};
 
 // buildingCost = {rice, timber, iron, gold}
 

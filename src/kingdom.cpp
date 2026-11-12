@@ -105,8 +105,8 @@ void Kingdom::populationActivities()
 	// taxes
 	taxIncome = population / 25;
 
-	resources.subFromStock(0, riceConsumption);
-	resources.addToStock(3, taxIncome);
+	resources.subFromStock(RICE, riceConsumption);
+	resources.addToStock(GOLD, taxIncome);
 	
 	std::cout << kingdomName << " population consumed: " << riceConsumption << " Rice." << std::endl;
 	std::cout << kingdomName << " population paid taxes: " << taxIncome << " Gold." << std::endl << std::endl;
@@ -164,7 +164,7 @@ void Kingdom::buildingUpkeep()
 		}
 	}
 	
-	resources.subFromStock(3, upkeepCost);
+	resources.subFromStock(GOLD, upkeepCost);
 	
 }
 
@@ -206,7 +206,7 @@ void Kingdom::armyUpkeep()
 		if (riceStock >= totalRiceUpkeep)
 		{
 			std::cout << kingdomName << " paid army upkeep: " << totalRiceUpkeep << " Rice." << std::endl;
-			resources.subFromStock(0, totalRiceUpkeep);
+			resources.subFromStock(RICE, totalRiceUpkeep);
 			break;
 		}
 		else

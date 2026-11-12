@@ -1,23 +1,22 @@
 #pragma once
 
-// external libraries used
 #include <iostream>
 #include <string>
-#include <climits>
+#include <vector>
 #include <memory>
 #include <algorithm>
 #include <ctime>
 #include <cmath>
-#include <cstring>
-#include <vector>
+#include <climits>
 #include <iomanip>
-#include <cstdlib>
 #include <utility>
 
-// class declarations
+// forward declarations classes
 class Resources;
 class Territory;
 class Building;
+class Unit;
+class Army;
 class Kingdom;
 class Ruler;
 class WorldMap;
@@ -46,3 +45,34 @@ std::vector<int> setTheTerrainCounts();
 int rollDie();
 void printTitle(std::string title, char decorator);
 void determinePlayerOrder(std::vector<std::unique_ptr<Ruler>>& rulers);
+
+// enumerations 
+enum RulerEnum
+{
+	NEUTRAL = -1, ANURADHAPURA, RUHUNA, KOTTE, KANDY
+};
+
+enum BuildingType 
+{
+	PADDY_FARM, IRRIGATION_LAKE, MINE, SAWMILL, MARKET, TEMPLE, BARRACKS, FORT
+};
+
+enum BuildingStatus
+{
+	OPEN, CLOSE
+};
+
+enum ResourceType
+{
+	RICE, TIMBER, IRON, GOLD
+};
+
+enum TerrainType
+{
+	PADDY_PLAIN, HILL_COUNTRY, DRY_ZONE, COAST, JUNGLE, LAKE 
+};
+
+enum UnitType
+{
+	NONE = -1, SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT
+};

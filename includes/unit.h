@@ -1,7 +1,6 @@
 #pragma once
 #include "includes.h"
 #include "resources.h"
-#include "structs_enums.h"
 
 class Unit
 {

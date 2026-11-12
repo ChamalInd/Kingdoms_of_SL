@@ -43,7 +43,7 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 void Ruler::claimTerritory(Territory* territory, int claimCost)
 {
 	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
-	kingdom.getResourceObject().subFromStock(3, claimCost);
+	kingdom.getResourceObject().subFromStock(GOLD, claimCost);
 	territory->setTerritoryRuler(rulerEnum);
 	kingdom.claimTerritory(territory);
 
@@ -88,7 +88,7 @@ void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit
 	std::cout << std::endl << kingdom.getKingdomName() << " recruited ";
 	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
 	std::cout << " at " << territory->getTerritoryName() << ". Cost: ";
-	std::cout << totalRecruitementCost[3] << " Gold, " << totalRecruitementCost[2] << " Iron." << std::endl;
+	std::cout << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
 }
 
 void Ruler::claimPhase(WorldMap& worldMap)

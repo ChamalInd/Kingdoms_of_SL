@@ -1,5 +1,7 @@
 #pragma once
 #include "includes.h"
+#include <iostream>
+#include <vector>
 
 class Resources
 {
@@ -11,10 +13,10 @@ class Resources
 		Resources(std::vector<int> newStock) : resourcesStock(newStock) {}
 
 		std::vector<int> getResources() const { return resourcesStock; }
-		int getRiceStock() const { return resourcesStock[0]; }
-		int getTimberStock() const { return resourcesStock[1]; }
-		int getIronStock() const { return resourcesStock[2]; }
-		int getGoldStock() const { return resourcesStock[3]; }
+		int getRiceStock() const { return resourcesStock[RICE]; }
+		int getTimberStock() const { return resourcesStock[TIMBER]; }
+		int getIronStock() const { return resourcesStock[IRON]; }
+		int getGoldStock() const { return resourcesStock[GOLD]; }
 		
 		void addToStock(int index, int value) { resourcesStock[index] += value; }
 		void subFromStock(int index, int value) { resourcesStock[index] = std::max(resourcesStock[index] - value, 0); }

@@ -8,7 +8,7 @@ void Ruler::printRoundSummary()
 	std::cout << "Gold: " << resources.getGoldStock() << " | Rice: " << resources.getRiceStock();
 	std::cout << " | Timber: " << resources.getTimberStock() << " | Iron: " << resources.getIronStock() << std::endl;
 	std::cout << "Population: " << kingdom.getPopulation() << " | Stability: " << kingdom.getStability() << std::endl;
-	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << kingdom.getNoOfBuildingsBuilt() << " | Units: " << "0" << std::endl;
+	std::cout << "Territories: " << kingdom.getNoOfTerritoriesOwned() << " | Buildings: " << kingdom.getNoOfBuildingsBuilt() << " | Units: " << kingdom.getUnitCount() << std::endl;
 }
 
 int Ruler::calculateScore()
@@ -238,6 +238,13 @@ void Ruler::recruitePhase()
 		}
 		unit = selectedTerritory->getTerritoryBuilding()->createUnit(selectedUnit);
 		if (unit == nullptr) 
+		{
+			unitTypes.erase(unitTypes.begin() + unitIndex);
+			continue;
+		}
+
+		int currentArmyUpkeep = kingdom.getArmyUpkeep();
+		if (kingdom.getResourceObject().getRiceStock() < currentArmyUpkeep + unit->getUnitUpkeep())
 		{
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;

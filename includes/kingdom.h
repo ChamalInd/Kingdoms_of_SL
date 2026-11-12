@@ -28,6 +28,8 @@ class Kingdom
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }
 		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
+		int getArmyUpkeep() const; 
+		int getUnitCount() const; 
 		
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }

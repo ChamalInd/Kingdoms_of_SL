@@ -21,6 +21,6 @@ class Resources
 		
 		void operator+=(const Resources& other);
 		void operator-=(const Resources& other);
-		bool operator>=(const Resources& other);
+		bool operator>=(const Resources& other) const;
 		int operator[](int index) const { return resourcesStock[index]; }
 };

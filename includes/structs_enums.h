@@ -25,7 +25,7 @@ enum BuildingStatus
 
 enum UnitType
 {
-	SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT
+	NONE = -1, SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT
 };
 
 // structures

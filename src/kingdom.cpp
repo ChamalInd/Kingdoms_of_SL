@@ -39,7 +39,7 @@ int Kingdom::getArmyUpkeep() const
 	return totalRiceUpkeep;
 }
 
-void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
+void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)
 {
 	Resources resourceIncrements = Resources({0, 0, 0, 0});
 	int stabilityIncrement = 0;
@@ -67,6 +67,25 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 		}
 	}
 
+	if (currentEvent != nullptr) 
+	{
+		switch (currentEvent->getEventType())
+		{ 
+			case DROUGHT:
+				resourceIncrements.subFromStock(RICE, resourceIncrements.getRiceStock() / 2);
+				break;
+			case GOOD_MONSOON:
+				resourceIncrements.addToStock(RICE, resourceIncrements.getRiceStock() / 2);
+				break;
+			
+			case F_O_IRON_AGE:
+				resourceIncrements.subFromStock(IRON, resourceIncrements.getIronStock() / 2);
+				break;
+			default:
+				break;
+		}
+	}
+
 	resources += resourceIncrements;
 	updateStability(stabilityIncrement);
 
@@ -74,14 +93,33 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler)
 	std::cout << ", Timber +" << resourceIncrements.getTimberStock() << ", Iron +" << resourceIncrements.getIronStock() << "." << std::endl << std::endl;
 }
 		
-void Kingdom::populationActivities()
+void Kingdom::populationActivities(std::unique_ptr<Event>& currentEvent)
 {
 	int riceConsumption = 0; 
 	int taxIncome = 0;
 	int currentRiceStock = resources.getRiceStock();	
 
+	
+	if (currentEvent != nullptr)
+	{
+		switch (currentEvent->getEventType())
+		{
+			case PLAGUE:
+				population -= population * 10 / 100;
+				updateStability(-5);
+				break;
+			case ROYAL_FESTIVAL:
+				updateStability(10);
+				break;
+			default:
+				break;
+		}
+	}
+
 	// consume rice
 	int consumption = population / 20;
+
+	if (currentEvent != nullptr && currentEvent->getEventType() == ROYAL_FESTIVAL) consumption += consumption * 50 / 100;
 
 	if (consumption <= currentRiceStock)
 	{
@@ -212,7 +250,7 @@ void Kingdom::armyUpkeep()
 		else
 		{
 			std::cout << kingdomName << " does not enough Rice to pay upkeep of army. ";
-			std::cout << "army at " << ownedTerritories[weekestArmy]->getTerritoryName() << " deserted." << std::endl;
+			std::cout << "Army at " << ownedTerritories[weekestArmy]->getTerritoryName() << " deserted." << std::endl;
 			ownedTerritories[weekestArmy]->getTerritoryArmy()->desertArmy();
 		}
 	}

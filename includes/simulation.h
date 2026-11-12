@@ -10,11 +10,13 @@ class SimulationManager
 		WorldMap worldMap;
 		std::vector<std::unique_ptr<Ruler>> rulers;
 		int gameRound = 0;
+		std::unique_ptr<Event> currentEvent = nullptr;
 	
 	public:
 		SimulationManager();
 		
 		void initializeGame();
+		void eventHandler();
 		void gameLoop();
 		void endGame();
 		std::vector<RulerDetails> calculateRulerDetails();

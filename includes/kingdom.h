@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "resources.h"
 #include "territory.h"
+#include "events.h"
 
 class Kingdom
 {
@@ -34,8 +35,8 @@ class Kingdom
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
 		void increaseArmyCount() { armyCount++; }
-		void collectProductions(WorldMap& worldMap, RulerEnum ruler);
-		void populationActivities();
+		void collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent);
+		void populationActivities(std::unique_ptr<Event>& currentEvent);
 		void buildingUpkeep();
 		void armyUpkeep();
 		void updateStability(int rate);

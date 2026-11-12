@@ -65,6 +65,8 @@ void SimulationManager::gameLoop()
 		printTitle(" Round " + std::to_string(gameRound + 1), ' ');
 		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
 
+		eventHandler();		
+
 		for (auto& R : rulers)
 		{
 			Kingdom& kingdom = R->getKingdom();
@@ -72,9 +74,9 @@ void SimulationManager::gameLoop()
 			std::cout << std::endl;
 			printTitle(title, '-');
 			// collect productions
-			kingdom.collectProductions(worldMap, R->getRulerEnum());
+			kingdom.collectProductions(worldMap, R->getRulerEnum(), currentEvent);
 			// upkeep and consumption
-			kingdom.populationActivities();
+			kingdom.populationActivities(currentEvent);
 			kingdom.buildingUpkeep();
 			kingdom.armyUpkeep();
 			// event check
@@ -93,11 +95,88 @@ void SimulationManager::gameLoop()
 			R->printRoundSummary();
 			std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
 		}
-		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
+
+		if (currentEvent != nullptr) 
+		{
+			int roundsLeft = currentEvent->getEventRounds();
+			if (roundsLeft > 0) 
+			{
+				std::cout <<  "Active Events: " << currentEvent->getEventName() << " (" << roundsLeft << " rounds remaining)" << std::endl;
+				std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
+			}
+		}
+
 		gameRound++;
 	}
 
 	endGame();
+}
+
+void SimulationManager::eventHandler()
+{
+	// event check
+	if (currentEvent == nullptr && (gameRound + 1) % 10 == 0)
+	{
+		std::vector<EventType> eventList = {DROUGHT, FLOOD, GOOD_MONSOON, PLAGUE, TRADE_CARAVAN, ROYAL_FESTIVAL, F_O_IRON_AGE};
+
+		currentEvent = EventCreater::createEvent(eventList[rand() % 7]);
+		std::cout << std::endl;
+		printTitle(" New Event Occurred ", '*');
+		std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
+		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
+
+		// immediate events
+		if (currentEvent->getEventType() == FLOOD)
+		{
+			Territory* selected = nullptr;
+			while (true)
+			{
+				int x = rand() % 6;
+				int y = rand() % 6;
+				selected = worldMap.getTerritory(x, y);
+				if (selected->getTerritoryBuilding() == nullptr) continue;
+				if (selected->getTerritoryBuilding()->getBuildingType() == FORT) continue;
+				if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) continue;
+				break;
+			}
+					
+			std::cout << selected->getTerritoryBuilding()->getBuildingName() << " on " << selected->getTerritoryName() << " destroyed by flood." << std::endl;
+			selected->destroyAProperty();
+		}
+		
+		if (currentEvent->getEventType() == TRADE_CARAVAN)
+		{
+			int minimum = INT_MAX;
+			std::vector<int> indices;
+			for (int i = 0; i < NO_OF_KINGDOMS; i++)
+			{
+				if (rulers[i]->getKingdom().getNoOfTerritoriesOwned() <= minimum)
+				{
+					if (rulers[i]->getKingdom().getNoOfTerritoriesOwned() < minimum) indices.clear();
+					indices.push_back(i);
+					minimum = rulers[i]->getKingdom().getNoOfTerritoriesOwned();
+				}
+			}
+			for (int index : indices)
+			{
+				std::cout << rulers[index]->getKingdom().getKingdomName() << " received 500 Gold from the Trade Caravan." << std::endl;
+				rulers[index]->getKingdom().getResourceObject().addToStock(GOLD, 500);
+			}
+		}
+	}
+	else if (currentEvent != nullptr) 
+	{
+		currentEvent->decreaseEventRound();
+		int roundsLeft = currentEvent->getEventRounds();
+		if (roundsLeft == 0) 
+		{
+			std::cout << std::endl;
+			printTitle(" Event Ended ", '*');
+			std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
+			std::cout << "Event Description: " << currentEvent->getEventOverMsg() << std::endl;
+			currentEvent = nullptr;
+		}
+	}
 }
 
 void SimulationManager::endGame()

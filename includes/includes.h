@@ -13,6 +13,7 @@
 
 // forward declarations classes
 class Resources;
+class Event;
 class Territory;
 class Building;
 class Unit;
@@ -75,4 +76,9 @@ enum TerrainType
 enum UnitType
 {
 	NONE = -1, SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT
+};
+
+enum EventType
+{
+	DROUGHT, FLOOD, GOOD_MONSOON, PLAGUE, TRADE_CARAVAN, ROYAL_FESTIVAL, F_O_IRON_AGE
 };

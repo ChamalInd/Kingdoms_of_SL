@@ -21,53 +21,86 @@ int Ruler::calculateScore()
 int Conqueror::scoreBuilding(const BuildingType type) const 
 {
 	if (type == BARRACKS && kingdom->getNoOfTerritoriesOwned() % 2 == 0 && kingdom->getSpecificBuildingCount(type) < 4) return 10;
-	else if (type == TEMPLE) return -1;
-	else return 5;
+	if (type == TEMPLE) return -1;
+	if (type == FORT) return 10;
+	return 0;
 }
 		
 int Conqueror::scoreUnits(const UnitType unit) const 
 {
 	if (unit == WAR_ELEPHANT) return 10;
 	if (unit == CAVALRY) return 9;
-	else return 0;
+	return 0;
 }
 
 int Conqueror::claimBudget() const { return kingdom->getResources()[3] * 40 / 100; }
 
+Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock() * 40 / 100});
+	return budget;
+}
+
 int AgrarianSage::scoreBuilding(const BuildingType type) const 
 {
 	if (type == PADDY_FARM) return 10; 
-	else if (type == IRRIGATION_LAKE) return 9;
-	else if (type == TEMPLE && kingdom->getNoOfTerritoriesOwned() % 4 == 0) return 8;
-	else return 0;
+	if (type == IRRIGATION_LAKE) return 10;
+	if (type == TEMPLE && kingdom->getNoOfTerritoriesOwned() % 4 == 0) return 10;
+	return 0;
 }
 
 int AgrarianSage::scoreUnits(const UnitType unit) const
 {
 	if (unit == SPEARMAN) return 10;
-	else return -1;
+	return -1;
 }
 
 int AgrarianSage::claimBudget() const { return kingdom->getResources()[3]; }
 
 int AgrarianSage::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
 
+Resources AgrarianSage::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+
 int MerchantPrince::scoreBuilding(const BuildingType type) const
 {
 	if (type == MARKET) return 10; 
-	else return 0;
+	return 0;
 }
 		
 int MerchantPrince::scoreUnits(const UnitType unit) const
 {
 	if (unit == ARCHER) return 10;
-	else if (unit == WAR_ELEPHANT) return 9;
-	else return -1;
+	if (unit == WAR_ELEPHANT) return 9;
+	return -1;
 }
 
 int MerchantPrince::claimBudget() const { return kingdom->getResources()[3] - 1500; }
 		
 int MerchantPrince::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == COAST ? 10 : 0; }
+
+Resources MerchantPrince::constructionBudget(std::unique_ptr<Event>& currentEvent) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	if (currentEvent != nullptr && currentEvent->getEventType() == TRADE_CARAVAN) return budget;
+	budget.subFromStock(GOLD, 1500);
+	return budget;
+}
 
 int Strategist::scoreBuilding(const BuildingType type) const 
 {
@@ -83,6 +116,16 @@ int Strategist::scoreUnits(const UnitType unit) const
 }
 
 int Strategist::claimBudget() const { return kingdom->getResources()[3]; }
+
+Resources Strategist::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
 
 std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 {
@@ -148,7 +191,7 @@ void Ruler::claimPhase(WorldMap& worldMap)
 	kingdom->claimTerritory(territory, claimCost);
 }
 
-void Ruler::buildPhase()
+void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent)
 {
 	// no territories left to build
 	if (kingdom->getNoOfBuildingsBuilt() == kingdom->getNoOfTerritoriesOwned()) return;
@@ -187,7 +230,7 @@ void Ruler::buildPhase()
 		}
 		Resources buildingCost = building->getBuildingCost();
 
-		if (!(kingdom->getResourceObject() >= buildingCost))
+		if (!(constructionBudget(currentEvent) >= buildingCost))
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);
 			continue;
@@ -296,9 +339,9 @@ void Ruler::recruitePhase()
 	recruiteUnits(selectedTerritory, selectedUnits, totalRecruitementCost);
 }
 
-void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 
 {
 	claimPhase(worldMap);
-	buildPhase();
+	buildPhase(currentEvent);
 	recruitePhase();
 }

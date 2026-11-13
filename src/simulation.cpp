@@ -123,7 +123,7 @@ void SimulationManager::gameLoop()
 			// to be implemented
 			// ruler turns
 			std::vector<RulerDetails> rd = calculateRulerDetails();
-			R->playTurn(worldMap, rd);
+			R->playTurn(worldMap, rd, currentEvent);
 		}
 
 		logger.printRoundSummary(rulers, currentEvent, gameRound);	

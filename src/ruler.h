@@ -22,6 +22,7 @@ class Ruler
 		int score = 0;
 
 		virtual int claimBudget() const = 0;
+		virtual Resources constructionBudget(std::unique_ptr<Event>&) const = 0;
 		virtual int scoreTerritory(const Territory*) const { return 0; }
 		virtual int scoreBuilding(const BuildingType) const { return 0; }
 		virtual int scoreUnits(const UnitType) const { return 0; }
@@ -29,7 +30,7 @@ class Ruler
 	private:
 		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost);
 		void claimPhase(WorldMap& worldMap);
-		void buildPhase();
+		void buildPhase(std::unique_ptr<Event>& currentEvent);
 		void recruitePhase();
 
 	public:
@@ -47,7 +48,7 @@ class Ruler
 		
 		void printRoundSummary();
 		int calculateScore();
-		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails);
+		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
 };
 
@@ -58,6 +59,7 @@ class Conqueror : public Ruler
 	
 	protected:
 		int claimBudget() const override;
+		Resources constructionBudget(std::unique_ptr<Event>&) const override;
 		int scoreBuilding(const BuildingType type) const override; 
 		int scoreUnits(const UnitType unit) const override;
 };
@@ -69,6 +71,7 @@ class AgrarianSage : public Ruler
 	
 	protected:
 		int claimBudget() const override;
+		Resources constructionBudget(std::unique_ptr<Event>&) const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type) const override;
 		int scoreUnits(const UnitType unit) const override;
@@ -81,6 +84,7 @@ class MerchantPrince : public Ruler
 
 	protected:
 		int claimBudget() const override;
+		Resources constructionBudget(std::unique_ptr<Event>& currentEvent) const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type) const override;
 		int scoreUnits(const UnitType unit) const override;
@@ -93,6 +97,7 @@ class Strategist : public Ruler
 
 	protected:
 		int claimBudget() const override;
+		Resources constructionBudget(std::unique_ptr<Event>&) const override;
 		int scoreBuilding(const BuildingType type) const override;
 		int scoreUnits(const UnitType unit) const override;
 };

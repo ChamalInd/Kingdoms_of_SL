@@ -217,7 +217,6 @@ void Kingdom::buildingUpkeep()
 	}
 	
 	resources.subFromStock(GOLD, upkeepCost);
-	
 }
 
 void Kingdom::armyUpkeep()

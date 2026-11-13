@@ -33,11 +33,11 @@ void Logger::printSimulationEnd(const int& gameRound, std::vector<std::unique_pt
 	std::string title = " Game Over after " + std::to_string(gameRound) + " rounds ";
 	printTitle(title, '=');
 
-	std::cout << "Winner : " << rulers[0]->getKingdom().getKingdomName() << " (" << rulers[0]->getRulerName() << ")" << std::endl << std::endl;
+	std::cout << "Winner : " << rulers[0]->getKingdom()->getKingdomName() << " (" << rulers[0]->getRulerName() << ")" << std::endl << std::endl;
 	std::cout << "Final Score" << std::endl;
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
-		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom().getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
+		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom()->getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
 	}
 }
 

@@ -24,21 +24,21 @@ class SimulationManager
 		std::vector<RulerDetails> calculateRulerDetails();
 };
 
-class RulerMaker
+class RulerFactory
 {
 	public:
-		static std::unique_ptr<Ruler> createRulers(std::string rulerName, Kingdom& kingdom, RulerEnum ruler)
+		static std::unique_ptr<Ruler> createRulers(std::string rulerName, std::unique_ptr<Kingdom> kingdom, RulerEnum ruler)
 		{
 			switch (ruler)
 			{
 				case ANURADHAPURA:
-					return std::make_unique<Conqueror>(rulerName, kingdom, ruler);
+					return std::make_unique<Conqueror>(rulerName, std::move(kingdom), ruler);
 				case RUHUNA:
-					return std::make_unique<AgrarianSage>(rulerName, kingdom, ruler);
+					return std::make_unique<AgrarianSage>(rulerName, std::move(kingdom), ruler);
 				case KOTTE:
-					return std::make_unique<MerchantPrince>(rulerName, kingdom, ruler);
+					return std::make_unique<MerchantPrince>(rulerName, std::move(kingdom), ruler);
 				case KANDY:
-					return std::make_unique<Strategist>(rulerName, kingdom, ruler);
+					return std::make_unique<Strategist>(rulerName, std::move(kingdom), ruler);
 				default:
 					return nullptr;
 			}

@@ -15,7 +15,7 @@ class Ruler
 {
 	protected:
 		std::string rulerName;
-		Kingdom kingdom;
+		std::unique_ptr<Kingdom> kingdom = nullptr;
 		RulerEnum rulerEnum;
 		int firstDieValue = 0;
 		bool placeChosen = false;
@@ -33,13 +33,13 @@ class Ruler
 		void recruitePhase();
 
 	public:
-		Ruler(std::string n, Kingdom& k, RulerEnum r) : rulerName(n), kingdom(k), rulerEnum(r) {}
+		Ruler(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : rulerName(n), kingdom(std::move(k)), rulerEnum(r) {}
 		virtual ~Ruler() = default;
 		
 		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
 		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
 		
-		Kingdom& getKingdom() { return kingdom; }
+		std::unique_ptr<Kingdom>& getKingdom() { return kingdom; }
 		int getFirstDieValue() const { return firstDieValue; }
 		bool getPlaceChosen() const { return placeChosen; }
 		std::string getRulerName() const { return rulerName; }
@@ -54,84 +54,45 @@ class Ruler
 class Conqueror : public Ruler
 {
 	public:
-		Conqueror(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
+		Conqueror(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : Ruler(n, std::move(k), r) {}
 	
 	protected:
-		int claimBudget() const override { return kingdom.getResources()[3] * 40 / 100; }
-		int scoreBuilding(const BuildingType type) const override 
-		{
-			if (type == BARRACKS && kingdom.getNoOfTerritoriesOwned() % 2 == 0 && kingdom.getSpecificBuildingCount(type) < 4) return 10;
-			else if (type == TEMPLE) return -1;
-			else return 5;
-		}
-		int scoreUnits(const UnitType unit) const override
-		{
-			if (unit == WAR_ELEPHANT) return 10;
-			if (unit == CAVALRY) return 9;
-			else return 0;
-		}
+		int claimBudget() const override;
+		int scoreBuilding(const BuildingType type) const override; 
+		int scoreUnits(const UnitType unit) const override;
 };
 
 class AgrarianSage : public Ruler
 {
 	public:
-		AgrarianSage(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
+		AgrarianSage(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : Ruler(n, std::move(k), r) {}
 	
 	protected:
-		int claimBudget() const override { return kingdom.getResources()[3]; }
-		int scoreTerritory(const Territory* T) const override { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
-		int scoreBuilding(const BuildingType type) const override 
-		{
-			if (type == PADDY_FARM) return 10; 
-			else if (type == IRRIGATION_LAKE) return 9;
-			else if (type == TEMPLE && kingdom.getNoOfTerritoriesOwned() % 4 == 0) return 8;
-			else return 0;
-		}
-		int scoreUnits(const UnitType unit) const override
-		{
-			if (unit == SPEARMAN) return 10;
-			else return -1;
-		}
+		int claimBudget() const override;
+		int scoreTerritory(const Territory* T) const override;
+		int scoreBuilding(const BuildingType type) const override;
+		int scoreUnits(const UnitType unit) const override;
 };
 
 class MerchantPrince : public Ruler
 {
 	public:
-		MerchantPrince(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
+		MerchantPrince(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : Ruler(n, std::move(k), r) {}
 
 	protected:
-		int claimBudget() const override { return kingdom.getResources()[3] - 1500; }
-		int scoreTerritory(const Territory* T) const override { return T->getTerritoryType() == COAST ? 10 : 0; }
-		int scoreBuilding(const BuildingType type) const override 
-		{
-			if (type == MARKET) return 10; 
-			else return 0;
-		}
-		int scoreUnits(const UnitType unit) const override
-		{
-			if (unit == ARCHER) return 10;
-			else if (unit == WAR_ELEPHANT) return 9;
-			else return -1;
-		}
-
+		int claimBudget() const override;
+		int scoreTerritory(const Territory* T) const override;
+		int scoreBuilding(const BuildingType type) const override;
+		int scoreUnits(const UnitType unit) const override;
 };
 
 class Strategist : public Ruler
 {
 	public:
-		Strategist(std::string n, Kingdom& k, RulerEnum r) : Ruler(n, k, r) {}
+		Strategist(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : Ruler(n, std::move(k), r) {}
 
 	protected:
-		int claimBudget() const override { return kingdom.getResources()[3]; }
-		int scoreBuilding(const BuildingType type) const override 
-		{
-			if (type == PADDY_FARM) return 10;
-			else if (type == TEMPLE) return 9;
-			else return 0;
-		}
-		int scoreUnits(const UnitType unit) const override
-		{
-			if (unit == SPEARMAN) return 10;
-			else return -1;
-		}
+		int claimBudget() const override;
+		int scoreBuilding(const BuildingType type) const override;
+		int scoreUnits(const UnitType unit) const override;
 };

@@ -9,15 +9,15 @@ SimulationManager::SimulationManager()
 	const std::vector<std::pair<int, int>> kingdomCapitals = {std::make_pair(0, 0), std::make_pair(0, 5), std::make_pair(5, 0), std::make_pair(5, 5)};
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
-		Kingdom kingdom(kingdomNames[i], enums[i]);
+		std::unique_ptr<Kingdom> kingdom = std::make_unique<Kingdom>(kingdomNames[i], enums[i]);
 
 		// preparing capital with a barracks and an army
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
 		std::unique_ptr<Building> building = BuildingFactory::createBuilding(BARRACKS);
-		kingdom.claimTerritory(capital, 0);
-		kingdom.constructBuilding(capital, building);
+		kingdom->claimTerritory(capital, 0);
+		kingdom->constructBuilding(capital, building);
 	
-		rulers.push_back(RulerMaker::createRulers(rulerNames[i], kingdom, enums[i]));
+		rulers.push_back(RulerFactory::createRulers(rulerNames[i], std::move(kingdom), enums[i]));
 	}
 
 	initializeGame();
@@ -35,7 +35,7 @@ void SimulationManager::initializeGame()
 			if (rulers[i]->getPlaceChosen()) continue;
 			int dieRoll = rollDie();
 			rulers[i]->setFirstDieValue(dieRoll);
-			std::cout << rulers[i]->getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
+			std::cout << rulers[i]->getKingdom()->getKingdomName() << " rolls " << dieRoll << "." << std::endl;
 		}
 	
 		bool tieFound = false;
@@ -65,7 +65,7 @@ void SimulationManager::initializeGame()
 			if (!rulers[i]->getPlaceChosen()) 
 			{
 				tieCount++;
-				std::cout << rulers[i]->getKingdom().getKingdomName() << " ";
+				std::cout << rulers[i]->getKingdom()->getKingdomName() << " ";
 			}
 			else rulers[i]->setFirstDieValue(rulers[i]->getFirstDieValue() * 10);
 		}
@@ -89,7 +89,7 @@ void SimulationManager::initializeGame()
 	int count = 0;
 	for (auto& R : rulers)
 	{
-		std::cout << R->getKingdom().getKingdomName();
+		std::cout << R->getKingdom()->getKingdomName();
 		count++;
 		if (count < NO_OF_KINGDOMS) std::cout << ", ";
 	}
@@ -108,17 +108,17 @@ void SimulationManager::gameLoop()
 
 		for (auto& R : rulers)
 		{
-			Kingdom& kingdom = R->getKingdom();
-			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom.getKingdomName() + " ";
+			std::unique_ptr<Kingdom>& kingdom = R->getKingdom();
+			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom->getKingdomName() + " ";
 			std::cout << std::endl;
 			logger.printTitle(title, '-');
 			// collect productions
-			kingdom.collectProductions(worldMap, R->getRulerEnum(), currentEvent);
+			kingdom->collectProductions(worldMap, R->getRulerEnum(), currentEvent);
 			// upkeep and consumption
-			kingdom.populationActivities(currentEvent);
-			kingdom.updateStability(currentEvent);
-			kingdom.buildingUpkeep();
-			kingdom.armyUpkeep();
+			kingdom->populationActivities(currentEvent);
+			kingdom->updateStability(currentEvent);
+			kingdom->buildingUpkeep();
+			kingdom->armyUpkeep();
 			// event check
 			// to be implemented
 			// ruler turns
@@ -145,6 +145,8 @@ void SimulationManager::eventHandler()
 		logger.printTitle(" New Event Occurred ", '*');
 		std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
 		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
+
+//		currentEvent->applyTradeCaravnEffect(rulers);
 
 		// immediate events
 		/***if (currentEvent->getEventType() == FLOOD)
@@ -184,22 +186,7 @@ void SimulationManager::eventHandler()
 		
 		if (currentEvent->getEventType() == TRADE_CARAVAN)
 		{
-			int minimum = INT_MAX;
-			std::vector<int> indices;
-			for (int i = 0; i < NO_OF_KINGDOMS; i++)
-			{
-				if (rulers[i]->getKingdom().getNoOfTerritoriesOwned() <= minimum)
-				{
-					if (rulers[i]->getKingdom().getNoOfTerritoriesOwned() < minimum) indices.clear();
-					indices.push_back(i);
-					minimum = rulers[i]->getKingdom().getNoOfTerritoriesOwned();
-				}
-			}
-			for (int index : indices)
-			{
-				std::cout << rulers[index]->getKingdom().getKingdomName() << " received 500 Gold from the Trade Caravan." << std::endl;
-				rulers[index]->getKingdom().getResourceObject().addToStock(GOLD, 500);
-			}
+			
 		}***/
 	}
 	else if (currentEvent != nullptr) 
@@ -232,10 +219,10 @@ std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
 	for (auto& R : rulers)
 	{
 		RulerDetails rd;
-		rd.noOfTerritoriesOwn = R->getKingdom().getNoOfTerritoriesOwned();
+		rd.noOfTerritoriesOwn = R->getKingdom()->getNoOfTerritoriesOwned();
 		rd.armyStrength = 0;
 		
-		for (auto& T : R->getKingdom().getOwnedTerritories())
+		for (auto& T : R->getKingdom()->getOwnedTerritories())
 		{
 			if (T->getTerritoryArmy() == nullptr) continue;
 			rd.armyStrength += T->getTerritoryArmy()->getArmyStrength(0);

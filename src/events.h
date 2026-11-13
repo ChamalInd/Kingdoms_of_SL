@@ -1,6 +1,7 @@
 #pragma once
 #include "includes.h"
 #include "resources.h"
+#include "ruler.h"
 
 struct ResourceEffect
 {
@@ -33,6 +34,7 @@ class Event
 		virtual ResourceEffect applyResourceEffect() const;
 		virtual int applyStabilityEffect() const { return 0; }
 		virtual PopulationEffect applyPopulationEffect() const;
+		virtual void applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>&) const {}
 };
 
 class Drought : public Event
@@ -90,6 +92,8 @@ class TradeCaravan : public Event
 		std::string getEventEffect() const override { return "The kingdom with the fewest territories receives 500 Gold."; }
 		std::string getEventOverMsg() const override { return "Trade Caravan has gone."; }
 		EventType getEventType() const override { return TRADE_CARAVAN; }
+		
+		void applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>& rulers) const override;
 };
 
 class RoyalFestival : public Event

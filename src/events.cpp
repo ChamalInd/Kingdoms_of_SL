@@ -56,3 +56,23 @@ PopulationEffect RoyalFestival::applyPopulationEffect() const
 	effect.consumptionScale = 150;
 	return effect;
 }
+		
+void TradeCaravan::applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>& rulers) const
+{
+	int minimum = INT_MAX;
+	std::vector<int> indices;
+	for (int i = 0; i < NO_OF_KINGDOMS; i++)
+	{
+		if (rulers[i]->getKingdom()->getNoOfTerritoriesOwned() <= minimum)
+		{
+			if (rulers[i]->getKingdom()->getNoOfTerritoriesOwned() < minimum) indices.clear();
+			indices.push_back(i);
+			minimum = rulers[i]->getKingdom()->getNoOfTerritoriesOwned();
+		}
+	}
+	for (int index : indices)
+	{
+		std::cout << rulers[index]->getKingdom()->getKingdomName() << " received 500 Gold from the Trade Caravan." << std::endl;
+		rulers[index]->getKingdom()->getResourceObject().addToStock(GOLD, 500);
+	}
+}

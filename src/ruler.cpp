@@ -26,10 +26,10 @@ int Conqueror::scoreBuilding(const BuildingType type, std::vector<RulerDetails>,
 	return 0;
 }
 		
-int Conqueror::scoreUnits(const UnitType unit) const 
+int Conqueror::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const 
 {
 	if (unit == WAR_ELEPHANT) return 10;
-	if (unit == CAVALRY) return 9;
+	if (unit == CAVALRY) return 10;
 	return 0;
 }
 
@@ -63,9 +63,9 @@ int AgrarianSage::scoreBuilding(const BuildingType type, std::vector<RulerDetail
 	return 0;
 }
 
-int AgrarianSage::scoreUnits(const UnitType unit) const
+int AgrarianSage::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
 {
-	if (unit == SPEARMAN) return 10;
+	if (kingdomState == AT_WAR && unit == SPEARMAN) return 10;
 	return -1;
 }
 
@@ -100,10 +100,10 @@ int MerchantPrince::scoreBuilding(const BuildingType type, std::vector<RulerDeta
 	return 0;
 }
 		
-int MerchantPrince::scoreUnits(const UnitType unit) const
+int MerchantPrince::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
 {
 	if (unit == ARCHER) return 10;
-	if (unit == WAR_ELEPHANT) return 9;
+	if (unit == WAR_ELEPHANT) return 10;
 	return -1;
 }
 
@@ -155,9 +155,20 @@ int Strategist::scoreBuilding(const BuildingType type, std::vector<RulerDetails>
 	else return 0;
 }
 
-int Strategist::scoreUnits(const UnitType unit) const
+int Strategist::scoreUnits(const UnitType unit, std::vector<RulerDetails> rd) const
 {
-	if (unit == SPEARMAN) return 10;
+	bool defensive = false;
+	int rulerArmyStrength = 0;
+	int strongest = INT_MIN;
+	for (RulerDetails R : rd)
+	{
+		if (R.ruler == rulerEnum) rulerArmyStrength = R.armyStrength;
+		if (R.armyStrength > strongest) strongest = R.armyStrength;
+	}
+
+	if (rulerArmyStrength != strongest) defensive = true; 
+
+	if (defensive && unit == SPEARMAN) return 10;
 	return -1;
 }
 
@@ -293,7 +304,7 @@ void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDe
 	kingdom->constructBuilding(territory, building);
 }
 
-void Ruler::recruitePhase()
+void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 {
 	if (kingdom->getArmyCount() == 0) return;
 	std::vector<Territory*> ownedTerritories = kingdom->getOwnedTerritories();
@@ -322,7 +333,7 @@ void Ruler::recruitePhase()
 	std::vector<UnitType> unitTypes = {SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT};
 
 	UnitType selected = unitTypes[0];
-	int unitScore = scoreUnits(selected);
+	int unitScore = scoreUnits(selected, rd);
 	std::unique_ptr<Unit> selectedUnit = nullptr;
 	int unitIndex = 0;
 	
@@ -333,7 +344,7 @@ void Ruler::recruitePhase()
 			unitIndex = 0;
 			for (size_t i = 0; i < unitTypes.size(); i++)
 			{
-				int score = scoreUnits(unitTypes[i]);
+				int score = scoreUnits(unitTypes[i], rd);
 				if (score > unitScore)
 				{
 					unitScore = score;
@@ -387,5 +398,5 @@ void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails,
 {
 	claimPhase(worldMap);
 	buildPhase(currentEvent, rulerDetails);
-	recruitePhase();
+	recruitePhase(rulerDetails);
 }

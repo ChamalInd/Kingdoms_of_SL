@@ -86,3 +86,8 @@ enum WarStatus
 {
 	NO_WAR, WON, LOST
 };
+
+enum KingdomStatus
+{
+	PEACE, AT_WAR
+};

@@ -21,18 +21,19 @@ class Ruler
 		int firstDieValue = 0;
 		bool placeChosen = false;
 		int score = 0;
+		KingdomStatus kingdomState = PEACE;
 
 		virtual int claimBudget() const = 0;
 		virtual Resources constructionBudget(std::unique_ptr<Event>&) const = 0;
 		virtual Resources recruiteBudget() const = 0;
 		virtual int scoreTerritory(const Territory*) const { return 0; }
 		virtual int scoreBuilding(const BuildingType, std::vector<RulerDetails>, std::unique_ptr<Event>&) const { return 0; }
-		virtual int scoreUnits(const UnitType) const { return 0; }
+		virtual int scoreUnits(const UnitType, std::vector<RulerDetails>) const { return 0; }
 
 	private:
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDetails> rd);
-		void recruitePhase();
+		void recruitePhase(std::vector<RulerDetails> rd);
 
 	public:
 		Ruler(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : rulerName(n), kingdom(std::move(k)), rulerEnum(r) {}
@@ -63,7 +64,7 @@ class Conqueror : public Ruler
 		Resources constructionBudget(std::unique_ptr<Event>&) const override;
 		Resources recruiteBudget() const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override; 
-		int scoreUnits(const UnitType unit) const override;
+		int scoreUnits(const UnitType unit, std::vector<RulerDetails>) const override;
 };
 
 class AgrarianSage : public Ruler
@@ -77,7 +78,7 @@ class AgrarianSage : public Ruler
 		Resources recruiteBudget() const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override;
-		int scoreUnits(const UnitType unit) const override;
+		int scoreUnits(const UnitType unit, std::vector<RulerDetails>) const override;
 };
 
 class MerchantPrince : public Ruler
@@ -91,7 +92,7 @@ class MerchantPrince : public Ruler
 		Resources recruiteBudget() const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override;
-		int scoreUnits(const UnitType unit) const override;
+		int scoreUnits(const UnitType unit, std::vector<RulerDetails>) const override;
 };
 
 class Strategist : public Ruler
@@ -104,5 +105,5 @@ class Strategist : public Ruler
 		Resources constructionBudget(std::unique_ptr<Event>&) const override;
 		Resources recruiteBudget() const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails> rd, std::unique_ptr<Event>& currentEvent) const override;
-		int scoreUnits(const UnitType unit) const override;
+		int scoreUnits(const UnitType unit, std::vector<RulerDetails> rd) const override;
 };

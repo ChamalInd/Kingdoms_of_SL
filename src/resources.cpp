@@ -12,7 +12,7 @@ void Resources::operator-=(const Resources& other)
 {
 	for (size_t i = 0; i < resourcesStock.size(); i++)
 	{
-		resourcesStock[i] -= other[i];
+		resourcesStock[i] = std::max(0, resourcesStock[i] - other[i]);
 	}
 }
 

@@ -129,7 +129,6 @@ void Ruler::claimPhase(WorldMap& worldMap)
 {
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 	int claimCost = 100 + 25 * kingdom->getNoOfTerritoriesOwned();
-	std::cout << "visited";
 	if (potentialTerritories.empty() || claimBudget() < claimCost) return;
 
 	int highestScore = scoreTerritory(potentialTerritories[0]);
@@ -144,7 +143,6 @@ void Ruler::claimPhase(WorldMap& worldMap)
 		}
 		if (s == highestScore) potentialClaims.push_back(T);
 	}
-	std::cout << "ready to purchase";
 
 	Territory* territory = potentialClaims[rand() % potentialClaims.size()];
 	kingdom->claimTerritory(territory, claimCost);
@@ -274,9 +272,13 @@ void Ruler::recruitePhase()
 		}
 
 		int currentArmyUpkeep = kingdom->getArmyUpkeep();
+		if (kingdom->getResourceObject().getRiceStock() < currentArmyUpkeep + unit->getUnitUpkeep())
+		{
+			unitTypes.erase(unitTypes.begin() + unitIndex);
+			continue;
+		}
 		Resources unitCost = unit->getUnitCost();
 		totalRecruitementCost += unitCost;
-		totalRecruitementCost.addToStock(RICE, currentArmyUpkeep + unit->getUnitUpkeep());
 
 		if (!(kingdom->getResourceObject() >= totalRecruitementCost))
 		{

@@ -57,7 +57,7 @@ void Kingdom::abandonTerritory(int territoryIndex)
 
 void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
 {
-	if (buildingCount[building->getBuildingType()] > 0)
+	if (buildingCount[BARRACKS] > 0)
 	{
 		Resources buildingCost = building->getBuildingCost();
 		resources  -= buildingCost;
@@ -128,16 +128,16 @@ void Kingdom::populationActivities(std::unique_ptr<Event>& currentEvent)
 	int taxIncome = 0;
 	int currentRiceStock = resources.getRiceStock();	
 	PopulationEffect eventEffect;
-	eventEffect.populationScale = 1;
-	eventEffect.consumptionScale = 1;
+	eventEffect.populationScale = 100;
+	eventEffect.consumptionScale = 100;
 
 	if (currentEvent != nullptr) eventEffect = currentEvent->applyPopulationEffect();
 
-	population *= eventEffect.populationScale / 100;
+	population = population * eventEffect.populationScale / 100;
 
 	// consume rice
 	int consumption = population / 20;
-	consumption *= eventEffect.consumptionScale / 100;
+	consumption = consumption * eventEffect.consumptionScale / 100;
 
 	if (consumption <= currentRiceStock) riceConsumption = consumption;
 

@@ -5,7 +5,7 @@ ResourceEffect Event::applyResourceEffect() const
 {
 	ResourceEffect effect; 
 	effect.resource = RICE;
-	effect.scale = 1;
+	effect.scale = 100;
 	return effect;
 }
 
@@ -36,8 +36,8 @@ ResourceEffect FamineIron::applyResourceEffect() const
 PopulationEffect Event::applyPopulationEffect() const
 {
 	PopulationEffect effect;
-	effect.populationScale = 1;
-	effect.consumptionScale = 1;
+	effect.populationScale = 100;
+	effect.consumptionScale = 100;
 	return effect;
 }
 
@@ -45,14 +45,14 @@ PopulationEffect Plague::applyPopulationEffect() const
 {
 	PopulationEffect effect;
 	effect.populationScale = 90;
-	effect.consumptionScale = 1;
+	effect.consumptionScale = 100;
 	return effect;
 }
 
 PopulationEffect RoyalFestival::applyPopulationEffect() const
 {
 	PopulationEffect effect;
-	effect.populationScale = 1;
+	effect.populationScale = 100;
 	effect.consumptionScale = 150;
 	return effect;
 }

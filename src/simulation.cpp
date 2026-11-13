@@ -146,7 +146,7 @@ void SimulationManager::eventHandler()
 		std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
 		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
 
-//		currentEvent->applyTradeCaravnEffect(rulers);
+		currentEvent->applyTradeCaravanEffect(rulers);
 
 		// immediate events
 		/***if (currentEvent->getEventType() == FLOOD)

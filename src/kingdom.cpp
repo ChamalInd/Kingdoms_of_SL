@@ -36,16 +36,16 @@ int Kingdom::getArmyUpkeep() const
 
 void Kingdom::claimTerritory(Territory* territory, int claimCost)
 {
-	if (claimCost == 0) ownedTerritories.push_back(territory);
-	else
+	if (claimCost != 0) 
 	{
 		std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
 		resources.subFromStock(GOLD, claimCost);
-		territory->setTerritoryRuler(rulerEnum);
 
 		std::cout << std::endl << kingdomName << " claimed " << territory->getTerritoryName() << " (";
 		std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
 	}
+	territory->setTerritoryRuler(rulerEnum);
+	ownedTerritories.push_back(territory);
 }
 		
 void Kingdom::abandonTerritory(int territoryIndex)

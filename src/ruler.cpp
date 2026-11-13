@@ -129,6 +129,7 @@ void Ruler::claimPhase(WorldMap& worldMap)
 {
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 	int claimCost = 100 + 25 * kingdom->getNoOfTerritoriesOwned();
+	std::cout << "visited";
 	if (potentialTerritories.empty() || claimBudget() < claimCost) return;
 
 	int highestScore = scoreTerritory(potentialTerritories[0]);
@@ -143,6 +144,7 @@ void Ruler::claimPhase(WorldMap& worldMap)
 		}
 		if (s == highestScore) potentialClaims.push_back(T);
 	}
+	std::cout << "ready to purchase";
 
 	Territory* territory = potentialClaims[rand() % potentialClaims.size()];
 	kingdom->claimTerritory(territory, claimCost);

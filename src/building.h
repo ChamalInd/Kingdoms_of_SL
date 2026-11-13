@@ -17,10 +17,6 @@ struct BuildingEffect
 class Building
 {
 	protected:
-		std::string buildingName;
-		std::vector<TerrainType> allowedTerrains;
-		Resources buildingCost;
-		int upkeepCost;
 		int buildingHealth = 100;
 		BuildingStatus buildingStatus = OPEN;
 		
@@ -28,18 +24,19 @@ class Building
 		virtual int getStabilityIncrements() const { return 0; } 
 	
 	public:
-		Building(std::string n, std::vector<TerrainType> a, Resources r, int u) : buildingName(n), allowedTerrains(a), buildingCost(r), upkeepCost(u) {}
+		Building() = default;
 		virtual ~Building() = default;
 
 		void setBuildingStatus(BuildingStatus newStatus) { buildingStatus = newStatus; }
 
-		std::string getBuildingName() const { return buildingName; }
-		std::vector<TerrainType> getAllowedTerrains() const { return allowedTerrains; }
-		Resources getBuildingCost() const { return buildingCost; }
-		int getUpkeepCost() const { return upkeepCost; }
+		virtual std::string getBuildingName() const = 0; 
+		virtual std::vector<TerrainType> getAllowedTerrains() const = 0; 
+		virtual Resources getBuildingCost() const = 0; 
+		virtual int getUpkeepCost() const = 0; 
+		virtual BuildingType getBuildingType() const = 0;
+		
 		int getBuildingHealth() const { return buildingHealth; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
-		virtual BuildingType getBuildingType() const = 0;
 		
 		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler);
 		virtual std::unique_ptr<Unit> createUnit(UnitType) { return nullptr; } 
@@ -48,7 +45,10 @@ class Building
 class PaddyFarm : public Building
 {
 	public:
-		PaddyFarm() : Building("Paddy Farm", {PADDY_PLAIN, DRY_ZONE}, Resources({0, 50, 0, 100}), 5) {}
+		std::string getBuildingName() const override { return "Paddy Farm"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 50, 0, 100}); } 
+		int getUpkeepCost() const override { return 5; } 
 		BuildingType getBuildingType() const override { return PADDY_FARM; }
 
 	protected:	
@@ -62,7 +62,10 @@ class PaddyFarm : public Building
 class IrrigationTank : public Building
 {
 	public:
-		IrrigationTank() : Building("Irrigation Tank", {LAKE}, Resources({0, 100, 0, 200}), 10) {}
+		std::string getBuildingName() const override { return "Irrigation Tank"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {LAKE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 100, 0, 200}); } 
+		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return IRRIGATION_LAKE; }
 
 	protected:	
@@ -72,13 +75,16 @@ class IrrigationTank : public Building
 class Mine : public Building
 {
 	public:
-		Mine() : Building("Mine", {HILL_COUNTRY}, Resources({0, 50, 0, 150}), 10) {}
+		std::string getBuildingName() const override { return "Mine"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {HILL_COUNTRY}; } 
+		Resources getBuildingCost() const override { return Resources({0, 50, 0, 150}); } 
+		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return MINE; }
 
 	protected:	
 		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
 		{
-			if (buildingHealth <= 50) Resources({0, 0, 10, 0});
+			if (buildingHealth <= 50) return Resources({0, 0, 10, 0});
 			return Resources({0, 0, 20, 0}); 
 		} 
 };
@@ -86,7 +92,10 @@ class Mine : public Building
 class SawMill : public Building
 {
 	public:
-		SawMill() : Building("Sawmill", {HILL_COUNTRY, JUNGLE}, Resources({0, 0, 0, 100}), 5) {}
+		std::string getBuildingName() const override { return "Sawmill"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {HILL_COUNTRY, JUNGLE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 0, 0, 100}); } 
+		int getUpkeepCost() const override { return 5; } 
 		BuildingType getBuildingType() const override { return SAWMILL; }
 
 	protected:	
@@ -100,7 +109,10 @@ class SawMill : public Building
 class Market : public Building
 {
 	public:
-		Market() : Building("Market", {COAST, DRY_ZONE}, Resources({0, 50, 0, 200}), 10) {}
+		std::string getBuildingName() const override { return "Market"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {COAST, DRY_ZONE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 50, 0, 200}); } 
+		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return MARKET; }
 
 	protected:	
@@ -114,7 +126,10 @@ class Market : public Building
 class Temple : public Building
 {
 	public:
-		Temple() : Building("Temple", {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}, Resources({0, 100, 0, 250}), 15) {}
+		std::string getBuildingName() const override { return "Temple"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 100, 0, 250}); } 
+		int getUpkeepCost() const override { return 15; } 
 		BuildingType getBuildingType() const override { return TEMPLE; }
 
 	protected:	
@@ -124,7 +139,10 @@ class Temple : public Building
 class Barracks : public Building
 {
 	public:
-		Barracks() : Building("Barracks", {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}, Resources({0, 100, 50, 200}), 10) {}
+		std::string getBuildingName() const override { return "Barracks"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 100, 50, 200}); } 
+		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return BARRACKS; }
 		std::unique_ptr<Unit> createUnit(UnitType unit) override
 		{
@@ -147,13 +165,16 @@ class Barracks : public Building
 class Fort : public Building
 {	
 	public:
-		Fort() : Building("Fort", {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}, Resources({0, 150, 100, 300}), 20) {}
+		std::string getBuildingName() const override { return "Fort"; } 
+		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
+		Resources getBuildingCost() const override { return Resources({0, 150, 100, 300}); } 
+		int getUpkeepCost() const override { return 20; } 
 		BuildingType getBuildingType() const override { return FORT; }
 
 	protected:	
 };
 
-class Builder
+class BuildingMaker
 {
 	public:
 		static std::unique_ptr<Building> createBuilding(const BuildingType& type)

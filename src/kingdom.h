@@ -34,6 +34,7 @@ class Kingdom
 		
 		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
+		void decreaseSpecificBuildingCount(int index) { buildingCount[index]--; }
 		void increaseArmyCount() { armyCount++; }
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent);
 		void populationActivities(std::unique_ptr<Event>& currentEvent);

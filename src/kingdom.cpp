@@ -1,4 +1,4 @@
-#include "../includes/kingdom.h"
+#include "kingdom.h"
 
 Kingdom::Kingdom(std::string n)
 {
@@ -267,6 +267,9 @@ void Kingdom::updateStability(int rate)
 			int randomTerritory = rand() % (getNoOfTerritoriesOwned() - 1) + 1;
 			std::cout << "Stability of " << kingdomName << " has reached 0. Rebellion in ";
 			std::cout << ownedTerritories[randomTerritory]->getTerritoryName() << "! " << kingdomName << " loses control." << std::endl;
+
+			if (ownedTerritories[randomTerritory]->getTerritoryBuilding() != nullptr) buildingCount[ownedTerritories[randomTerritory]->getTerritoryBuilding()->getBuildingType()]--;
+			ownedTerritories[randomTerritory]->destroyAProperty();
 			ownedTerritories[randomTerritory]->setTerritoryRuler(NEUTRAL);
 			ownedTerritories.erase(ownedTerritories.begin() + randomTerritory);
 		}

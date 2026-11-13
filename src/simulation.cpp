@@ -1,4 +1,4 @@
-#include "../includes/simulation.h"
+#include "simulation.h"
 		
 SimulationManager::SimulationManager()
 {
@@ -13,7 +13,7 @@ SimulationManager::SimulationManager()
 
 		// preparing capital with a barracks and an army
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
-		std::unique_ptr<Building> building = Builder::createBuilding(BARRACKS);
+		std::unique_ptr<Building> building = BuildingMaker::createBuilding(BARRACKS);
 		capital->buildAProperty(building);
 		kingdom.increaseSpecificBuildingCount(BARRACKS);
 		
@@ -29,19 +29,62 @@ SimulationManager::SimulationManager()
 
 void SimulationManager::initializeGame()
 {
-	std::cout << std::string(70, '=') << std::endl;
-	printTitle(" KINGDOM OF LANKA Simulation ", ' ');
-//    std::cout << "Seed : " << SEED << std::endl;
-	std::cout << std::string(70, '=') << std::endl << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << std::setw(22) << " - The Conqueror" << " Capital at (0, 0)" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << std::setw(22) << " - The Agrarian Sage" << " Capital at (0, 5)" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 3 : Kotte" << std::setw(22) << " - The Merchant Prince" << " Capital at (5, 0)" << std::endl;
-	std::cout << std::left << std::setw(24) << "Kingdom 4 : Kandy" << std::setw(22) << " - The Strategist" << " Capital at (5, 0)" << std::endl;
+	while (true)
+	{
+		std::cout << std::endl;
 
-	std::cout << std::endl << "Each kingdom begins with 1000 Gold, 500 Rice, 200 Timber, 100 Iron." << std::endl;
-	std::cout << "Population: 1000 | Stability: 70" << std::endl;
+		for (int i = 0; i < NO_OF_KINGDOMS; i++)
+		{	
+			if (rulers[i]->getPlaceChosen()) continue;
+			int dieRoll = rollDie();
+			rulers[i]->setFirstDieValue(dieRoll);
+			std::cout << rulers[i]->getKingdom().getKingdomName() << " rolls " << dieRoll << "." << std::endl;
+		}
+	
+		bool tieFound = false;
+		for (int i = 0; i < NO_OF_KINGDOMS; i++)
+		{
+			if (rulers[i]->getPlaceChosen()) continue;
+			tieFound = false;
+			for (int j = 0; j < NO_OF_KINGDOMS; j++)
+			{
+				if (i == j) continue;
+				if (rulers[j]->getPlaceChosen()) continue;
+				if (rulers[i]->getFirstDieValue() == rulers[j]->getFirstDieValue()) 
+				{ 
+					tieFound = true;
+					break;
+				}
+			}
 
-	determinePlayerOrder(rulers);
+			if (!tieFound) rulers[i]->setPlaceChosen(true);
+		}
+
+
+		int tieCount = 0;
+		std::cout << "Tie between ";
+		for (int i = 0; i < NO_OF_KINGDOMS; i++)
+		{
+			if (!rulers[i]->getPlaceChosen()) 
+			{
+				tieCount++;
+				std::cout << rulers[i]->getKingdom().getKingdomName() << " ";
+			}
+			else rulers[i]->setFirstDieValue(rulers[i]->getFirstDieValue() * 10);
+		}
+
+		if (tieCount == 0)
+		{
+			std::cout << std::string(12, '\b') << std::string(12, ' ');
+			break;
+		}
+		else
+		{
+			std::cout << "\b. Re-rolling..." << std::endl;
+		}
+	}
+	std::cout << std::endl;
+
 	std::sort(rulers.begin(), rulers.end(), [](const std::unique_ptr<Ruler>& a, const std::unique_ptr<Ruler>& b) {
 		return a->getFirstDieValue() > b->getFirstDieValue();
 	});
@@ -62,7 +105,7 @@ void SimulationManager::gameLoop()
 	while (gameRound < 200)
 	{
 		std::cout << std::endl << std::string(MESSAGE_WIDTH, '=') << std::endl;
-		printTitle(" Round " + std::to_string(gameRound + 1), ' ');
+		logger.printTitle(" Round " + std::to_string(gameRound + 1), ' ');
 		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
 
 		eventHandler();		
@@ -72,7 +115,7 @@ void SimulationManager::gameLoop()
 			Kingdom& kingdom = R->getKingdom();
 			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom.getKingdomName() + " ";
 			std::cout << std::endl;
-			printTitle(title, '-');
+			logger.printTitle(title, '-');
 			// collect productions
 			kingdom.collectProductions(worldMap, R->getRulerEnum(), currentEvent);
 			// upkeep and consumption
@@ -86,30 +129,11 @@ void SimulationManager::gameLoop()
 			R->playTurn(worldMap, rd);
 		}
 
-		// printing round summary
-		std::string title = " Round " + std::to_string(gameRound + 1) + " Summary ";
-		std::cout << std::endl;
-		printTitle(title, '=');
-		for (auto& R : rulers)
-		{
-			R->printRoundSummary();
-			std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
-		}
-
-		if (currentEvent != nullptr) 
-		{
-			int roundsLeft = currentEvent->getEventRounds();
-			if (roundsLeft > 0) 
-			{
-				std::cout <<  "Active Events: " << currentEvent->getEventName() << " (" << roundsLeft << " rounds remaining)" << std::endl;
-				std::cout << std::string(MESSAGE_WIDTH, '-') << std::endl;
-			}
-		}
-
+		logger.printRoundSummary(rulers, currentEvent, gameRound);	
 		gameRound++;
 	}
 
-	endGame();
+	logger.printSimulationEnd(gameRound, rulers);
 }
 
 void SimulationManager::eventHandler()
@@ -121,7 +145,7 @@ void SimulationManager::eventHandler()
 
 		currentEvent = EventCreater::createEvent(eventList[rand() % 7]);
 		std::cout << std::endl;
-		printTitle(" New Event Occurred ", '*');
+		logger.printTitle(" New Event Occurred ", '*');
 		std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
 		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
 
@@ -129,19 +153,36 @@ void SimulationManager::eventHandler()
 		if (currentEvent->getEventType() == FLOOD)
 		{
 			Territory* selected = nullptr;
+			int tries = 0;
 			while (true)
 			{
 				int x = rand() % 6;
 				int y = rand() % 6;
+				if (x == 0 && y == 0) continue;
+				if (x == 0 && y == 5) continue;
+				if (x == 5 && y == 0) continue;
+				if (x == 5 && y == 5) continue;
 				selected = worldMap.getTerritory(x, y);
 				if (selected->getTerritoryBuilding() == nullptr) continue;
 				if (selected->getTerritoryBuilding()->getBuildingType() == FORT) continue;
 				if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) continue;
+				if (++tries > NO_OF_TILES) break;
 				break;
 			}
 					
-			std::cout << selected->getTerritoryBuilding()->getBuildingName() << " on " << selected->getTerritoryName() << " destroyed by flood." << std::endl;
-			selected->destroyAProperty();
+			if (tries <= NO_OF_TILES)
+			{
+				for (int i = 0; i < NO_OF_KINGDOMS; i++)
+				{
+					if (selected->getTerritoryRuler() == rulers[i]->getRulerEnum())
+					{
+						rulers[i]->getKingdom().decreaseSpecificBuildingCount(selected->getTerritoryBuilding()->getBuildingType());
+						break;
+					}
+				}
+				std::cout << selected->getTerritoryBuilding()->getBuildingName() << " on " << selected->getTerritoryName() << " destroyed by flood." << std::endl;
+				selected->destroyAProperty();
+			}
 		}
 		
 		if (currentEvent->getEventType() == TRADE_CARAVAN)
@@ -171,7 +212,7 @@ void SimulationManager::eventHandler()
 		if (roundsLeft == 0) 
 		{
 			std::cout << std::endl;
-			printTitle(" Event Ended ", '*');
+			logger.printTitle(" Event Ended ", '*');
 			std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;
 			std::cout << "Event Description: " << currentEvent->getEventOverMsg() << std::endl;
 			currentEvent = nullptr;
@@ -179,24 +220,14 @@ void SimulationManager::eventHandler()
 	}
 }
 
-void SimulationManager::endGame()
+int SimulationManager::rollDie()
 {
-	// printing game over message and wounding up
-	std::sort(rulers.begin(), rulers.end(), [](std::unique_ptr<Ruler>& a, std::unique_ptr<Ruler>& b){
-		return a->calculateScore() > b->calculateScore();
-	});
-	std::cout << std::endl;
-	std::string title = " Game Over after " + std::to_string(gameRound) + " rounds ";
-	printTitle(title, '=');
+	int die_1 = rand() % 6 + 1;
+	int die_2 = rand() % 6 + 1;
 
-	std::cout << "Winner : " << rulers[0]->getKingdom().getKingdomName() << " (" << rulers[0]->getRulerName() << ")" << std::endl << std::endl;
-	std::cout << "Final Score" << std::endl;
-	for (int i = 0; i < NO_OF_KINGDOMS; i++)
-	{
-		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom().getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
-	}
+	return die_1 + die_2;
 }
-		
+
 std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
 {
 	std::vector<RulerDetails> rulerDetails;

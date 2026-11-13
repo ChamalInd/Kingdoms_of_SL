@@ -1,5 +1,5 @@
-#include "../includes/includes.h"
-#include "../includes/simulation.h"
+#include "includes.h"
+#include "simulation.h"
 
 int main()
 {

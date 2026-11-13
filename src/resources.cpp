@@ -1,4 +1,4 @@
-#include "../includes/resources.h"
+#include "resources.h"
 		
 void Resources::operator+=(const Resources& other)
 {

@@ -1,4 +1,4 @@
-#include "../includes/worldmap.h"
+#include "worldmap.h"
 
 WorldMap::WorldMap()
 {
@@ -53,6 +53,20 @@ WorldMap::WorldMap()
 			territoryID++;
 		}
 	}
+}
+
+std::vector<int> WorldMap::setTheTerrainCounts()
+{
+	std::vector<int> counts = {NO_OF_KINGDOMS, 2, 2, 2, 2, 2};
+	int total = 14;
+
+	while (total < NO_OF_TILES)
+	{
+		counts[rand() % NO_OF_TERRAINS]++;
+		total++;
+	}
+
+	return counts;
 }
 
 void WorldMap::printWorldMap()

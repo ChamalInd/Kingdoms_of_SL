@@ -1,4 +1,4 @@
-#include "../includes/army.h"
+#include "army.h"
 
 int Army::getArmyAttack() const 
 {
@@ -27,7 +27,7 @@ int Army::getArmyDefence() const
 int Army::getMove() const 
 {
 	if (units.empty()) return 0;
-	int move = 2;
+	int move = INT_MAX;
 	for (auto& u : units)
 	{	
 		if (u->getHP() <= 0) continue;

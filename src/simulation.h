@@ -3,11 +3,13 @@
 #include "ruler.h"
 #include "worldmap.h"
 #include "kingdom.h"
+#include "logger.h"
 
 class SimulationManager
 {
 	private:
 		WorldMap worldMap;
+		Logger logger;
 		std::vector<std::unique_ptr<Ruler>> rulers;
 		int gameRound = 0;
 		std::unique_ptr<Event> currentEvent = nullptr;
@@ -18,7 +20,7 @@ class SimulationManager
 		void initializeGame();
 		void eventHandler();
 		void gameLoop();
-		void endGame();
+		int rollDie();
 		std::vector<RulerDetails> calculateRulerDetails();
 };
 

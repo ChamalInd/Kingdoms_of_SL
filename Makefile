@@ -1,7 +1,7 @@
 CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -Wall -Wextra -Wpedantic -O2 -Iincludes
+CXXFLAGS ?= -std=c++17 -Wall -Wextra -Wpedantic -O2
 
-TARGET := kingdom
+TARGET := kingdoms
 BUILD  := build
 LOG := output.log
 

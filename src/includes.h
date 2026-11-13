@@ -41,12 +41,6 @@ const std::vector<std::vector<int>> BASE_PRODUCTION = {
 	{10,      0,    0,    5,            0}   // lake
 };
 
-// global helper functions
-std::vector<int> setTheTerrainCounts();
-int rollDie();
-void printTitle(std::string title, char decorator);
-void determinePlayerOrder(std::vector<std::unique_ptr<Ruler>>& rulers);
-
 // enumerations 
 enum RulerEnum
 {

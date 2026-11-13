@@ -1,6 +1,6 @@
-#include "../includes/building.h"
-#include "../includes/territory.h"
-#include "../includes/worldmap.h"
+#include "building.h"
+#include "territory.h"
+#include "worldmap.h"
 
 BuildingEffect Building::performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler)
 {
@@ -25,8 +25,9 @@ Resources IrrigationTank::getResourceIncrements(Territory* parentTerritory, Worl
 		
 		resources[RICE] += T->getTerritoryProduction()[RICE];
 		if (T->getTerritoryBuilding() != nullptr && T->getTerritoryBuilding()->getBuildingType() == PADDY_FARM) resources[RICE] += 30;
-		resources[RICE] = resources[RICE] * 50 / 100;
 	}
+
+	resources[RICE] = resources[RICE] * 50 / 100;
 
 	if (buildingHealth <= 50) resources[RICE] /= 2;
 

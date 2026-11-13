@@ -1,4 +1,4 @@
-#include "../includes/ruler.h"
+#include "ruler.h"
 
 void Ruler::printRoundSummary()
 {
@@ -155,7 +155,7 @@ void Ruler::buildPhase()
 			continue;
 		}
 
-		building = Builder::createBuilding(selected);
+		building = BuildingMaker::createBuilding(selected);
 		if (building == nullptr)
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);

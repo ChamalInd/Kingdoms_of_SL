@@ -24,7 +24,7 @@ class Ruler
 
 		virtual int claimBudget() const = 0;
 		virtual Resources constructionBudget(std::unique_ptr<Event>&) const = 0;
-//		virtual Resources recruiteBudget(std::unique_ptr<Event>&) const = 0;
+		virtual Resources recruiteBudget() const = 0;
 		virtual int scoreTerritory(const Territory*) const { return 0; }
 		virtual int scoreBuilding(const BuildingType, std::vector<RulerDetails>, std::unique_ptr<Event>&) const { return 0; }
 		virtual int scoreUnits(const UnitType) const { return 0; }
@@ -61,6 +61,7 @@ class Conqueror : public Ruler
 	protected:
 		int claimBudget() const override;
 		Resources constructionBudget(std::unique_ptr<Event>&) const override;
+		Resources recruiteBudget() const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override; 
 		int scoreUnits(const UnitType unit) const override;
 };
@@ -73,6 +74,7 @@ class AgrarianSage : public Ruler
 	protected:
 		int claimBudget() const override;
 		Resources constructionBudget(std::unique_ptr<Event>&) const override;
+		Resources recruiteBudget() const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override;
 		int scoreUnits(const UnitType unit) const override;
@@ -86,6 +88,7 @@ class MerchantPrince : public Ruler
 	protected:
 		int claimBudget() const override;
 		Resources constructionBudget(std::unique_ptr<Event>& currentEvent) const override;
+		Resources recruiteBudget() const override;
 		int scoreTerritory(const Territory* T) const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const override;
 		int scoreUnits(const UnitType unit) const override;
@@ -99,6 +102,7 @@ class Strategist : public Ruler
 	protected:
 		int claimBudget() const override;
 		Resources constructionBudget(std::unique_ptr<Event>&) const override;
+		Resources recruiteBudget() const override;
 		int scoreBuilding(const BuildingType type, std::vector<RulerDetails> rd, std::unique_ptr<Event>& currentEvent) const override;
 		int scoreUnits(const UnitType unit) const override;
 };

@@ -33,7 +33,7 @@ int Conqueror::scoreUnits(const UnitType unit) const
 	return 0;
 }
 
-int Conqueror::claimBudget() const { return kingdom->getResources()[3] * 40 / 100; }
+int Conqueror::claimBudget() const { return kingdom->getResources()[GOLD] * 40 / 100; }
 
 Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
 {
@@ -42,6 +42,16 @@ Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
 			kingdom->getResourceObject().getTimberStock(), 
 			kingdom->getResourceObject().getIronStock(), 
 			kingdom->getResourceObject().getGoldStock() * 40 / 100});
+	return budget;
+}
+		
+Resources Conqueror::recruiteBudget() const 
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock() * 60 / 100});
 	return budget;
 }
 
@@ -59,7 +69,7 @@ int AgrarianSage::scoreUnits(const UnitType unit) const
 	return -1;
 }
 
-int AgrarianSage::claimBudget() const { return kingdom->getResources()[3]; }
+int AgrarianSage::claimBudget() const { return kingdom->getResources()[GOLD]; }
 
 int AgrarianSage::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
 
@@ -67,6 +77,17 @@ Resources AgrarianSage::constructionBudget(std::unique_ptr<Event>&) const
 {
 	Resources budget = Resources({
 			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+		
+Resources AgrarianSage::recruiteBudget() const 
+{
+	int consumptionSavings = 5 * (kingdom->getPopulation() / 20);
+	Resources budget = Resources({
+			std::max(0, kingdom->getResourceObject().getRiceStock() - consumptionSavings),
 			kingdom->getResourceObject().getTimberStock(), 
 			kingdom->getResourceObject().getIronStock(), 
 			kingdom->getResourceObject().getGoldStock()});
@@ -86,7 +107,7 @@ int MerchantPrince::scoreUnits(const UnitType unit) const
 	return -1;
 }
 
-int MerchantPrince::claimBudget() const { return kingdom->getResources()[3] - 1500; }
+int MerchantPrince::claimBudget() const { return std::max(0, kingdom->getResources()[GOLD] - 1500); }
 		
 int MerchantPrince::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == COAST ? 10 : 0; }
 
@@ -99,6 +120,16 @@ Resources MerchantPrince::constructionBudget(std::unique_ptr<Event>& currentEven
 			kingdom->getResourceObject().getGoldStock()});
 	if (currentEvent != nullptr && currentEvent->getEventType() == TRADE_CARAVAN) return budget;
 	budget.subFromStock(GOLD, 1500);
+	return budget;
+}
+		
+Resources MerchantPrince::recruiteBudget() const 
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			std::max(0, kingdom->getResourceObject().getGoldStock() - 1500)});
 	return budget;
 }
 
@@ -130,9 +161,19 @@ int Strategist::scoreUnits(const UnitType unit) const
 	return -1;
 }
 
-int Strategist::claimBudget() const { return kingdom->getResources()[3]; }
+int Strategist::claimBudget() const { return kingdom->getResources()[GOLD]; }
 
 Resources Strategist::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+		
+Resources Strategist::recruiteBudget() const 
 {
 	Resources budget = Resources({
 			kingdom->getResourceObject().getRiceStock(),
@@ -256,10 +297,10 @@ void Ruler::recruitePhase()
 {
 	if (kingdom->getArmyCount() == 0) return;
 	std::vector<Territory*> ownedTerritories = kingdom->getOwnedTerritories();
-	std::vector<int> recruitementBudget = kingdom->getResources();
 	Resources totalRecruitementCost = Resources({0, 0, 0, 0});
 	int unitCount = INT_MAX;
 	int armyIndex = -1;
+	int recruiteAmount = 0;
 
 	for (size_t i = 0; i < ownedTerritories.size(); i++)
 	{
@@ -276,63 +317,70 @@ void Ruler::recruitePhase()
 	if (armyIndex == -1) return;
 	
 	Territory* selectedTerritory = ownedTerritories[armyIndex];
+	if (selectedTerritory == nullptr) return;
 
 	std::vector<UnitType> unitTypes = {SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT};
 
-	UnitType selectedUnit = unitTypes[0];
-	int unitScore = scoreUnits(selectedUnit);
-	std::vector<std::unique_ptr<Unit>> selectedUnits;
-
+	UnitType selected = unitTypes[0];
+	int unitScore = scoreUnits(selected);
+	std::unique_ptr<Unit> selectedUnit = nullptr;
+	int unitIndex = 0;
+	
 	while (!unitTypes.empty())
 	{
-		int unitIndex = 0;
-		std::unique_ptr<Unit> unit = nullptr;
-		for (size_t i = 0; i < unitTypes.size(); i++)
+		if (selectedUnit == nullptr)
 		{
-			int score = scoreUnits(unitTypes[i]);
-			if (score > unitScore)
+			unitIndex = 0;
+			for (size_t i = 0; i < unitTypes.size(); i++)
 			{
-				unitScore = score;
-				selectedUnit = unitTypes[i];
-				unitIndex = i;
+				int score = scoreUnits(unitTypes[i]);
+				if (score > unitScore)
+				{
+					unitScore = score;
+					selected = unitTypes[i];
+					unitIndex = i;
+				}
+			}
+		
+			if (unitScore == -1)
+			{
+				unitTypes.erase(unitTypes.begin() + unitIndex);
+				selectedUnit = nullptr;
+				continue;
+			}
+			selectedUnit = UnitFactory::createUnit(selected);
+			if (selectedUnit == nullptr) 
+			{
+				unitTypes.erase(unitTypes.begin() + unitIndex);
+				continue;
 			}
 		}
 		
-		if (unitScore == -1)
-		{
-			unitTypes.erase(unitTypes.begin() + unitIndex);
-			continue;
-		}
-		unit = UnitFactory::createUnit(selectedUnit);
-		if (unit == nullptr) 
-		{
-			unitTypes.erase(unitTypes.begin() + unitIndex);
-			continue;
-		}
-
 		int currentArmyUpkeep = kingdom->getArmyUpkeep();
-		if (kingdom->getResourceObject().getRiceStock() < currentArmyUpkeep + unit->getUnitUpkeep())
+		if (recruiteBudget().getRiceStock() < currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep())
 		{
+			selectedUnit = nullptr;
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}
-		Resources unitCost = unit->getUnitCost();
+		Resources unitCost = selectedUnit->getUnitCost();
 		totalRecruitementCost += unitCost;
 
-		if (!(kingdom->getResourceObject() >= totalRecruitementCost))
+		if (!(recruiteBudget() >= totalRecruitementCost))
 		{
+			selectedUnit = nullptr;
 			totalRecruitementCost -= unitCost;
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}
-		selectedUnits.push_back(std::move(unit));
+		recruiteAmount++;
 
-		if (selectedUnits.size() == 5) break;
+		if (recruiteAmount == 5) break;
 	}
 
-	if (selectedUnits.empty()) return;
-
-	kingdom->recruiteUnits(selectedTerritory, selectedUnits, totalRecruitementCost);
+	if (recruiteAmount == 0) return;
+	
+	kingdom->recruiteUnits(selectedTerritory, selected, recruiteAmount, totalRecruitementCost);
 }
 
 void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 

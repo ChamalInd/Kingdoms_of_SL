@@ -85,23 +85,19 @@ void Kingdom::destroyBuilding(Territory* territory)
 	territory->demolish();
 }
 
-void Kingdom::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost)
+void Kingdom::recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost)
 {
-	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
-	std::vector<int> unitCount = {0, 0, 0, 0};
-
-	for (auto& u : units)
+	for (int i = 0; i < amount; i++)
 	{
-		unitCount[u->getUnitType()] += 1;
-		territory->getTerritoryArmy()->recruiteUnits(u);
+		std::unique_ptr<Unit> newUnit = UnitFactory::createUnit(unit);
+		territory->getTerritoryArmy()->recruiteUnits(newUnit);
 	}
 
 	resources -= totalRecruitementCost;
-
-	std::cout << std::endl << kingdomName << " recruited ";
-	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
-	std::cout << " at " << territory->getTerritoryName() << ". Cost: ";
-	std::cout << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
+	
+	std::vector<std::string> unitTypes = {"Spearman", "Archer", "Cavalry", "War Elephant"};
+	std::cout << std::endl << kingdomName << " recruited " << amount << " " << unitTypes[unit] << " at " << territory->getTerritoryName();
+	std::cout << ". Cost: " << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
 }
 
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)

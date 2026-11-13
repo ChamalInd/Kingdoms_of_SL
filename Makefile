@@ -1,5 +1,5 @@
 CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -Wall -Wextra -Wpedantic -O2
+CXXFLAGS ?= -std=c++17 -Wall -Wextra -Wpedantic -O2 -g -fsanitize=address -O1
 
 TARGET := kingdoms
 BUILD  := build

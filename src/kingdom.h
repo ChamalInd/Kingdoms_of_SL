@@ -41,7 +41,7 @@ class Kingdom
 		void abandonTerritory(int territoryIndex);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 		void destroyBuilding(Territory* territory);
-		void recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost);
+		void recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost);
 		
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent);
 		void populationActivities(std::unique_ptr<Event>& currentEvent);

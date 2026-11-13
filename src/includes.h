@@ -29,7 +29,7 @@ class SimulationManager;
 #define MAP_DIMENSIONS  6
 #define NO_OF_TERRAINS  6
 #define NO_OF_TILES    36
-#define MESSAGE_WIDTH  70
+#define MESSAGE_WIDTH  80
 
 const std::vector<std::vector<int>> BASE_PRODUCTION = {
 // rice, timber, iron, gold, defense bonus

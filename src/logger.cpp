@@ -9,10 +9,10 @@ void Logger::printTitle(std::string title, char decorator)
 
 void Logger::printSimulationInitializer()
 {
-	std::cout << std::string(70, '=') << std::endl;
+	std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
 	printTitle(" KINGDOM OF LANKA Simulation ", ' ');
 //    std::cout << "Seed : " << SEED << std::endl;
-	std::cout << std::string(70, '=') << std::endl << std::endl;
+	std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl << std::endl;
 	std::cout << std::left << std::setw(24) << "Kingdom 1 : Anuradhapura" << std::setw(22) << " - The Conqueror" << " Capital at (0, 0)" << std::endl;
 	std::cout << std::left << std::setw(24) << "Kingdom 2 : Ruhuna" << std::setw(22) << " - The Agrarian Sage" << " Capital at (0, 5)" << std::endl;
 	std::cout << std::left << std::setw(24) << "Kingdom 3 : Kotte" << std::setw(22) << " - The Merchant Prince" << " Capital at (5, 0)" << std::endl;

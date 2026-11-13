@@ -30,7 +30,7 @@ class Building
 		void setBuildingStatus(BuildingStatus newStatus) { buildingStatus = newStatus; }
 
 		virtual std::string getBuildingName() const = 0; 
-		virtual std::vector<TerrainType> getAllowedTerrains() const = 0; 
+		virtual bool getIsAllowed(TerrainType) const = 0; 
 		virtual Resources getBuildingCost() const = 0; 
 		virtual int getUpkeepCost() const = 0; 
 		virtual BuildingType getBuildingType() const = 0;
@@ -44,12 +44,18 @@ class Building
 
 class PaddyFarm : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE};
 	public:
 		std::string getBuildingName() const override { return "Paddy Farm"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 100}); } 
 		int getUpkeepCost() const override { return 5; } 
 		BuildingType getBuildingType() const override { return PADDY_FARM; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
@@ -61,12 +67,18 @@ class PaddyFarm : public Building
 
 class IrrigationTank : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {LAKE};
 	public:
 		std::string getBuildingName() const override { return "Irrigation Tank"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {LAKE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 0, 200}); } 
 		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return IRRIGATION_LAKE; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		Resources getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const override;
@@ -74,12 +86,18 @@ class IrrigationTank : public Building
 
 class Mine : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {HILL_COUNTRY};
 	public:
 		std::string getBuildingName() const override { return "Mine"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {HILL_COUNTRY}; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 150}); } 
 		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return MINE; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
@@ -91,12 +109,18 @@ class Mine : public Building
 
 class SawMill : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {HILL_COUNTRY, JUNGLE};
 	public:
 		std::string getBuildingName() const override { return "Sawmill"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {HILL_COUNTRY, JUNGLE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 0, 0, 100}); } 
 		int getUpkeepCost() const override { return 5; } 
 		BuildingType getBuildingType() const override { return SAWMILL; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
@@ -108,12 +132,18 @@ class SawMill : public Building
 
 class Market : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {COAST, DRY_ZONE};
 	public:
 		std::string getBuildingName() const override { return "Market"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {COAST, DRY_ZONE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 200}); } 
 		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return MARKET; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
@@ -125,12 +155,18 @@ class Market : public Building
 
 class Temple : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 	public:
 		std::string getBuildingName() const override { return "Temple"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 0, 250}); } 
 		int getUpkeepCost() const override { return 15; } 
 		BuildingType getBuildingType() const override { return TEMPLE; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 		int getStabilityIncrements() const override { return 3; } 
@@ -138,43 +174,40 @@ class Temple : public Building
 
 class Barracks : public Building
 {
+	private:
+		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 	public:
 		std::string getBuildingName() const override { return "Barracks"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 50, 200}); } 
 		int getUpkeepCost() const override { return 10; } 
 		BuildingType getBuildingType() const override { return BARRACKS; }
-		std::unique_ptr<Unit> createUnit(UnitType unit) override
+		bool getIsAllowed(TerrainType terrain) const override
 		{
-			switch (unit)
-			{
-				case SPEARMAN:
-					return std::make_unique<Spearman>();
-				case ARCHER:
-					return std::make_unique<Archer>();
-				case CAVALRY:
-					return std::make_unique<Cavalry>();
-				case WAR_ELEPHANT:
-					return std::make_unique<WarElephant>();
-				default:
-					return nullptr;
-			}
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
 		}
+		
 };
 
 class Fort : public Building
 {	
+	private:
+		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
 	public:
 		std::string getBuildingName() const override { return "Fort"; } 
-		std::vector<TerrainType> getAllowedTerrains() const override { return {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE}; } 
 		Resources getBuildingCost() const override { return Resources({0, 150, 100, 300}); } 
 		int getUpkeepCost() const override { return 20; } 
 		BuildingType getBuildingType() const override { return FORT; }
+		bool getIsAllowed(TerrainType terrain) const override
+		{
+			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
+			return found != allowedTerrains.end();
+		}
 
 	protected:	
 };
 
-class BuildingMaker
+class BuildingFactory
 {
 	public:
 		static std::unique_ptr<Building> createBuilding(const BuildingType& type)

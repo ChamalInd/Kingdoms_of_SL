@@ -1,10 +1,5 @@
 #include "kingdom.h"
 
-Kingdom::Kingdom(std::string n)
-{
-	kingdomName = n;
-}
-
 int Kingdom::getNoOfBuildingsBuilt() const
 {
 	int buildingCount = 0;
@@ -37,6 +32,43 @@ int Kingdom::getArmyUpkeep() const
 	}
 
 	return totalRiceUpkeep;
+}
+
+void Kingdom::claimTerritory(Territory* territory, int claimCost)
+{
+	if (claimCost == 0) ownedTerritories.push_back(territory);
+	else
+	{
+		std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
+		resources.subFromStock(GOLD, claimCost);
+		territory->setTerritoryRuler(rulerEnum);
+
+		std::cout << std::endl << kingdomName << " claimed " << territory->getTerritoryName() << " (";
+		std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
+	}
+}
+
+void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
+{
+	if (buildingCount[building->getBuildingType()] > 0)
+	{
+		Resources buildingCost = building->getBuildingCost();
+		resources  -= buildingCost;
+
+		std::cout << std::endl << kingdomName << " built a " << building->getBuildingName() << " in " << territory->getTerritoryName() << ". Cost: ";
+		if (buildingCost.getGoldStock() > 0) std::cout << buildingCost.getGoldStock() << " Gold";
+		if (buildingCost.getTimberStock() > 0) std::cout << ", " << buildingCost.getTimberStock() << " Timber";
+		if (buildingCost.getIronStock() > 0) std::cout << ", " << buildingCost.getIronStock() << " Iron";
+		std::cout << "." << std::endl;
+	}
+
+	buildingCount[building->getBuildingType()]++;
+	if (building->getBuildingType() == BARRACKS)
+	{
+		increaseArmyCount();
+		territory->addAnArmy(std::make_unique<Army>(getArmyCount()));
+	}
+	territory->buildAProperty(building);
 }
 
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)

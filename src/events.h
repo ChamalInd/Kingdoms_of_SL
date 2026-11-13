@@ -4,71 +4,88 @@
 class Event
 {
 	protected:
-		std::string eventName;
 		int noOfRounds;
-		std::string eventEffect;
-		std::string eventOverMsg;
 
 	public:
-		Event(std::string n, int r, std::string e, std::string m) : eventName(n), noOfRounds(r), eventEffect(e), eventOverMsg(m) {}
+		Event(int r) : noOfRounds(r) {}
 		virtual ~Event() = default;
 		
 		virtual EventType getEventType() const = 0;
-		std::string getEventName() const { return eventName; }
-		std::string getEventEffect() const { return eventEffect; }
-		std::string getEventOverMsg() const { return eventOverMsg; }
+		virtual std::string getEventName() const = 0;
+		virtual std::string getEventEffect() const = 0;
+		virtual std::string getEventOverMsg() const = 0;
 		int getEventRounds() const { return noOfRounds; }
 		
 		void decreaseEventRound() { noOfRounds = std::max(0, noOfRounds - 1); }
 };
 
-
 class Drought : public Event
 {
 	public:
-		Drought() : Event("Drought", 3, "Rice production of every Dry Zone and Paddy Plain territory is halved.", "Drought has ended. Rice production restored.") {}
+		Drought() : Event(3) {}
+		std::string getEventName() const override { return "Drought"; } 
+		std::string getEventEffect() const override { return "Rice production of every Dry Zone and Paddy Plain territory is halved."; }
+		std::string getEventOverMsg() const override { return "Drought has ended. Rice production restored."; }
 		EventType getEventType() const override { return DROUGHT; }
 };
 
 class Flood : public Event
 {
 	public:
-		Flood() : Event("Flood", 1, "One random Paddy Plain or Coast territory loses its building", "Flood has ended.") {}
+		Flood() : Event(1) {}
+		std::string getEventName() const override { return "Flood"; } 
+		std::string getEventEffect() const override { return "One random Paddy Plain or Coast territory loses its building."; }
+		std::string getEventOverMsg() const override { return "Flood has ended."; }
 		EventType getEventType() const override { return FLOOD; } 
 };
 
 class GoodMonsoon : public Event
 {
 	public:
-		GoodMonsoon() : Event("Good Monsoon", 3, "Rice production of all Paddy Plain territories +50%.", "Good Monsoon has ended. Rice production restored.") {}
+		GoodMonsoon() : Event(3) {}
+		std::string getEventName() const override { return "Good Monsoon"; } 
+		std::string getEventEffect() const override { return "Rice production of all Paddy Plain territories +50%."; }
+		std::string getEventOverMsg() const override { return "Good Monsoon has ended. Rice production restored."; }
 		EventType getEventType() const override { return GOOD_MONSOON; }
 };
 
 class Plague : public Event
 {
 	public:
-		Plague() : Event("Plague", 2, "Every kingdom's population falls by 10% and Stability falls by 5.", "Plague has ended.") {}
+		Plague() : Event(2) {}
+		std::string getEventName() const override { return "Plague"; } 
+		std::string getEventEffect() const override { return "Every kingdom's population falls by 10% and Stability falls by 5."; }
+		std::string getEventOverMsg() const override { return "Plague has ended."; }
 		EventType getEventType() const override { return PLAGUE; }
 };
 
 class TradeCaravan : public Event
 {
 	public:
-		TradeCaravan() : Event("Trade Caravan", 0, "The kingdom with the fewest territories receives 500 Gold.", "Trade Caravan has gone.") {}
+		TradeCaravan() : Event(0) {}
+		std::string getEventName() const override { return "Trade Caravan"; } 
+		std::string getEventEffect() const override { return "The kingdom with the fewest territories receives 500 Gold."; }
+		std::string getEventOverMsg() const override { return "Trade Caravan has gone."; }
 		EventType getEventType() const override { return TRADE_CARAVAN; }
 };
 
 class RoyalFestival : public Event
 {
 	public:
-		RoyalFestival() : Event("Royal Festival", 2, "All kingdoms gain +10 Stability once and consume 50% more Rice.", "Royal Festival has ended. Rice consumption restored.") {}
+		RoyalFestival() : Event(2) {}
+		std::string getEventName() const override { return "Royal Festival"; } 
+		std::string getEventEffect() const override { return "All kingdoms gain +10 Stability once and consume 50% more Rice."; }
+		std::string getEventOverMsg() const override { return "Royal Festival has ended. Rice consumption restored."; }
 		EventType getEventType() const override { return ROYAL_FESTIVAL; }
 };
 
 class FamineIron : public Event
 {
 	public:
-		FamineIron() : Event("Famine of Iron Age", 3, "Iron production is halved.", "Famine of Iron Age has ended. Iron production restored.") {}
+		FamineIron() : Event(3) {}
+		std::string getEventName() const override { return "Famine of Iron Age"; } 
+		std::string getEventEffect() const override { return "Iron production is halved."; }
+		std::string getEventOverMsg() const override { return "Famine of Iron Age has ended. Iron production restored."; }
 		EventType getEventType() const override { return F_O_IRON_AGE; }
 };
 

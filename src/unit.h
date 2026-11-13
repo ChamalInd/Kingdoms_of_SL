@@ -54,3 +54,24 @@ class WarElephant : public Unit
 		WarElephant() : Unit("War Elephant", 18, 12, 60, 1, Resources({0, 0, 40, 200}), 8) {}
 		UnitType getUnitType() const override { return WAR_ELEPHANT; }
 };
+
+class UnitFactory
+{
+	public:
+		static std::unique_ptr<Unit> createUnit(UnitType unit) 
+		{
+			switch (unit)
+			{
+				case SPEARMAN:
+					return std::make_unique<Spearman>();
+				case ARCHER:
+					return std::make_unique<Archer>();
+				case CAVALRY:
+					return std::make_unique<Cavalry>();
+				case WAR_ELEPHANT:
+					return std::make_unique<WarElephant>();
+				default:
+					return nullptr;
+			}
+		}
+};

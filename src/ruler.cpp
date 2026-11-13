@@ -40,38 +40,6 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 
-void Ruler::claimTerritory(Territory* territory, int claimCost)
-{
-	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
-	kingdom.getResourceObject().subFromStock(GOLD, claimCost);
-	territory->setTerritoryRuler(rulerEnum);
-	kingdom.claimTerritory(territory);
-
-	std::cout << std::endl << kingdom.getKingdomName() << " claimed " << territory->getTerritoryName() << " (";
-	std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
-
-}
-
-void Ruler::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
-{
-	territory->buildAProperty(building);
-	Resources buildingCost = territory->getTerritoryBuilding()->getBuildingCost();
-	kingdom.getResourceObject() -= buildingCost;
-	kingdom.increaseSpecificBuildingCount(territory->getTerritoryBuilding()->getBuildingType());
-
-	if (territory->getTerritoryBuilding()->getBuildingType() == BARRACKS)
-	{
-		kingdom.increaseArmyCount();
-		territory->addAnArmy(std::make_unique<Army>(kingdom.getArmyCount()));
-	}
-
-	std::cout << std::endl << kingdom.getKingdomName() << " built a " << territory->getTerritoryBuilding()->getBuildingName() << " in " << territory->getTerritoryName() << ". Cost: ";
-	if (buildingCost.getGoldStock() > 0) std::cout << buildingCost.getGoldStock() << " Gold";
-	if (buildingCost.getTimberStock() > 0) std::cout << ", " << buildingCost.getTimberStock() << " Timber";
-	if (buildingCost.getIronStock() > 0) std::cout << ", " << buildingCost.getIronStock() << " Iron";
-	std::cout << "." << std::endl;
-}
-
 void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost)
 {
 	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
@@ -111,7 +79,7 @@ void Ruler::claimPhase(WorldMap& worldMap)
 	}
 
 	Territory* territory = potentialClaims[rand() % potentialClaims.size()];
-	claimTerritory(territory, claimCost);
+	kingdom.claimTerritory(territory, claimCost);
 }
 
 void Ruler::buildPhase()
@@ -155,13 +123,12 @@ void Ruler::buildPhase()
 			continue;
 		}
 
-		building = BuildingMaker::createBuilding(selected);
+		building = BuildingFactory::createBuilding(selected);
 		if (building == nullptr)
 		{
 			buildingTypes.erase(buildingTypes.begin() + index);
 			continue;
 		}
-		std::vector<TerrainType> allowedTerrains = building->getAllowedTerrains();
 		Resources buildingCost = building->getBuildingCost();
 
 		if (!(kingdom.getResourceObject() >= buildingCost))
@@ -173,8 +140,7 @@ void Ruler::buildPhase()
 		bool found = false;
 		for (Territory* T : potentialTerritories)
 		{
-			auto s = std::find(allowedTerrains.begin(), allowedTerrains.end(), T->getTerritoryType());
-			if (s != allowedTerrains.end())
+			if (building->getIsAllowed(T->getTerritoryType()))
 			{
 				found = true;
 				territory = T;
@@ -187,9 +153,8 @@ void Ruler::buildPhase()
 	}
 
 	if (territory == nullptr) return;
-	constructBuilding(territory, building);
+	kingdom.constructBuilding(territory, building);
 }
-
 
 void Ruler::recruitePhase()
 {
@@ -242,7 +207,7 @@ void Ruler::recruitePhase()
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}
-		unit = selectedTerritory->getTerritoryBuilding()->createUnit(selectedUnit);
+		unit = UnitFactory::createUnit(selectedUnit);
 		if (unit == nullptr) 
 		{
 			unitTypes.erase(unitTypes.begin() + unitIndex);

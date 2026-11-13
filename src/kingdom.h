@@ -8,6 +8,7 @@ class Kingdom
 {
 	private:
 		std::string kingdomName;
+		RulerEnum rulerEnum;
 		int population = 1000;
 		int stability = 70;
 		Resources resources = Resources({500, 200, 100, 1000});
@@ -17,7 +18,7 @@ class Kingdom
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
 	
 	public:
-		Kingdom(std::string n);
+		Kingdom(std::string n, RulerEnum r) : kingdomName(n), rulerEnum(r) {}
 		
 		std::string getKingdomName() const { return kingdomName; }
 		int getPopulation() const { return population; }
@@ -32,7 +33,8 @@ class Kingdom
 		int getArmyUpkeep() const; 
 		int getUnitCount() const; 
 		
-		void claimTerritory(Territory* territory) { ownedTerritories.push_back(territory); }
+		void claimTerritory(Territory* territory, int claimCost);
+		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
 		void decreaseSpecificBuildingCount(int index) { buildingCount[index]--; }
 		void increaseArmyCount() { armyCount++; }

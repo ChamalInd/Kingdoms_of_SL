@@ -9,18 +9,14 @@ SimulationManager::SimulationManager()
 	const std::vector<std::pair<int, int>> kingdomCapitals = {std::make_pair(0, 0), std::make_pair(0, 5), std::make_pair(5, 0), std::make_pair(5, 5)};
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
-		Kingdom kingdom(kingdomNames[i]);
+		Kingdom kingdom(kingdomNames[i], enums[i]);
 
 		// preparing capital with a barracks and an army
 		Territory* capital = worldMap.getTerritory(kingdomCapitals[i].first, kingdomCapitals[i].second);
-		std::unique_ptr<Building> building = BuildingMaker::createBuilding(BARRACKS);
-		capital->buildAProperty(building);
-		kingdom.increaseSpecificBuildingCount(BARRACKS);
-		
-		kingdom.increaseArmyCount();
-		capital->addAnArmy(std::make_unique<Army>(kingdom.getArmyCount()));
+		std::unique_ptr<Building> building = BuildingFactory::createBuilding(BARRACKS);
+		kingdom.claimTerritory(capital, 0);
+		kingdom.constructBuilding(capital, building);
 	
-		kingdom.claimTerritory(capital);
 		rulers.push_back(RulerMaker::createRulers(rulerNames[i], kingdom, enums[i]));
 	}
 
@@ -29,6 +25,7 @@ SimulationManager::SimulationManager()
 
 void SimulationManager::initializeGame()
 {
+	logger.printSimulationInitializer();
 	while (true)
 	{
 		std::cout << std::endl;
@@ -101,7 +98,6 @@ void SimulationManager::initializeGame()
 
 void SimulationManager::gameLoop()
 {
-
 	while (gameRound < 200)
 	{
 		std::cout << std::endl << std::string(MESSAGE_WIDTH, '=') << std::endl;
@@ -150,7 +146,7 @@ void SimulationManager::eventHandler()
 		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
 
 		// immediate events
-		if (currentEvent->getEventType() == FLOOD)
+		/***if (currentEvent->getEventType() == FLOOD)
 		{
 			Territory* selected = nullptr;
 			int tries = 0;
@@ -203,7 +199,7 @@ void SimulationManager::eventHandler()
 				std::cout << rulers[index]->getKingdom().getKingdomName() << " received 500 Gold from the Trade Caravan." << std::endl;
 				rulers[index]->getKingdom().getResourceObject().addToStock(GOLD, 500);
 			}
-		}
+		}***/
 	}
 	else if (currentEvent != nullptr) 
 	{

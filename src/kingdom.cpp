@@ -85,6 +85,25 @@ void Kingdom::destroyBuilding(Territory* territory)
 	territory->demolish();
 }
 
+void Kingdom::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost)
+{
+	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
+	std::vector<int> unitCount = {0, 0, 0, 0};
+
+	for (auto& u : units)
+	{
+		unitCount[u->getUnitType()] += 1;
+		territory->getTerritoryArmy()->recruiteUnits(u);
+	}
+
+	resources -= totalRecruitementCost;
+
+	std::cout << std::endl << kingdomName << " recruited ";
+	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
+	std::cout << " at " << territory->getTerritoryName() << ". Cost: ";
+	std::cout << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
+}
+
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)
 {
 	Resources resourceIncrements = Resources({0, 0, 0, 0});

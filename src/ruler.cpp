@@ -18,7 +18,7 @@ int Ruler::calculateScore()
 	return score;
 }
 
-int Conqueror::scoreBuilding(const BuildingType type) const 
+int Conqueror::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const 
 {
 	if (type == BARRACKS && kingdom->getNoOfTerritoriesOwned() % 2 == 0 && kingdom->getSpecificBuildingCount(type) < 4) return 10;
 	if (type == TEMPLE) return -1;
@@ -45,7 +45,7 @@ Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
 	return budget;
 }
 
-int AgrarianSage::scoreBuilding(const BuildingType type) const 
+int AgrarianSage::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const 
 {
 	if (type == PADDY_FARM) return 10; 
 	if (type == IRRIGATION_LAKE) return 10;
@@ -73,7 +73,7 @@ Resources AgrarianSage::constructionBudget(std::unique_ptr<Event>&) const
 	return budget;
 }
 
-int MerchantPrince::scoreBuilding(const BuildingType type) const
+int MerchantPrince::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const
 {
 	if (type == MARKET) return 10; 
 	return 0;
@@ -102,17 +102,32 @@ Resources MerchantPrince::constructionBudget(std::unique_ptr<Event>& currentEven
 	return budget;
 }
 
-int Strategist::scoreBuilding(const BuildingType type) const 
+int Strategist::scoreBuilding(const BuildingType type, std::vector<RulerDetails> rd, std::unique_ptr<Event>& currentEvent) const 
 {
-	if (type == PADDY_FARM) return 10;
-	else if (type == TEMPLE) return 9;
+	bool defensive = false;
+	int rulerArmyStrength = 0;
+	int strongest = INT_MIN;
+	for (RulerDetails R : rd)
+	{
+		if (R.ruler == rulerEnum) rulerArmyStrength = R.armyStrength;
+		if (R.armyStrength > strongest) strongest = R.armyStrength;
+	}
+
+	if (rulerArmyStrength != strongest) defensive = true; 
+
+	if (!defensive && type == PADDY_FARM) return 10;
+	if (!defensive && type == TEMPLE) return 10;
+	if (defensive && type == BARRACKS) return 10;
+	if (defensive && type == FORT) return 10;
+	if (currentEvent != nullptr && currentEvent->getEventType() == DROUGHT && type == PADDY_FARM) return 10;
+	if (currentEvent != nullptr && currentEvent->getEventType() == PLAGUE && type == TEMPLE) return 10;
 	else return 0;
 }
 
 int Strategist::scoreUnits(const UnitType unit) const
 {
 	if (unit == SPEARMAN) return 10;
-	else return -1;
+	return -1;
 }
 
 int Strategist::claimBudget() const { return kingdom->getResources()[3]; }
@@ -149,25 +164,6 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 
-void Ruler::recruiteUnits(Territory* territory, std::vector<std::unique_ptr<Unit>>& units, Resources totalRecruitementCost)
-{
-	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
-	std::vector<int> unitCount = {0, 0, 0, 0};
-
-	for (auto& u : units)
-	{
-		unitCount[u->getUnitType()] += 1;
-		territory->getTerritoryArmy()->recruiteUnits(u);
-	}
-
-	kingdom->getResourceObject() -= totalRecruitementCost;
-
-	std::cout << std::endl << kingdom->getKingdomName() << " recruited ";
-	for (int i = 0; i < 4; i++) if (unitCount[i] > 0) std::cout << unitCount[i] << " " << unitNames[i] << " ";
-	std::cout << " at " << territory->getTerritoryName() << ". Cost: ";
-	std::cout << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
-}
-
 void Ruler::claimPhase(WorldMap& worldMap)
 {
 	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
@@ -191,7 +187,7 @@ void Ruler::claimPhase(WorldMap& worldMap)
 	kingdom->claimTerritory(territory, claimCost);
 }
 
-void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent)
+void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDetails> rd)
 {
 	// no territories left to build
 	if (kingdom->getNoOfBuildingsBuilt() == kingdom->getNoOfTerritoriesOwned()) return;
@@ -203,11 +199,11 @@ void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent)
 	while (!buildingTypes.empty())
 	{
 		BuildingType selected = buildingTypes[0];
-		int highestScore = scoreBuilding(selected);
+		int highestScore = scoreBuilding(selected, rd, currentEvent);
 		int index = 0;
 		for (size_t i = 1; i < buildingTypes.size(); i++)
 		{
-			int s = scoreBuilding(buildingTypes[i]);
+			int s = scoreBuilding(buildingTypes[i], rd, currentEvent);
 			if (highestScore < s) 
 			{
 				highestScore = s;
@@ -336,12 +332,12 @@ void Ruler::recruitePhase()
 
 	if (selectedUnits.empty()) return;
 
-	recruiteUnits(selectedTerritory, selectedUnits, totalRecruitementCost);
+	kingdom->recruiteUnits(selectedTerritory, selectedUnits, totalRecruitementCost);
 }
 
 void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 
 {
 	claimPhase(worldMap);
-	buildPhase(currentEvent);
+	buildPhase(currentEvent, rulerDetails);
 	recruitePhase();
 }

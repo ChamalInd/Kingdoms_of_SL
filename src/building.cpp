@@ -2,68 +2,32 @@
 #include "territory.h"
 #include "worldmap.h"
 
-BuildingEffect PaddyFarm::performEffect(Territory*, WorldMap&, RulerEnum)
+Resources PaddyFarm::getResourceEffect(Territory*, WorldMap&, RulerEnum) const
 {
-	BuildingEffect effect;
-
-	if (buildingHealth <= 50) effect.resourceIncrement = Resources({15, 0, 0, 0});
-	else effect.resourceIncrement = Resources({30, 0, 0, 0}); 
-	
-	effect.stabilityIncrement = 0;
-
-	return effect;
+	if (buildingHealth <= 50) return Resources({15, 0, 0, 0});
+	return Resources({30, 0, 0, 0}); 
 }
 
-BuildingEffect Mine::performEffect(Territory*, WorldMap&, RulerEnum)
+Resources Mine::getResourceEffect(Territory*, WorldMap&, RulerEnum) const
 {
-	BuildingEffect effect;
-
-	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 0, 10, 0});
-	else effect.resourceIncrement = Resources({0, 0, 20, 0}); 
-	
-	effect.stabilityIncrement = 0;
-
-	return effect;
+	if (buildingHealth <= 50) return Resources({0, 0, 10, 0});
+	return Resources({0, 0, 20, 0}); 
 }
 
-BuildingEffect SawMill::performEffect(Territory*, WorldMap&, RulerEnum)
+Resources SawMill::getResourceEffect(Territory*, WorldMap&, RulerEnum) const
 {
-	BuildingEffect effect;
-
-	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 15, 0, 0});
-	else effect.resourceIncrement = Resources({0, 30, 0, 0}); 
-	
-	effect.stabilityIncrement = 0;
-
-	return effect;
+	if (buildingHealth <= 50) return Resources({0, 15, 0, 0});
+	return Resources({0, 30, 0, 0}); 
 }
 
-BuildingEffect Market::performEffect(Territory*, WorldMap&, RulerEnum)
+Resources Market::getResourceEffect(Territory*, WorldMap&, RulerEnum) const
 {
-	BuildingEffect effect;
-
-	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 0, 0, 20});
-	else effect.resourceIncrement = Resources({0, 0, 0, 40}); 
-	
-	effect.stabilityIncrement = 0;
-
-	return effect;
+	if (buildingHealth <= 50) return Resources({0, 0, 0, 20});
+	return Resources({0, 0, 0, 40}); 
 }
 
-BuildingEffect Temple::performEffect(Territory*, WorldMap&, RulerEnum)
+Resources IrrigationTank::getResourceEffect(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const
 {
-	BuildingEffect effect;
-	
-	effect.resourceIncrement = Resources({0, 0, 0, 0});
-	effect.stabilityIncrement = 3;
-
-	return effect;
-}
-
-BuildingEffect IrrigationTank::performEffect(Territory* parentTerritory, WorldMap& map, RulerEnum ruler)
-{
-	BuildingEffect effect;
-	
 	std::vector<std::pair<int, int>> neighbours = parentTerritory->getTerritoryNeighbours();
 	std::vector<int> resources = {0, 0, 0, 0};
 	for (auto P : neighbours)
@@ -81,8 +45,5 @@ BuildingEffect IrrigationTank::performEffect(Territory* parentTerritory, WorldMa
 
 	if (buildingHealth <= 50) resources[RICE] /= 2;
 
-	effect.resourceIncrement = Resources(resources);
-	effect.stabilityIncrement = 0;
-
-	return effect;
+	return Resources(resources);
 }

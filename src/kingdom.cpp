@@ -47,6 +47,13 @@ void Kingdom::claimTerritory(Territory* territory, int claimCost)
 		std::cout << terrainTypes[territory->getTerritoryType()] << ") for " << claimCost << " Gold." << std::endl;
 	}
 }
+		
+void Kingdom::abandonTerritory(int territoryIndex)
+{
+	destroyBuilding(ownedTerritories[territoryIndex]);
+	ownedTerritories[territoryIndex]->setTerritoryRuler(NEUTRAL);
+	ownedTerritories.erase(ownedTerritories.begin() + territoryIndex);
+}
 
 void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>& building)
 {
@@ -68,13 +75,19 @@ void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>&
 		increaseArmyCount();
 		territory->addAnArmy(std::make_unique<Army>(getArmyCount()));
 	}
-	territory->buildAProperty(building);
+	territory->construct(building);
+}
+
+void Kingdom::destroyBuilding(Territory* territory)
+{
+	if (territory->getTerritoryBuilding() == nullptr) return;
+	buildingCount[territory->getTerritoryBuilding()->getBuildingType()]--;
+	territory->demolish();
 }
 
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)
 {
 	Resources resourceIncrements = Resources({0, 0, 0, 0});
-	int stabilityIncrement = 0;
 	for (Territory* T : ownedTerritories)
 	{
 		std::vector<int> baseProduction = T->getTerritoryProduction();
@@ -87,39 +100,23 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::uniqu
 			}
 			resourceIncrements.addToStock(i, (baseProduction[i] - reduction));
 		}
-		if (T->getTerritoryBuilding() != nullptr && T->getTerritoryBuilding()->getBuildingStatus() == OPEN)
-		{
-			BuildingEffect effect = T->getTerritoryBuilding()->performEffect(T, worldMap, ruler);
-			for (int i = 0; i < 4; i++) 
-			{
-				if (stability < 30) resourceIncrements.addToStock(i, effect.resourceIncrement[i] * 75 / 100);
-				else resourceIncrements.addToStock(i, effect.resourceIncrement[i]);
-			}
-			stabilityIncrement += effect.stabilityIncrement;
-		}
+		if (T->getTerritoryBuilding() == nullptr) continue;
+		if (T->getTerritoryBuilding()->getBuildingType() == TEMPLE) continue;
+		if (T->getTerritoryBuilding()->getBuildingStatus() == CLOSE) continue;
+		
+		Resources buildingResources = T->getTerritoryBuilding()->getResourceEffect(T, worldMap, ruler);
+		resourceIncrements += buildingResources;
 	}
 
 	if (currentEvent != nullptr) 
 	{
-		switch (currentEvent->getEventType())
-		{ 
-			case DROUGHT:
-				resourceIncrements.subFromStock(RICE, resourceIncrements.getRiceStock() / 2);
-				break;
-			case GOOD_MONSOON:
-				resourceIncrements.addToStock(RICE, resourceIncrements.getRiceStock() / 2);
-				break;
-			
-			case F_O_IRON_AGE:
-				resourceIncrements.subFromStock(IRON, resourceIncrements.getIronStock() / 2);
-				break;
-			default:
-				break;
-		}
+		ResourceEffect eventEffect = currentEvent->applyResourceEffect();
+		resourceIncrements.scaleStock(eventEffect.resource, eventEffect.scale);
 	}
 
+	if (stability < 30) for (int i = 0; i < 4; i++) resourceIncrements.scaleStock(i, 75);
+	
 	resources += resourceIncrements;
-	updateStability(stabilityIncrement);
 
 	std::cout << kingdomName << " produced: Gold +" << resourceIncrements.getGoldStock() << ", Rice +" << resourceIncrements.getRiceStock();
 	std::cout << ", Timber +" << resourceIncrements.getTimberStock() << ", Iron +" << resourceIncrements.getIronStock() << "." << std::endl << std::endl;
@@ -130,45 +127,31 @@ void Kingdom::populationActivities(std::unique_ptr<Event>& currentEvent)
 	int riceConsumption = 0; 
 	int taxIncome = 0;
 	int currentRiceStock = resources.getRiceStock();	
+	PopulationEffect eventEffect;
+	eventEffect.populationScale = 1;
+	eventEffect.consumptionScale = 1;
 
-	
-	if (currentEvent != nullptr)
-	{
-		switch (currentEvent->getEventType())
-		{
-			case PLAGUE:
-				population -= population * 10 / 100;
-				updateStability(-5);
-				break;
-			case ROYAL_FESTIVAL:
-				updateStability(10);
-				break;
-			default:
-				break;
-		}
-	}
+	if (currentEvent != nullptr) eventEffect = currentEvent->applyPopulationEffect();
+
+	population *= eventEffect.populationScale / 100;
 
 	// consume rice
 	int consumption = population / 20;
+	consumption *= eventEffect.consumptionScale / 100;
 
-	if (currentEvent != nullptr && currentEvent->getEventType() == ROYAL_FESTIVAL) consumption += consumption * 50 / 100;
+	if (consumption <= currentRiceStock) riceConsumption = consumption;
 
-	if (consumption <= currentRiceStock)
-	{
-		riceConsumption = consumption;
-	}
-
-	if ((consumption * 2) <= currentRiceStock)
+	if ((consumption * 2) <= currentRiceStock) 
 	{
 		population += population * 2 / 100;
-		updateStability(1);
+		riceAbundance = MORE;
 	}
 	
 	if (consumption > currentRiceStock)
 	{
 		riceConsumption = currentRiceStock;
 		population -= population * 5 / 100;
-		updateStability(-10);
+		riceAbundance = LESS;
 		std::cout << kingdomName << " is starving! Population falls by 5%. Stability - 10." << std::endl;
 	}
 
@@ -180,7 +163,6 @@ void Kingdom::populationActivities(std::unique_ptr<Event>& currentEvent)
 	
 	std::cout << kingdomName << " population consumed: " << riceConsumption << " Rice." << std::endl;
 	std::cout << kingdomName << " population paid taxes: " << taxIncome << " Gold." << std::endl << std::endl;
-
 }
 		
 void Kingdom::buildingUpkeep()
@@ -288,9 +270,30 @@ void Kingdom::armyUpkeep()
 	}
 }
 
-void Kingdom::updateStability(int rate)
+void Kingdom::updateStability(std::unique_ptr<Event>& currentEvent)
 {
-	stability = std::clamp(stability + rate, 0, 100);
+	int stabilityIncrement = 0;
+
+	if (riceAbundance == MORE) stabilityIncrement += 1;
+	else if (riceAbundance == LESS) stabilityIncrement -= 10;
+
+	riceAbundance = ENOUGH;
+
+	if (currentEvent != nullptr) stabilityIncrement += currentEvent->applyStabilityEffect();
+
+	for (Territory* T : ownedTerritories)
+	{
+		if (T->getTerritoryBuilding() == nullptr) continue;
+		if (T->getTerritoryBuilding()->getBuildingType() != TEMPLE) continue;
+		stabilityIncrement += T->getTerritoryBuilding()->getStabilityEffect();
+	}
+
+	if (lastWarStatus == WON) stabilityIncrement += 2;
+	else if (lastWarStatus == LOST) stabilityIncrement -= 5;
+
+	lastWarStatus = NO_WAR;
+
+	stability = std::clamp(stability + stabilityIncrement, 0, 100);
 
 	if (stability <= 0)
 	{
@@ -300,10 +303,7 @@ void Kingdom::updateStability(int rate)
 			std::cout << "Stability of " << kingdomName << " has reached 0. Rebellion in ";
 			std::cout << ownedTerritories[randomTerritory]->getTerritoryName() << "! " << kingdomName << " loses control." << std::endl;
 
-			if (ownedTerritories[randomTerritory]->getTerritoryBuilding() != nullptr) buildingCount[ownedTerritories[randomTerritory]->getTerritoryBuilding()->getBuildingType()]--;
-			ownedTerritories[randomTerritory]->destroyAProperty();
-			ownedTerritories[randomTerritory]->setTerritoryRuler(NEUTRAL);
-			ownedTerritories.erase(ownedTerritories.begin() + randomTerritory);
+			abandonTerritory(randomTerritory);
 		}
 		stability = 30;
 	}

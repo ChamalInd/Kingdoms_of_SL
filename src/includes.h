@@ -76,3 +76,13 @@ enum EventType
 {
 	DROUGHT, FLOOD, GOOD_MONSOON, PLAGUE, TRADE_CARAVAN, ROYAL_FESTIVAL, F_O_IRON_AGE
 };
+
+enum RiceAbundance
+{
+	ENOUGH, MORE, LESS
+};
+
+enum WarStatus
+{
+	NO_WAR, WON, LOST
+};

@@ -28,7 +28,7 @@ class Territory
 		std::unique_ptr<Building>& getTerritoryBuilding() { return territoryBuilding; }
 		std::unique_ptr<Army>& getTerritoryArmy() { return territoryArmy; }
 
-		void buildAProperty(std::unique_ptr<Building>& newBuilding) { territoryBuilding = std::move(newBuilding); }
+		void construct(std::unique_ptr<Building>& newBuilding) { territoryBuilding = std::move(newBuilding); }
 		void addAnArmy(std::unique_ptr<Army> newArmy) { territoryArmy = std::move(newArmy); }
-		void destroyAProperty() { territoryBuilding = nullptr; }
+		void demolish() { territoryBuilding = nullptr; }
 };

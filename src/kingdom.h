@@ -15,7 +15,10 @@ class Kingdom
 		std::vector<Territory*> ownedTerritories;
 		int buildingUpkeepDebt = 0;
 		size_t armyCount = 0;
+		RiceAbundance riceAbundance = ENOUGH;
+		WarStatus lastWarStatus = NO_WAR;
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
+
 	
 	public:
 		Kingdom(std::string n, RulerEnum r) : kingdomName(n), rulerEnum(r) {}
@@ -32,15 +35,16 @@ class Kingdom
 		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
 		int getArmyUpkeep() const; 
 		int getUnitCount() const; 
+		void increaseArmyCount() { armyCount++; }
 		
 		void claimTerritory(Territory* territory, int claimCost);
+		void abandonTerritory(int territoryIndex);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
-		void increaseSpecificBuildingCount(int index) { buildingCount[index]++; }
-		void decreaseSpecificBuildingCount(int index) { buildingCount[index]--; }
-		void increaseArmyCount() { armyCount++; }
+		void destroyBuilding(Territory* territory);
+		
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent);
 		void populationActivities(std::unique_ptr<Event>& currentEvent);
+		void updateStability(std::unique_ptr<Event>& currentEvent);
 		void buildingUpkeep();
 		void armyUpkeep();
-		void updateStability(int rate);
 };

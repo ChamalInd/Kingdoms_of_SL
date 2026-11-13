@@ -1,5 +1,18 @@
 #pragma once
 #include "includes.h"
+#include "resources.h"
+
+struct ResourceEffect
+{
+	ResourceType resource;
+	int scale;
+};
+
+struct PopulationEffect
+{
+	int populationScale;
+	int consumptionScale;
+};
 
 class Event
 {
@@ -17,6 +30,9 @@ class Event
 		int getEventRounds() const { return noOfRounds; }
 		
 		void decreaseEventRound() { noOfRounds = std::max(0, noOfRounds - 1); }
+		virtual ResourceEffect applyResourceEffect() const;
+		virtual int applyStabilityEffect() const { return 0; }
+		virtual PopulationEffect applyPopulationEffect() const;
 };
 
 class Drought : public Event
@@ -27,6 +43,8 @@ class Drought : public Event
 		std::string getEventEffect() const override { return "Rice production of every Dry Zone and Paddy Plain territory is halved."; }
 		std::string getEventOverMsg() const override { return "Drought has ended. Rice production restored."; }
 		EventType getEventType() const override { return DROUGHT; }
+		
+		ResourceEffect applyResourceEffect() const override; 
 };
 
 class Flood : public Event
@@ -47,6 +65,8 @@ class GoodMonsoon : public Event
 		std::string getEventEffect() const override { return "Rice production of all Paddy Plain territories +50%."; }
 		std::string getEventOverMsg() const override { return "Good Monsoon has ended. Rice production restored."; }
 		EventType getEventType() const override { return GOOD_MONSOON; }
+		
+		ResourceEffect applyResourceEffect() const override; 
 };
 
 class Plague : public Event
@@ -57,6 +77,9 @@ class Plague : public Event
 		std::string getEventEffect() const override { return "Every kingdom's population falls by 10% and Stability falls by 5."; }
 		std::string getEventOverMsg() const override { return "Plague has ended."; }
 		EventType getEventType() const override { return PLAGUE; }
+
+		int applyStabilityEffect() const override { return -5; }
+		PopulationEffect applyPopulationEffect() const override;
 };
 
 class TradeCaravan : public Event
@@ -77,6 +100,9 @@ class RoyalFestival : public Event
 		std::string getEventEffect() const override { return "All kingdoms gain +10 Stability once and consume 50% more Rice."; }
 		std::string getEventOverMsg() const override { return "Royal Festival has ended. Rice consumption restored."; }
 		EventType getEventType() const override { return ROYAL_FESTIVAL; }
+		
+		int applyStabilityEffect() const override { return noOfRounds == 2 ? 10 : 0; }
+		PopulationEffect applyPopulationEffect() const override;
 };
 
 class FamineIron : public Event
@@ -87,9 +113,11 @@ class FamineIron : public Event
 		std::string getEventEffect() const override { return "Iron production is halved."; }
 		std::string getEventOverMsg() const override { return "Famine of Iron Age has ended. Iron production restored."; }
 		EventType getEventType() const override { return F_O_IRON_AGE; }
+		
+		ResourceEffect applyResourceEffect() const override; 
 };
 
-class EventCreater
+class EventFactory
 {
 	public:
 		static std::unique_ptr<Event> createEvent(EventType type)

@@ -116,6 +116,7 @@ void SimulationManager::gameLoop()
 			kingdom.collectProductions(worldMap, R->getRulerEnum(), currentEvent);
 			// upkeep and consumption
 			kingdom.populationActivities(currentEvent);
+			kingdom.updateStability(currentEvent);
 			kingdom.buildingUpkeep();
 			kingdom.armyUpkeep();
 			// event check
@@ -139,7 +140,7 @@ void SimulationManager::eventHandler()
 	{
 		std::vector<EventType> eventList = {DROUGHT, FLOOD, GOOD_MONSOON, PLAGUE, TRADE_CARAVAN, ROYAL_FESTIVAL, F_O_IRON_AGE};
 
-		currentEvent = EventCreater::createEvent(eventList[rand() % 7]);
+		currentEvent = EventFactory::createEvent(eventList[rand() % 7]);
 		std::cout << std::endl;
 		logger.printTitle(" New Event Occurred ", '*');
 		std::cout << "Event Name: " << currentEvent->getEventName() << std::endl;

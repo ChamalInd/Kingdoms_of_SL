@@ -18,6 +18,7 @@ class Resources
 		int getIronStock() const { return resourcesStock[IRON]; }
 		int getGoldStock() const { return resourcesStock[GOLD]; }
 		
+		void scaleStock(int index, int value) { resourcesStock[index] = resourcesStock[index] * value / 100; }
 		void addToStock(int index, int value) { resourcesStock[index] += value; }
 		void subFromStock(int index, int value) { resourcesStock[index] = std::max(resourcesStock[index] - value, 0); }
 		

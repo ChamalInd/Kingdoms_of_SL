@@ -6,14 +6,6 @@
 class Territory;
 class WorldMap;
 
-struct BuildingEffect
-{
-	Resources resourceIncrement;
-	int stabilityIncrement;
-};
-
-// buildingCost = {rice, timber, iron, gold}
-
 class Building
 {
 	protected:
@@ -35,13 +27,8 @@ class Building
 		int getBuildingHealth() const { return buildingHealth; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
-		virtual BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum)
-		{
-			BuildingEffect effect;
-			effect.resourceIncrement = Resources({0, 0, 0, 0});
-			effect.stabilityIncrement = 0;
-			return effect;
-		}
+		virtual Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const { return Resources({0, 0, 0, 0}); }
+		virtual int getStabilityEffect() const { return 0; }
 };
 
 class PaddyFarm : public Building
@@ -59,7 +46,7 @@ class PaddyFarm : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
+		Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const override;
 };
 
 class IrrigationTank : public Building
@@ -77,7 +64,7 @@ class IrrigationTank : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler) override;
+		Resources getResourceEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler) const override;
 };
 
 class Mine : public Building
@@ -95,7 +82,7 @@ class Mine : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
+		Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const override;
 };
 
 class SawMill : public Building
@@ -113,7 +100,7 @@ class SawMill : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
+		Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const override;
 };
 
 class Market : public Building
@@ -131,7 +118,7 @@ class Market : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
+		Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const override;
 };
 
 class Temple : public Building
@@ -149,7 +136,7 @@ class Temple : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
+		int getStabilityEffect() const override { return 3; }
 };
 
 class Barracks : public Building

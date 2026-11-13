@@ -84,18 +84,8 @@ void Ruler::claimPhase(WorldMap& worldMap)
 
 void Ruler::buildPhase()
 {
-	std::vector<Territory*> potentialTerritories;
-
-	for (Territory* T : kingdom.getOwnedTerritories())
-	{
-		if (T->getTerritoryBuilding() == nullptr)
-		{
-			potentialTerritories.push_back(T);
-		}
-	}
-
 	// no territories left to build
-	if (potentialTerritories.empty()) return;
+	if (kingdom.getNoOfBuildingsBuilt() == kingdom.getNoOfTerritoriesOwned()) return;
 
 	std::vector<BuildingType> buildingTypes = {PADDY_FARM, IRRIGATION_LAKE, MINE, SAWMILL, MARKET, TEMPLE, BARRACKS, FORT};
 	std::unique_ptr<Building> building;
@@ -138,8 +128,9 @@ void Ruler::buildPhase()
 		}
 
 		bool found = false;
-		for (Territory* T : potentialTerritories)
+		for (Territory* T : kingdom.getOwnedTerritories())
 		{
+			if (T->getTerritoryBuilding() != nullptr) continue;
 			if (building->getIsAllowed(T->getTerritoryType()))
 			{
 				found = true;
@@ -149,7 +140,7 @@ void Ruler::buildPhase()
 		}
 
 		if (found) break;
-		else buildingTypes.erase(buildingTypes.begin() + index);
+		buildingTypes.erase(buildingTypes.begin() + index);
 	}
 
 	if (territory == nullptr) return;

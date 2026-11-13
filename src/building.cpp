@@ -2,18 +2,68 @@
 #include "territory.h"
 #include "worldmap.h"
 
-BuildingEffect Building::performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler)
+BuildingEffect PaddyFarm::performEffect(Territory*, WorldMap&, RulerEnum)
 {
 	BuildingEffect effect;
+
+	if (buildingHealth <= 50) effect.resourceIncrement = Resources({15, 0, 0, 0});
+	else effect.resourceIncrement = Resources({30, 0, 0, 0}); 
 	
-	effect.resourceIncrement = getResourceIncrements(parentTerritory, worldMap, ruler);
-	effect.stabilityIncrement = getStabilityIncrements();
+	effect.stabilityIncrement = 0;
 
 	return effect;
 }
 
-Resources IrrigationTank::getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const
+BuildingEffect Mine::performEffect(Territory*, WorldMap&, RulerEnum)
 {
+	BuildingEffect effect;
+
+	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 0, 10, 0});
+	else effect.resourceIncrement = Resources({0, 0, 20, 0}); 
+	
+	effect.stabilityIncrement = 0;
+
+	return effect;
+}
+
+BuildingEffect SawMill::performEffect(Territory*, WorldMap&, RulerEnum)
+{
+	BuildingEffect effect;
+
+	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 15, 0, 0});
+	else effect.resourceIncrement = Resources({0, 30, 0, 0}); 
+	
+	effect.stabilityIncrement = 0;
+
+	return effect;
+}
+
+BuildingEffect Market::performEffect(Territory*, WorldMap&, RulerEnum)
+{
+	BuildingEffect effect;
+
+	if (buildingHealth <= 50) effect.resourceIncrement = Resources({0, 0, 0, 20});
+	else effect.resourceIncrement = Resources({0, 0, 0, 40}); 
+	
+	effect.stabilityIncrement = 0;
+
+	return effect;
+}
+
+BuildingEffect Temple::performEffect(Territory*, WorldMap&, RulerEnum)
+{
+	BuildingEffect effect;
+	
+	effect.resourceIncrement = Resources({0, 0, 0, 0});
+	effect.stabilityIncrement = 3;
+
+	return effect;
+}
+
+BuildingEffect IrrigationTank::performEffect(Territory* parentTerritory, WorldMap& map, RulerEnum ruler)
+{
+	BuildingEffect effect;
+	
 	std::vector<std::pair<int, int>> neighbours = parentTerritory->getTerritoryNeighbours();
 	std::vector<int> resources = {0, 0, 0, 0};
 	for (auto P : neighbours)
@@ -31,5 +81,8 @@ Resources IrrigationTank::getResourceIncrements(Territory* parentTerritory, Worl
 
 	if (buildingHealth <= 50) resources[RICE] /= 2;
 
-	return Resources(resources);
+	effect.resourceIncrement = Resources(resources);
+	effect.stabilityIncrement = 0;
+
+	return effect;
 }

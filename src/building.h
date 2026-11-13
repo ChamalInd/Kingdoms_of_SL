@@ -19,9 +19,6 @@ class Building
 	protected:
 		int buildingHealth = 100;
 		BuildingStatus buildingStatus = OPEN;
-		
-		virtual Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const { return Resources({0, 0, 0, 0}); } 
-		virtual int getStabilityIncrements() const { return 0; } 
 	
 	public:
 		Building() = default;
@@ -38,14 +35,20 @@ class Building
 		int getBuildingHealth() const { return buildingHealth; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
-		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler);
-		virtual std::unique_ptr<Unit> createUnit(UnitType) { return nullptr; } 
+		virtual BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum)
+		{
+			BuildingEffect effect;
+			effect.resourceIncrement = Resources({0, 0, 0, 0});
+			effect.stabilityIncrement = 0;
+			return effect;
+		}
 };
 
 class PaddyFarm : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE};
+
 	public:
 		std::string getBuildingName() const override { return "Paddy Farm"; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 100}); } 
@@ -56,19 +59,14 @@ class PaddyFarm : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
-		{ 
-			if (buildingHealth <= 50) return Resources({15, 0, 0, 0});
-			return Resources({30, 0, 0, 0}); 
-		} 
+		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
 };
 
 class IrrigationTank : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {LAKE};
+
 	public:
 		std::string getBuildingName() const override { return "Irrigation Tank"; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 0, 200}); } 
@@ -79,15 +77,14 @@ class IrrigationTank : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		Resources getResourceIncrements(Territory* parentTerritory, WorldMap& map, RulerEnum ruler) const override;
+		BuildingEffect performEffect(Territory* parentTerritory, WorldMap& worldMap, RulerEnum ruler) override;
 };
 
 class Mine : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {HILL_COUNTRY};
+		
 	public:
 		std::string getBuildingName() const override { return "Mine"; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 150}); } 
@@ -98,19 +95,14 @@ class Mine : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
-		{
-			if (buildingHealth <= 50) return Resources({0, 0, 10, 0});
-			return Resources({0, 0, 20, 0}); 
-		} 
+		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
 };
 
 class SawMill : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {HILL_COUNTRY, JUNGLE};
+
 	public:
 		std::string getBuildingName() const override { return "Sawmill"; } 
 		Resources getBuildingCost() const override { return Resources({0, 0, 0, 100}); } 
@@ -121,19 +113,14 @@ class SawMill : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
-		{ 
-			if (buildingHealth <= 50) return Resources({0, 15, 0, 0});
-			return Resources({0, 30, 0, 0}); 
-		} 
+		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
 };
 
 class Market : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {COAST, DRY_ZONE};
+
 	public:
 		std::string getBuildingName() const override { return "Market"; } 
 		Resources getBuildingCost() const override { return Resources({0, 50, 0, 200}); } 
@@ -144,19 +131,14 @@ class Market : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		Resources getResourceIncrements(Territory*, WorldMap&, RulerEnum) const override 
-		{ 
-			if (buildingHealth <= 50) return Resources({0, 0, 0, 20}); 
-			return Resources({0, 0, 0, 40}); 
-		} 
+		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
 };
 
 class Temple : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
+
 	public:
 		std::string getBuildingName() const override { return "Temple"; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 0, 250}); } 
@@ -167,15 +149,14 @@ class Temple : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
-		int getStabilityIncrements() const override { return 3; } 
+		BuildingEffect performEffect(Territory*, WorldMap&, RulerEnum) override;
 };
 
 class Barracks : public Building
 {
 	private:
 		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
+
 	public:
 		std::string getBuildingName() const override { return "Barracks"; } 
 		Resources getBuildingCost() const override { return Resources({0, 100, 50, 200}); } 
@@ -186,13 +167,13 @@ class Barracks : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-		
 };
 
 class Fort : public Building
 {	
 	private:
 		std::vector<TerrainType> allowedTerrains = {PADDY_PLAIN, DRY_ZONE, COAST, JUNGLE, HILL_COUNTRY, LAKE};
+
 	public:
 		std::string getBuildingName() const override { return "Fort"; } 
 		Resources getBuildingCost() const override { return Resources({0, 150, 100, 300}); } 
@@ -203,8 +184,6 @@ class Fort : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
-
-	protected:	
 };
 
 class BuildingFactory

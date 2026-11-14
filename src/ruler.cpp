@@ -119,7 +119,7 @@ bool Conqueror::hasPermissionToMove(Territory* territory, std::vector<RulerDetai
 		opponentStrength = R.armyStrength;
 		break;
 	}
-	if (myStrength == opponentStrength * 120 / 100) return true;
+	if (myStrength >= opponentStrength * 120 / 100) return true;
 	return false;
 }
 
@@ -141,7 +141,7 @@ bool MerchantPrince::hasPermissionToMove(Territory* territory, std::vector<Ruler
 		opponentStrength = R.armyStrength;
 		break;
 	}
-	if (myStrength == opponentStrength * 2) return true;
+	if (myStrength >= opponentStrength * 2) return true;
 
 	return false;
 }
@@ -158,7 +158,7 @@ bool Strategist::hasPermissionToMove(Territory* territory, std::vector<RulerDeta
 		opponentTerritoryCount = R.noOfTerritoriesOwn;
 		break;
 	}
-	if (myTerritoryCount == opponentTerritoryCount + 2 && kingdom->getStability() >= 60) return true;
+	if (myTerritoryCount >= opponentTerritoryCount + 2 && kingdom->getStability() >= 60) return true;
 	return false;
 }
 
@@ -281,11 +281,12 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)
 {
 	int claimCost = 100 + 25 * kingdom->getNoOfTerritoriesOwned();
+	if (claimBudget() < claimCost) return;
+
 	if (territory == nullptr)
 	{
 		std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
-		
-		if (potentialTerritories.empty() || claimBudget() < claimCost) return;
+		if (potentialTerritories.empty()) return;
 
 		int highestScore = scoreTerritory(potentialTerritories[0]);
 		std::vector<Territory*> potentialClaims;
@@ -301,11 +302,6 @@ void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)
 		}
 
 		territory = potentialClaims[rand() % potentialClaims.size()];
-	}
-	else 
-	{
-		int score = scoreTerritory(territory);
-		if (score != 10) territory = nullptr;
 	}
 
 	if (territory == nullptr) return;
@@ -467,7 +463,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails)
 {
 	std::vector<int> triedArmies;
-	int index = 0;
+	int index = -1;
 	while (triedArmies.size() < kingdom->getArmyCount())
 	{
 		index = rand() % kingdom->getArmyCount(); 
@@ -486,27 +482,31 @@ void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails
 		break;
 	}
 
-	if (index == 0) return;
+	if (index == -1) return;
 
 	int moveLength = kingdom->getOwnedArmies()[index]->getMove();
 	Territory* selected = kingdom->getOwnedArmies()[index]->getStationedPlace();
 	Territory* goingToMove = nullptr;
+	std::vector<std::pair<int, int>> visited;
 	while (moveLength > 0)
 	{
 		std::pair<int, int> location;
 		if (goingToMove == nullptr) location = selected->getTerritoryNeighbours()[rand() % selected->getTerritoryNeighbours().size()];
 		else location = goingToMove->getTerritoryNeighbours()[rand() % goingToMove->getTerritoryNeighbours().size()];
-
+		
+		auto found = std::find(visited.begin(), visited.end(), location);
+		if (found != visited.end()) continue;
+		visited.push_back(location);
 		goingToMove = worldMap.getTerritory(location.first, location.second);
 		moveLength--;
 	}
 
 	if (goingToMove == nullptr) return;
 
-	std::cout << std::endl << kingdom->getKingdomName();
 
 	if (hasPermissionToMove(goingToMove, rulerDetails))
 	{
+		std::cout << std::endl << kingdom->getKingdomName();
 		kingdom->getOwnedArmies()[index]->moveArmy(goingToMove);
 	
 		if (goingToMove->getTerritoryRuler() == NEUTRAL) claimPhase(worldMap, goingToMove);

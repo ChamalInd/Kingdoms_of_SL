@@ -81,7 +81,7 @@ void Flood::applyFloodEffect(WorldMap& worldMap, std::vector<std::unique_ptr<Rul
 {	
 	Territory* selected = nullptr;
 	std::vector<std::pair<int, int>> triedPairs;
-	while (triedPairs.size() < MAP_DIMENSIONS * MAP_DIMENSIONS)
+	while (triedPairs.size() < MAP_DIMENSIONS * MAP_DIMENSIONS - 4)
 	{
 		int x = rand() % MAP_DIMENSIONS;
 		int y = rand() % MAP_DIMENSIONS;

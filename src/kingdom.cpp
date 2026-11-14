@@ -51,8 +51,11 @@ void Kingdom::claimTerritory(Territory* territory, int claimCost)
 void Kingdom::abandonTerritory(int territoryIndex)
 {
 	destroyBuilding(ownedTerritories[territoryIndex]);
-	ownedTerritories[territoryIndex]->deleteAnArmy();
-	armyCount--;
+	if (ownedTerritories[territoryIndex]->getTerritoryArmy() != nullptr)
+	{
+		ownedTerritories[territoryIndex]->deleteAnArmy();
+		armyCount--;
+	}
 	ownedTerritories[territoryIndex]->setTerritoryRuler(NEUTRAL);
 	ownedTerritories.erase(ownedTerritories.begin() + territoryIndex);
 }

@@ -53,4 +53,9 @@ int Army::getArmyStrength(int defenceBonus) const
 	if (units.empty()) return 0;
 	else return getArmyAttack() + getArmyDefence() * (100 + defenceBonus) / 100;
 }
-		
+
+void Army::desertUnit()
+{
+	if (units.empty()) return;
+	units.erase(units.begin());
+}

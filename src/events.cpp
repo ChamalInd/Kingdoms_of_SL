@@ -59,7 +59,7 @@ PopulationEffect RoyalFestival::applyPopulationEffect() const
 		
 void TradeCaravan::applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>& rulers) const
 {
-	int minimum = INT_MAX;
+	size_t minimum = INT_MAX;
 	std::vector<int> indices;
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{

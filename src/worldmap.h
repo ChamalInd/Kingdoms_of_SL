@@ -10,7 +10,7 @@ class WorldMap
 	public:
 		WorldMap();
 		
-		Territory* getTerritory(int i, int j) { return &worldMap[i][j]; };
+		Territory* getTerritory(int i, int j) { return &worldMap[i][j]; }
 		
 		std::vector<int> setTheTerrainCounts();
 		void printWorldMap();

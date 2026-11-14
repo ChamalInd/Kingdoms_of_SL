@@ -13,8 +13,8 @@ class Kingdom
 		int stability = 70;
 		Resources resources = Resources({500, 200, 100, 1000});
 		std::vector<Territory*> ownedTerritories;
+		std::vector<std::unique_ptr<Army>> ownedArmies;
 		int buildingUpkeepDebt = 0;
-		size_t armyCount = 0;
 		RiceAbundance riceAbundance = ENOUGH;
 		WarStatus lastWarStatus = NO_WAR;
 		std::vector<int> buildingCount = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -26,12 +26,13 @@ class Kingdom
 		std::string getKingdomName() const { return kingdomName; }
 		int getPopulation() const { return population; }
 		int getStability() const { return stability; }
-		int getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
-		int getNoOfBuildingsBuilt() const; 
-		size_t getArmyCount() const { return armyCount; } 
+		size_t getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
+		size_t getNoOfBuildingsBuilt() const; 
+		size_t getArmyCount() const { return ownedArmies.size(); } 
 		Resources& getResourceObject() { return resources; }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }
+		const std::vector<std::unique_ptr<Army>>& getOwnedArmies() const { return ownedArmies; }
 		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
 		int getArmyUpkeep() const; 
 		int getUnitCount() const; 
@@ -40,6 +41,8 @@ class Kingdom
 		void abandonTerritory(int territoryIndex);
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 		void destroyBuilding(Territory* territory);
+		void createAnArmy(Territory* territory);
+		void removeAnArmy(Territory* territory);
 		void recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost);
 		void desertUnits();
 		

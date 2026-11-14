@@ -1,8 +1,8 @@
 #include "kingdom.h"
 
-int Kingdom::getNoOfBuildingsBuilt() const
+size_t Kingdom::getNoOfBuildingsBuilt() const
 {
-	int buildingCount = 0;
+	size_t buildingCount = 0;
 	for (Territory* T : ownedTerritories)
 	{
 		if (T->getTerritoryBuilding() != nullptr) buildingCount++;
@@ -13,10 +13,9 @@ int Kingdom::getNoOfBuildingsBuilt() const
 int Kingdom::getUnitCount() const
 {
 	int unitCount = 0;
-	for (Territory* T : ownedTerritories)
+	for (auto& A : ownedArmies)
 	{
-		if (T->getTerritoryArmy() == nullptr) continue;
-		unitCount += T->getTerritoryArmy()->getUnitCount();
+		unitCount += A->getUnitCount();
 	}
 	return unitCount;
 }
@@ -24,11 +23,9 @@ int Kingdom::getUnitCount() const
 int Kingdom::getArmyUpkeep() const
 {
 	int totalRiceUpkeep = 0;
-	for (size_t i = 0; i < ownedTerritories.size(); i++)
+	for (auto& A : ownedArmies)
 	{
-		Territory* T = ownedTerritories[i]; 
-		if (T->getTerritoryArmy() == nullptr) continue;
-		totalRiceUpkeep += T->getTerritoryArmy()->getUpkeep(); 
+		totalRiceUpkeep += A->getUpkeep(); 
 	}
 
 	return totalRiceUpkeep;
@@ -51,11 +48,7 @@ void Kingdom::claimTerritory(Territory* territory, int claimCost)
 void Kingdom::abandonTerritory(int territoryIndex)
 {
 	destroyBuilding(ownedTerritories[territoryIndex]);
-	if (ownedTerritories[territoryIndex]->getTerritoryArmy() != nullptr)
-	{
-		ownedTerritories[territoryIndex]->deleteAnArmy();
-		armyCount--;
-	}
+	removeAnArmy(ownedTerritories[territoryIndex]);
 	ownedTerritories[territoryIndex]->setTerritoryRuler(NEUTRAL);
 	ownedTerritories.erase(ownedTerritories.begin() + territoryIndex);
 }
@@ -74,13 +67,9 @@ void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>&
 		std::cout << "." << std::endl;
 	}
 
-	buildingCount[building->getBuildingType()]++;
-	if (building->getBuildingType() == BARRACKS)
-	{
-		armyCount++;
-		territory->addAnArmy(std::make_unique<Army>(getArmyCount()));
-	}
+	buildingCount[building->getBuildingType()]++;	
 	territory->construct(building);
+	createAnArmy(territory);
 }
 
 void Kingdom::destroyBuilding(Territory* territory)
@@ -92,33 +81,71 @@ void Kingdom::destroyBuilding(Territory* territory)
 
 void Kingdom::recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost)
 {
+	int armyIndex = -1;
+
+	for (size_t i = 0; i < ownedArmies.size(); i++)
+	{
+		if (ownedArmies[i]->getStationedPlace() != territory) continue;
+		armyIndex = i;
+		break;
+	}
+
+	if (armyIndex == -1)
+	{
+		createAnArmy(territory);
+		armyIndex = ownedArmies.size() - 1;
+	}
+
 	for (int i = 0; i < amount; i++)
 	{
 		std::unique_ptr<Unit> newUnit = UnitFactory::createUnit(unit);
-		territory->getTerritoryArmy()->recruiteUnits(newUnit);
+		ownedArmies[armyIndex]->recruiteUnits(newUnit);
 	}
 
 	resources -= totalRecruitementCost;
 	
 	std::vector<std::string> unitTypes = {"Spearman", "Archer", "Cavalry", "War Elephant"};
-	std::cout << std::endl << kingdomName << " recruited " << amount << " " << unitTypes[unit] << " at " << territory->getTerritoryName();
+	std::cout << std::endl << kingdomName << " recruited " << amount << " " << unitTypes[unit] << " at " << ownedArmies[armyIndex]->getStationedPlace()->getTerritoryName();
 	std::cout << ". Cost: " << totalRecruitementCost.getGoldStock() << " Gold, " << totalRecruitementCost.getIronStock() << " Iron." << std::endl;
 }
 
 void Kingdom::desertUnits()
 {
-	Territory* randomTerritory = nullptr;
-	
-	for (Territory* T : ownedTerritories)
+	int index = -1;
+	bool found = false;
+	for (auto& A : ownedArmies)	
 	{
-		if (T->getTerritoryArmy() == nullptr) continue;
-		if (T->getTerritoryArmy()->getUnitCount() == 0) continue;
-		randomTerritory = T;
+		index++;
+		if (A->getUnitCount() == 0) continue;
+		found = true;
 		break;
 	}
 
-	randomTerritory->getTerritoryArmy()->desertUnit();
-	std::cout << "Unit in " << randomTerritory->getTerritoryName() << " deserted." << std::endl;
+	if (!found) return;
+
+	ownedArmies[index]->desertUnit();
+	std::cout << "Unit in " << ownedArmies[index]->getStationedPlace()->getTerritoryName() << " deserted." << std::endl;
+}
+
+void Kingdom::createAnArmy(Territory* territory) 
+{ 
+	if (territory->getTerritoryBuilding()->getBuildingType() == BARRACKS)
+	{
+		std::unique_ptr<Army> newArmy = std::make_unique<Army>(ownedArmies.size() + 1, territory);
+		ownedArmies.push_back(std::move(newArmy)); 
+	}
+}
+		
+void Kingdom::removeAnArmy(Territory* territory) 
+{
+	for (size_t i = 0; i < ownedArmies.size(); i++)
+	{
+		if (ownedArmies[i]->getStationedPlace() == territory)
+		{
+			ownedArmies.erase(ownedArmies.begin() + i);
+			break;
+		}
+	}
 }
 
 void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent)
@@ -254,12 +281,7 @@ void Kingdom::armyUpkeep()
 
 	int totalRiceUpkeep = 0;
 		
-	for (Territory* T : ownedTerritories)
-	{
-		if (T->getTerritoryArmy() == nullptr) continue;
-		if (T->getTerritoryArmy()->getUnitCount() <= 0) continue;
-		totalRiceUpkeep += T->getTerritoryArmy()->getUpkeep(); 
-	}
+	for (auto& A : ownedArmies) totalRiceUpkeep += A->getUpkeep(); 
 
 	if (totalRiceUpkeep == 0) return;
 		

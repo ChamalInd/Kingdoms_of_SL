@@ -34,6 +34,7 @@ class Ruler
 		void claimPhase(WorldMap& worldMap);
 		void buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDetails> rd);
 		void recruitePhase(std::vector<RulerDetails> rd);
+		void movePhase(WorldMap& worldMap);
 
 	public:
 		Ruler(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : rulerName(n), kingdom(std::move(k)), rulerEnum(r) {}

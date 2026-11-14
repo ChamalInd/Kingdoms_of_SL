@@ -307,27 +307,21 @@ void Ruler::buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDe
 void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 {
 	if (kingdom->getArmyCount() == 0) return;
-	std::vector<Territory*> ownedTerritories = kingdom->getOwnedTerritories();
+	std::vector<Territory*> potentialTerritories;
 	Resources totalRecruitementCost = Resources({0, 0, 0, 0});
-	int unitCount = INT_MAX;
-	int armyIndex = -1;
 	int recruiteAmount = 0;
 
-	for (size_t i = 0; i < ownedTerritories.size(); i++)
+	for (auto& T : kingdom->getOwnedTerritories())
 	{
-		if (ownedTerritories[i]->getTerritoryBuilding() == nullptr) continue;
-		if (ownedTerritories[i]->getTerritoryBuilding()->getBuildingType() != BARRACKS) continue;
-		if (ownedTerritories[i]->getTerritoryBuilding()->getBuildingStatus() == CLOSE) continue;
-		if (ownedTerritories[i]->getTerritoryArmy()->getUnitCount() < unitCount)
-		{
-			unitCount = ownedTerritories[i]->getTerritoryArmy()->getUnitCount(); 
-			armyIndex = i;
-		}
+		if (T->getTerritoryBuilding() == nullptr) continue;
+		if (T->getTerritoryBuilding()->getBuildingType() != BARRACKS) continue;
+		if (T->getTerritoryBuilding()->getBuildingStatus() == CLOSE) continue;
+		potentialTerritories.push_back(T);
 	}
 
-	if (armyIndex == -1) return;
+	if (potentialTerritories.empty()) return;
 	
-	Territory* selectedTerritory = ownedTerritories[armyIndex];
+	Territory* selectedTerritory = potentialTerritories[rand() % potentialTerritories.size()];
 	if (selectedTerritory == nullptr) return;
 
 	std::vector<UnitType> unitTypes = {SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT};
@@ -395,10 +389,47 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 	
 	kingdom->recruiteUnits(selectedTerritory, selected, recruiteAmount, totalRecruitementCost);
 }
+/***	
+void Ruler::movePhase(WorldMap& worldMap)
+{
+	Territory* selected = nullptr;
+	std::vector<int> triedTerritories;
+	while (triedTerritories.size() < kingdom->getNoOfTerritoriesOwned())
+	{
+		int index = rand() % kingdom->getNoOfTerritoriesOwned(); 
+		auto found = std::find(triedTerritories.begin(), triedTerritories.end(), index);
+		if (found != triedTerritories.end()) continue;
+		triedTerritories.push_back(index);
+		if (kingdom->getOwnedTerritories()[index]->getTerritoryArmy() == nullptr) continue;
+		if (kingdom->getOwnedTerritories()[index]->getTerritoryArmy()->getUnitCount() <= 0) continue;
+		selected = kingdom->getOwnedTerritories()[index];
+		break;
+	}
 
+	if (selected == nullptr) return;
+
+	int moveLength = selected->getTerritoryArmy()->getMove();
+	Territory* goingToMove = nullptr;
+	while (moveLength > 0)
+	{
+		std::pair<int, int> location;
+		if (goingToMove == nullptr) location = selected->getTerritoryNeighbours()[rand() % selected->getTerritoryNeighbours().size()];
+		else location = goingToMove->getTerritoryNeighbours()[rand() % goingToMove->getTerritoryNeighbours().size()];
+
+		goingToMove = worldMap.getTerritory(location.first, location.second);
+		moveLength--;
+	}
+
+	if (goingToMove == nullptr) return;
+
+	if (goingToMove->getTerritory)
+
+}
+**/
 void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 
 {
 	claimPhase(worldMap);
 	buildPhase(currentEvent, rulerDetails);
 	recruitePhase(rulerDetails);
+//	movePhase(worldMap);
 }

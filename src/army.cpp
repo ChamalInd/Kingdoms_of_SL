@@ -59,3 +59,10 @@ void Army::desertUnit()
 	if (units.empty()) return;
 	units.erase(units.begin());
 }
+		
+void Army::moveArmy(Territory* territory) 
+{
+	std::cout << " moved Army #" << armyNumber;
+	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << territory->getTerritoryName() << ".";
+	stationedPlace = territory; 
+}

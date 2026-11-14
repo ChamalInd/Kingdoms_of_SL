@@ -18,41 +18,18 @@ int Ruler::calculateScore()
 	return score;
 }
 
+// score territory functions
+int AgrarianSage::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
+
+int MerchantPrince::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == COAST ? 10 : 0; }
+
+// score building functions
 int Conqueror::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const 
 {
 	if (type == BARRACKS && kingdom->getNoOfTerritoriesOwned() % 2 == 0 && kingdom->getSpecificBuildingCount(type) < 4) return 10;
 	if (type == TEMPLE) return -1;
 	if (type == FORT) return 10;
 	return 0;
-}
-		
-int Conqueror::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const 
-{
-	if (unit == WAR_ELEPHANT) return 10;
-	if (unit == CAVALRY) return 10;
-	return 0;
-}
-
-int Conqueror::claimBudget() const { return kingdom->getResources()[GOLD] * 40 / 100; }
-
-Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
-{
-	Resources budget = Resources({
-			kingdom->getResourceObject().getRiceStock(),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			kingdom->getResourceObject().getGoldStock() * 40 / 100});
-	return budget;
-}
-		
-Resources Conqueror::recruiteBudget() const 
-{
-	Resources budget = Resources({
-			kingdom->getResourceObject().getRiceStock(),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			kingdom->getResourceObject().getGoldStock() * 60 / 100});
-	return budget;
 }
 
 int AgrarianSage::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const 
@@ -63,74 +40,10 @@ int AgrarianSage::scoreBuilding(const BuildingType type, std::vector<RulerDetail
 	return 0;
 }
 
-int AgrarianSage::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
-{
-	if (kingdomState == AT_WAR && unit == SPEARMAN) return 10;
-	return -1;
-}
-
-int AgrarianSage::claimBudget() const { return kingdom->getResources()[GOLD]; }
-
-int AgrarianSage::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == PADDY_PLAIN ? 10 : 0; }
-
-Resources AgrarianSage::constructionBudget(std::unique_ptr<Event>&) const
-{
-	Resources budget = Resources({
-			kingdom->getResourceObject().getRiceStock(),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			kingdom->getResourceObject().getGoldStock()});
-	return budget;
-}
-		
-Resources AgrarianSage::recruiteBudget() const 
-{
-	int consumptionSavings = 5 * (kingdom->getPopulation() / 20);
-	Resources budget = Resources({
-			std::max(0, kingdom->getResourceObject().getRiceStock() - consumptionSavings),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			kingdom->getResourceObject().getGoldStock()});
-	return budget;
-}
-
 int MerchantPrince::scoreBuilding(const BuildingType type, std::vector<RulerDetails>, std::unique_ptr<Event>&) const
 {
 	if (type == MARKET) return 10; 
 	return 0;
-}
-		
-int MerchantPrince::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
-{
-	if (unit == ARCHER) return 10;
-	if (unit == WAR_ELEPHANT) return 10;
-	return -1;
-}
-
-int MerchantPrince::claimBudget() const { return std::max(0, kingdom->getResources()[GOLD] - 1500); }
-		
-int MerchantPrince::scoreTerritory(const Territory* T) const { return T->getTerritoryType() == COAST ? 10 : 0; }
-
-Resources MerchantPrince::constructionBudget(std::unique_ptr<Event>& currentEvent) const
-{
-	Resources budget = Resources({
-			kingdom->getResourceObject().getRiceStock(),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			kingdom->getResourceObject().getGoldStock()});
-	if (currentEvent != nullptr && currentEvent->getEventType() == TRADE_CARAVAN) return budget;
-	budget.subFromStock(GOLD, 1500);
-	return budget;
-}
-		
-Resources MerchantPrince::recruiteBudget() const 
-{
-	Resources budget = Resources({
-			kingdom->getResourceObject().getRiceStock(),
-			kingdom->getResourceObject().getTimberStock(), 
-			kingdom->getResourceObject().getIronStock(), 
-			std::max(0, kingdom->getResourceObject().getGoldStock() - 1500)});
-	return budget;
 }
 
 int Strategist::scoreBuilding(const BuildingType type, std::vector<RulerDetails> rd, std::unique_ptr<Event>& currentEvent) const 
@@ -155,6 +68,27 @@ int Strategist::scoreBuilding(const BuildingType type, std::vector<RulerDetails>
 	else return 0;
 }
 
+// score unit functions
+int Conqueror::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const 
+{
+	if (unit == WAR_ELEPHANT) return 10;
+	if (unit == CAVALRY) return 10;
+	return 0;
+}
+
+int AgrarianSage::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
+{
+	if (kingdomState == AT_WAR && unit == SPEARMAN) return 10;
+	return -1;
+}
+
+int MerchantPrince::scoreUnits(const UnitType unit, std::vector<RulerDetails>) const
+{
+	if (unit == ARCHER) return 10;
+	if (unit == WAR_ELEPHANT) return 10;
+	return -1;
+}
+
 int Strategist::scoreUnits(const UnitType unit, std::vector<RulerDetails> rd) const
 {
 	bool defensive = false;
@@ -172,7 +106,103 @@ int Strategist::scoreUnits(const UnitType unit, std::vector<RulerDetails> rd) co
 	return -1;
 }
 
+// check for move permissions
+bool Conqueror::hasPermissionToMove(Territory* territory, std::vector<RulerDetails> rulerDetails) const
+{
+	if (territory->getTerritoryRuler() == NEUTRAL || territory->getTerritoryRuler() == rulerEnum) return true;	
+	int myStrength = 0;
+	int opponentStrength = 0;
+	for (RulerDetails R : rulerDetails)
+	{
+		if (R.ruler == rulerEnum) myStrength = R.armyStrength;
+		if (R.ruler != territory->getTerritoryRuler()) continue;
+		opponentStrength = R.armyStrength;
+		break;
+	}
+	if (myStrength == opponentStrength * 120 / 100) return true;
+	return false;
+}
+
+bool AgrarianSage::hasPermissionToMove(Territory* territory, std::vector<RulerDetails>) const
+{
+	if (territory->getTerritoryRuler() == NEUTRAL || territory->getTerritoryRuler() == rulerEnum) return true;	
+	return false;
+}
+
+bool MerchantPrince::hasPermissionToMove(Territory* territory, std::vector<RulerDetails> rulerDetails) const
+{
+	if (territory->getTerritoryRuler() == NEUTRAL || territory->getTerritoryRuler() == rulerEnum) return true;	
+	int myStrength = 0;
+	int opponentStrength = 0;
+	for (RulerDetails R : rulerDetails)
+	{
+		if (R.ruler == rulerEnum) myStrength = R.armyStrength;
+		if (R.ruler != territory->getTerritoryRuler()) continue;
+		opponentStrength = R.armyStrength;
+		break;
+	}
+	if (myStrength == opponentStrength * 2) return true;
+
+	return false;
+}
+
+bool Strategist::hasPermissionToMove(Territory* territory, std::vector<RulerDetails> rulerDetails) const
+{
+	if (territory->getTerritoryRuler() == NEUTRAL || territory->getTerritoryRuler() == rulerEnum) return true;	
+	int myTerritoryCount = 0;
+	int opponentTerritoryCount = 0;
+	for (RulerDetails R : rulerDetails)
+	{
+		if (R.ruler == rulerEnum) myTerritoryCount = R.noOfTerritoriesOwn;
+		if (R.ruler != territory->getTerritoryRuler()) continue;
+		opponentTerritoryCount = R.noOfTerritoriesOwn;
+		break;
+	}
+	if (myTerritoryCount == opponentTerritoryCount + 2 && kingdom->getStability() >= 60) return true;
+	return false;
+}
+
+// territory claim budget
+int Conqueror::claimBudget() const { return kingdom->getResources()[GOLD] * 40 / 100; }
+
+int AgrarianSage::claimBudget() const { return kingdom->getResources()[GOLD]; }
+
+int MerchantPrince::claimBudget() const { return std::max(0, kingdom->getResources()[GOLD] - 1500); }
+
 int Strategist::claimBudget() const { return kingdom->getResources()[GOLD]; }
+
+// construction budget
+Resources Conqueror::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock() * 40 / 100});
+	return budget;
+}
+		
+Resources AgrarianSage::constructionBudget(std::unique_ptr<Event>&) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+
+Resources MerchantPrince::constructionBudget(std::unique_ptr<Event>& currentEvent) const
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	if (currentEvent != nullptr && currentEvent->getEventType() == TRADE_CARAVAN) return budget;
+	budget.subFromStock(GOLD, 1500);
+	return budget;
+}
 
 Resources Strategist::constructionBudget(std::unique_ptr<Event>&) const
 {
@@ -181,6 +211,38 @@ Resources Strategist::constructionBudget(std::unique_ptr<Event>&) const
 			kingdom->getResourceObject().getTimberStock(), 
 			kingdom->getResourceObject().getIronStock(), 
 			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+		
+// recruite budget
+Resources Conqueror::recruiteBudget() const 
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock() * 60 / 100});
+	return budget;
+}
+
+Resources AgrarianSage::recruiteBudget() const 
+{
+	int consumptionSavings = 5 * (kingdom->getPopulation() / 20);
+	Resources budget = Resources({
+			std::max(0, kingdom->getResourceObject().getRiceStock() - consumptionSavings),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			kingdom->getResourceObject().getGoldStock()});
+	return budget;
+}
+		
+Resources MerchantPrince::recruiteBudget() const 
+{
+	Resources budget = Resources({
+			kingdom->getResourceObject().getRiceStock(),
+			kingdom->getResourceObject().getTimberStock(), 
+			kingdom->getResourceObject().getIronStock(), 
+			std::max(0, kingdom->getResourceObject().getGoldStock() - 1500)});
 	return budget;
 }
 		
@@ -216,26 +278,38 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 
-void Ruler::claimPhase(WorldMap& worldMap)
+void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)
 {
-	std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
 	int claimCost = 100 + 25 * kingdom->getNoOfTerritoriesOwned();
-	if (potentialTerritories.empty() || claimBudget() < claimCost) return;
-
-	int highestScore = scoreTerritory(potentialTerritories[0]);
-	std::vector<Territory*> potentialClaims;
-	for (Territory* T : potentialTerritories)
+	if (territory == nullptr)
 	{
-		int s = scoreTerritory(T);
-		if (s > highestScore) 
+		std::vector<Territory*> potentialTerritories = checkNeighbouringTerritory(worldMap);	
+		
+		if (potentialTerritories.empty() || claimBudget() < claimCost) return;
+
+		int highestScore = scoreTerritory(potentialTerritories[0]);
+		std::vector<Territory*> potentialClaims;
+		for (Territory* T : potentialTerritories)
 		{
-			highestScore = s;
-			potentialClaims.clear();
+			int s = scoreTerritory(T);
+			if (s > highestScore) 
+			{
+				highestScore = s;
+				potentialClaims.clear();
+			}
+			if (s == highestScore) potentialClaims.push_back(T);
 		}
-		if (s == highestScore) potentialClaims.push_back(T);
+
+		territory = potentialClaims[rand() % potentialClaims.size()];
+	}
+	else 
+	{
+		int score = scoreTerritory(territory);
+		if (score != 10) territory = nullptr;
 	}
 
-	Territory* territory = potentialClaims[rand() % potentialClaims.size()];
+	if (territory == nullptr) return;
+
 	kingdom->claimTerritory(territory, claimCost);
 }
 
@@ -389,26 +463,33 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 	
 	kingdom->recruiteUnits(selectedTerritory, selected, recruiteAmount, totalRecruitementCost);
 }
-/***	
-void Ruler::movePhase(WorldMap& worldMap)
+	
+void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails)
 {
-	Territory* selected = nullptr;
-	std::vector<int> triedTerritories;
-	while (triedTerritories.size() < kingdom->getNoOfTerritoriesOwned())
+	std::vector<int> triedArmies;
+	int index = 0;
+	while (triedArmies.size() < kingdom->getArmyCount())
 	{
-		int index = rand() % kingdom->getNoOfTerritoriesOwned(); 
-		auto found = std::find(triedTerritories.begin(), triedTerritories.end(), index);
-		if (found != triedTerritories.end()) continue;
-		triedTerritories.push_back(index);
-		if (kingdom->getOwnedTerritories()[index]->getTerritoryArmy() == nullptr) continue;
-		if (kingdom->getOwnedTerritories()[index]->getTerritoryArmy()->getUnitCount() <= 0) continue;
-		selected = kingdom->getOwnedTerritories()[index];
+		index = rand() % kingdom->getArmyCount(); 
+		auto found = std::find(triedArmies.begin(), triedArmies.end(), index);
+		if (found != triedArmies.end()) 
+		{
+			index = 0;
+			continue;
+		}
+		triedArmies.push_back(index);
+		if (kingdom->getOwnedArmies()[index]->getUnitCount() <= 0) 
+		{
+			index = 0;
+			continue;
+		}
 		break;
 	}
 
-	if (selected == nullptr) return;
+	if (index == 0) return;
 
-	int moveLength = selected->getTerritoryArmy()->getMove();
+	int moveLength = kingdom->getOwnedArmies()[index]->getMove();
+	Territory* selected = kingdom->getOwnedArmies()[index]->getStationedPlace();
 	Territory* goingToMove = nullptr;
 	while (moveLength > 0)
 	{
@@ -422,14 +503,22 @@ void Ruler::movePhase(WorldMap& worldMap)
 
 	if (goingToMove == nullptr) return;
 
-	if (goingToMove->getTerritory)
+	std::cout << std::endl << kingdom->getKingdomName();
 
+	if (hasPermissionToMove(goingToMove, rulerDetails))
+	{
+		kingdom->getOwnedArmies()[index]->moveArmy(goingToMove);
+	
+		if (goingToMove->getTerritoryRuler() == NEUTRAL) claimPhase(worldMap, goingToMove);
+
+		if (goingToMove->getTerritoryRuler() != NEUTRAL && goingToMove->getTerritoryRuler() != rulerEnum);
+	}
 }
-**/
+
 void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 
 {
-	claimPhase(worldMap);
+	claimPhase(worldMap, nullptr);
 	buildPhase(currentEvent, rulerDetails);
 	recruitePhase(rulerDetails);
-//	movePhase(worldMap);
+	movePhase(worldMap, rulerDetails);
 }

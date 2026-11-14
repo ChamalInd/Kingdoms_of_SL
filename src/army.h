@@ -1,6 +1,7 @@
 #pragma once
 #include "includes.h"
 #include "unit.h"
+#include "territory.h"
 
 class Army
 {
@@ -21,6 +22,7 @@ class Army
 		int getUpkeep() const;
 		int getUnitCount() const { return units.size(); }
 
+		void moveArmy(Territory* territory);
 		void recruiteUnits(std::unique_ptr<Unit>& newUnit) { units.push_back(std::move(newUnit)); }
 		void desertUnit();
 };

@@ -1,11 +1,7 @@
 #include "territory.h"
 	
-Territory::Territory(int ID, std::string n, TerrainType t, RulerEnum r, std::pair<int, int> location)
+Territory::Territory(std::string n, TerrainType t, RulerEnum r, std::pair<int, int> location) : territoryName(n), territoryType(t), territoryRuler(r)
 {
-	territoryID = ID;
-	territoryName = n;
-	territoryType = t;
-	territoryRuler = r;
 	territoryBaseProduction = BASE_PRODUCTION[t];
 
 	// filtering neighbours

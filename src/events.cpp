@@ -95,9 +95,21 @@ void Flood::applyFloodEffect(WorldMap& worldMap, std::vector<std::unique_ptr<Rul
 		triedPairs.push_back(coord);
 
 		selected = worldMap.getTerritory(x, y);
-		if (selected->getTerritoryBuilding() == nullptr) continue;
-		if (selected->getTerritoryBuilding()->getBuildingType() == FORT) continue;
-		if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) continue;
+		if (selected->getTerritoryBuilding() == nullptr) 
+		{	
+			selected = nullptr;
+			continue;
+		}
+		if (selected->getTerritoryBuilding()->getBuildingType() == FORT) 
+		{	
+			selected = nullptr;
+			continue;
+		}
+		if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) 
+		{	
+			selected = nullptr;
+			continue;
+		}
 		break;
 	}
 

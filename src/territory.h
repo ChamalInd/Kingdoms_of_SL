@@ -6,7 +6,6 @@
 class Territory
 {
 	private:
-		int territoryID;
 		std::string territoryName;
 		TerrainType territoryType;
 		std::vector<int> territoryBaseProduction;
@@ -16,7 +15,7 @@ class Territory
 		std::unique_ptr<Army> territoryArmy = nullptr;
 	
 	public:
-		Territory(int ID, std::string n, TerrainType, RulerEnum r, std::pair<int, int>);
+		Territory(std::string n, TerrainType t, RulerEnum r, std::pair<int, int> location);
 		
 		void setTerritoryRuler(RulerEnum newRuler) { territoryRuler = newRuler; }
 		

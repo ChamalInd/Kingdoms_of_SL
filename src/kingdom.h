@@ -35,7 +35,6 @@ class Kingdom
 		int getSpecificBuildingCount(int index) const { return buildingCount[index]; }
 		int getArmyUpkeep() const; 
 		int getUnitCount() const; 
-		void increaseArmyCount() { armyCount++; }
 		
 		void claimTerritory(Territory* territory, int claimCost);
 		void abandonTerritory(int territoryIndex);

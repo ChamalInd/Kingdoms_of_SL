@@ -77,7 +77,7 @@ void Kingdom::constructBuilding(Territory* territory, std::unique_ptr<Building>&
 	buildingCount[building->getBuildingType()]++;
 	if (building->getBuildingType() == BARRACKS)
 	{
-		increaseArmyCount();
+		armyCount++;
 		territory->addAnArmy(std::make_unique<Army>(getArmyCount()));
 	}
 	territory->construct(building);

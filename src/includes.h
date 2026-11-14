@@ -24,7 +24,7 @@ class WorldMap;
 class SimulationManager;
 
 // global variables
-#define SEED            1//time(NULL)
+#define SEED            11//time(NULL)
 #define NO_OF_KINGDOMS  4
 #define MAP_DIMENSIONS  6
 #define NO_OF_TERRAINS  6

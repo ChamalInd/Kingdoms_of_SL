@@ -51,6 +51,8 @@ void Kingdom::claimTerritory(Territory* territory, int claimCost)
 void Kingdom::abandonTerritory(int territoryIndex)
 {
 	destroyBuilding(ownedTerritories[territoryIndex]);
+	ownedTerritories[territoryIndex]->deleteAnArmy();
+	armyCount--;
 	ownedTerritories[territoryIndex]->setTerritoryRuler(NEUTRAL);
 	ownedTerritories.erase(ownedTerritories.begin() + territoryIndex);
 }
@@ -122,15 +124,7 @@ void Kingdom::collectProductions(WorldMap& worldMap, RulerEnum ruler, std::uniqu
 	for (Territory* T : ownedTerritories)
 	{
 		std::vector<int> baseProduction = T->getTerritoryProduction();
-		for (int i = 0; i < 4; i++) 
-		{
-			int reduction = 0;
-			if (stability < 30)
-			{
-				reduction = baseProduction[i] * 25 / 100;
-			}
-			resourceIncrements.addToStock(i, (baseProduction[i] - reduction));
-		}
+		for (int i = 0; i < 4; i++) resourceIncrements.addToStock(i, baseProduction[i]);
 		if (T->getTerritoryBuilding() == nullptr) continue;
 		if (T->getTerritoryBuilding()->getBuildingType() == TEMPLE) continue;
 		if (T->getTerritoryBuilding()->getBuildingStatus() == CLOSE) continue;

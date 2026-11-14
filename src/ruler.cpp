@@ -332,8 +332,8 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 
 	std::vector<UnitType> unitTypes = {SPEARMAN, ARCHER, CAVALRY, WAR_ELEPHANT};
 
-	UnitType selected = unitTypes[0];
-	int unitScore = scoreUnits(selected, rd);
+	UnitType selected;
+	int unitScore;
 	std::unique_ptr<Unit> selectedUnit = nullptr;
 	int unitIndex = 0;
 	
@@ -342,6 +342,8 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		if (selectedUnit == nullptr)
 		{
 			unitIndex = 0;
+			selected = unitTypes[0];
+			unitScore = scoreUnits(selected, rd);
 			for (size_t i = 0; i < unitTypes.size(); i++)
 			{
 				int score = scoreUnits(unitTypes[i], rd);

@@ -76,3 +76,36 @@ void TradeCaravan::applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>& 
 		rulers[index]->getKingdom()->getResourceObject().addToStock(GOLD, 500);
 	}
 }
+		
+void Flood::applyFloodEffect(WorldMap& worldMap, std::vector<std::unique_ptr<Ruler>>& rulers) const
+{	
+	Territory* selected = nullptr;
+	std::vector<std::pair<int, int>> triedPairs;
+	while (triedPairs.size() < MAP_DIMENSIONS * MAP_DIMENSIONS)
+	{
+		int x = rand() % MAP_DIMENSIONS;
+		int y = rand() % MAP_DIMENSIONS;
+		if (x == 0 && y == 0) continue;
+		if (x == 0 && y == 5) continue;
+		if (x == 5 && y == 0) continue;
+		if (x == 5 && y == 5) continue;
+		std::pair<int, int> coord = std::make_pair(x, y);
+		auto found = std::find(triedPairs.begin(), triedPairs.end(), coord);
+		if (found != triedPairs.end()) continue;
+		triedPairs.push_back(coord);
+
+		selected = worldMap.getTerritory(x, y);
+		if (selected->getTerritoryBuilding() == nullptr) continue;
+		if (selected->getTerritoryBuilding()->getBuildingType() == FORT) continue;
+		if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) continue;
+		break;
+	}
+
+	if (selected == nullptr) return;
+	for (auto& R : rulers)
+	{
+		if (R->getRulerEnum() != selected->getTerritoryRuler()) continue;
+		std::cout << selected->getTerritoryBuilding()->getBuildingName() << " on " << selected->getTerritoryName() << " destroyed by flood." << std::endl;
+		R->getKingdom()->destroyBuilding(selected);
+	}
+}

@@ -147,47 +147,7 @@ void SimulationManager::eventHandler()
 		std::cout << "Event Description: " << currentEvent->getEventEffect() << std::endl;
 
 		currentEvent->applyTradeCaravanEffect(rulers);
-
-		// immediate events
-		/***if (currentEvent->getEventType() == FLOOD)
-		{
-			Territory* selected = nullptr;
-			int tries = 0;
-			while (true)
-			{
-				int x = rand() % 6;
-				int y = rand() % 6;
-				if (x == 0 && y == 0) continue;
-				if (x == 0 && y == 5) continue;
-				if (x == 5 && y == 0) continue;
-				if (x == 5 && y == 5) continue;
-				selected = worldMap.getTerritory(x, y);
-				if (selected->getTerritoryBuilding() == nullptr) continue;
-				if (selected->getTerritoryBuilding()->getBuildingType() == FORT) continue;
-				if (selected->getTerritoryType() != PADDY_PLAIN && selected->getTerritoryType() != COAST) continue;
-				if (++tries > NO_OF_TILES) break;
-				break;
-			}
-					
-			if (tries <= NO_OF_TILES)
-			{
-				for (int i = 0; i < NO_OF_KINGDOMS; i++)
-				{
-					if (selected->getTerritoryRuler() == rulers[i]->getRulerEnum())
-					{
-						rulers[i]->getKingdom().decreaseSpecificBuildingCount(selected->getTerritoryBuilding()->getBuildingType());
-						break;
-					}
-				}
-				std::cout << selected->getTerritoryBuilding()->getBuildingName() << " on " << selected->getTerritoryName() << " destroyed by flood." << std::endl;
-				selected->destroyAProperty();
-			}
-		}
-		
-		if (currentEvent->getEventType() == TRADE_CARAVAN)
-		{
-			
-		}***/
+		currentEvent->applyFloodEffect(worldMap, rulers);
 	}
 	else if (currentEvent != nullptr) 
 	{

@@ -35,6 +35,7 @@ class Event
 		virtual int applyStabilityEffect() const { return 0; }
 		virtual PopulationEffect applyPopulationEffect() const;
 		virtual void applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>&) const {}
+		virtual void applyFloodEffect(WorldMap&, std::vector<std::unique_ptr<Ruler>>&) const {}
 };
 
 class Drought : public Event
@@ -57,6 +58,8 @@ class Flood : public Event
 		std::string getEventEffect() const override { return "One random Paddy Plain or Coast territory loses its building."; }
 		std::string getEventOverMsg() const override { return "Flood has ended."; }
 		EventType getEventType() const override { return FLOOD; } 
+		
+		void applyFloodEffect(WorldMap& worldMap, std::vector<std::unique_ptr<Ruler>>& rulers) const override; 
 };
 
 class GoodMonsoon : public Event

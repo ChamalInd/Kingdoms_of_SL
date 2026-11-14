@@ -11,6 +11,7 @@ class Kingdom
 		RulerEnum rulerEnum;
 		int population = 1000;
 		int stability = 70;
+		int armyNumber = 1;
 		Resources resources = Resources({500, 200, 100, 1000});
 		std::vector<Territory*> ownedTerritories;
 		std::vector<std::unique_ptr<Army>> ownedArmies;

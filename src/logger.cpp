@@ -27,7 +27,7 @@ void Logger::printSimulationEnd(const int& gameRound, std::vector<std::unique_pt
 {
 	// printing game over message and wounding up
 	std::sort(rulers.begin(), rulers.end(), [](std::unique_ptr<Ruler>& a, std::unique_ptr<Ruler>& b){
-		return a->calculateScore() > b->calculateScore() && a->getKingdom()->getPopulation() > b->getKingdom()->getPopulation();
+		return a->calculateScore() > b->calculateScore() ||  (a->calculateScore() == b->calculateScore() && a->getKingdom()->getPopulation() > b->getKingdom()->getPopulation());
 	});
 	std::cout << std::endl;
 	std::string title = " Game Over after " + std::to_string(gameRound) + " rounds ";

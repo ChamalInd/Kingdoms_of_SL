@@ -6,7 +6,6 @@ class Army
 {
 	private:
 		int armyNumber;
-		RulerEnum ruler;
 		std::vector<std::unique_ptr<Unit>> units;
 		Territory* stationedPlace = nullptr;
 	
@@ -14,7 +13,6 @@ class Army
 		Army(int n, Territory* T) : armyNumber(n), stationedPlace(T) {}
 
 		int getArmyNumber() const { return armyNumber; }
-		RulerEnum getRuler() const { return ruler; }
 		Territory* getStationedPlace() const { return stationedPlace; }
 		int getArmyStrength(int defenceBonus = 0) const;
 		int getArmyAttack() const;

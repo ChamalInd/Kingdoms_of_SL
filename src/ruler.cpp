@@ -364,7 +364,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		}
 		
 		int currentArmyUpkeep = kingdom->getArmyUpkeep();
-		if (recruiteBudget().getRiceStock() < currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep())
+		if (recruiteBudget().getRiceStock() < (currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep()))
 		{
 			selectedUnit = nullptr;
 			unitTypes.erase(unitTypes.begin() + unitIndex);

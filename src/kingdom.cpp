@@ -129,9 +129,15 @@ void Kingdom::desertUnits()
 
 void Kingdom::createAnArmy(Territory* territory) 
 { 
+	for (auto& A : ownedArmies)
+	{
+		if (A->getStationedPlace() == territory) return;
+	}
+
 	if (territory->getTerritoryBuilding()->getBuildingType() == BARRACKS)
 	{
-		std::unique_ptr<Army> newArmy = std::make_unique<Army>(ownedArmies.size() + 1, territory);
+		std::unique_ptr<Army> newArmy = std::make_unique<Army>(armyNumber, territory);
+		armyNumber++;
 		ownedArmies.push_back(std::move(newArmy)); 
 	}
 }

@@ -20,6 +20,16 @@ int Kingdom::getUnitCount() const
 	return unitCount;
 }
 
+int Kingdom::getArmyStrength(int defenceBonus) const
+{
+	int armyStrength = 0;
+	for (auto& A : ownedArmies)
+	{
+		armyStrength += A->getArmyStrength(defenceBonus);
+	}
+	return armyStrength;
+}
+
 int Kingdom::getArmyUpkeep() const
 {
 	int totalRiceUpkeep = 0;

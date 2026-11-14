@@ -30,6 +30,7 @@ class Kingdom
 		size_t getNoOfTerritoriesOwned() const { return ownedTerritories.size(); }
 		size_t getNoOfBuildingsBuilt() const; 
 		size_t getArmyCount() const { return ownedArmies.size(); } 
+		int getArmyStrength(int defenceBonus) const;
 		Resources& getResourceObject() { return resources; }
 		std::vector<int> getResources() const { return resources.getResources(); }
 		std::vector<Territory*> getOwnedTerritories() const { return ownedTerritories; }

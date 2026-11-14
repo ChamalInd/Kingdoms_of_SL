@@ -63,6 +63,6 @@ void Army::desertUnit()
 void Army::moveArmy(Territory* territory) 
 {
 	std::cout << " moved Army #" << armyNumber;
-	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << territory->getTerritoryName() << ".";
+	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << territory->getTerritoryName() << "." << std::endl;
 	stationedPlace = territory; 
 }

@@ -123,7 +123,7 @@ void SimulationManager::gameLoop()
 			// to be implemented
 			// ruler turns
 			std::vector<RulerDetails> rd = calculateRulerDetails();
-			R->playTurn(worldMap, rd, currentEvent);
+			R->playTurn(worldMap, rd, currentEvent, rulers);
 		}
 
 		logger.printRoundSummary(rulers, currentEvent, gameRound);	
@@ -181,12 +181,7 @@ std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
 		RulerDetails rd;
 		rd.ruler = R->getRulerEnum();
 		rd.noOfTerritoriesOwn = R->getKingdom()->getNoOfTerritoriesOwned();
-		rd.armyStrength = 0;
-		
-		for (auto& A : R->getKingdom()->getOwnedArmies())
-		{
-			rd.armyStrength += A->getArmyStrength(0);
-		}
+		rd.armyStrength = R->getKingdom()->getArmyStrength(0);	
 
 		rulerDetails.push_back(rd);
 	}

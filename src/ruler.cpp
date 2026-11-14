@@ -277,6 +277,40 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 
 	return potentialTerritories;
 }
+		
+void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy)
+{
+	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
+	std::cout << std::endl;
+	Logger::printTitle(" Ongoing War ", '*');
+	std::cout << std::endl << "Battle at " << territory->getTerritoryName() << " (" << terrainTypes[territory->getTerritoryType()] << ")!" << std::endl;
+	std::cout << "Attacker: " << attacker->getRulerName() << " (Strength: " << attacker->getKingdom()->getArmyStrength(0) << ")" << std::endl;
+	std::cout << "Defender: " << defender->getRulerName() << " (Strength: " << defender->getKingdom()->getArmyStrength(0) << ")" << std::endl;
+
+	int defendArmy = -1;
+	for (size_t i = 0; i < defender->getKingdom()->getOwnedArmies().size(); i++)
+	{
+		if (defender->getKingdom()->getOwnedArmies()[i]->getStationedPlace() != territory) continue;
+		defendArmy = i;
+		break;
+	}
+
+	if (defendArmy == -1) endWar(attacker, defender, territory);
+}
+
+void Ruler::endWar(Ruler* winner, Ruler* loser, Territory* territory)
+{
+	std::cout << std::endl << loser->getRulerName() << "'s army has been destroyed." << std::endl;
+	std::cout << winner->getRulerName() << " captured " << territory->getTerritoryName() << "." << std::endl;
+	
+	auto loserTerritories = loser->getKingdom()->getOwnedTerritories();
+	auto found = std::find(loserTerritories.begin(), loserTerritories.end(), territory);
+	if (found == loserTerritories.end()) return;
+	int index = std::distance(loserTerritories.begin(), found);
+
+	loser->getKingdom()->abandonTerritory(index);
+	winner->getKingdom()->claimTerritory(territory, 0);
+}
 
 void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)
 {
@@ -460,7 +494,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 	kingdom->recruiteUnits(selectedTerritory, selected, recruiteAmount, totalRecruitementCost);
 }
 	
-void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails)
+void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers)
 {
 	std::vector<int> triedArmies;
 	int index = -1;
@@ -511,14 +545,25 @@ void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails
 	
 		if (goingToMove->getTerritoryRuler() == NEUTRAL) claimPhase(worldMap, goingToMove);
 
-		if (goingToMove->getTerritoryRuler() != NEUTRAL && goingToMove->getTerritoryRuler() != rulerEnum);
+		if (goingToMove->getTerritoryRuler() != NEUTRAL && goingToMove->getTerritoryRuler() != rulerEnum)
+		{
+			Ruler* attacker;
+			Ruler* defender;
+			for (auto& R : rulers)
+			{
+				if (goingToMove->getTerritoryRuler() == R->getRulerEnum()) defender = R.get();
+				if (rulerEnum == R->getRulerEnum()) attacker = R.get();
+			}
+
+			initiateWar(attacker, defender, goingToMove, index);
+		}
 	}
 }
 
-void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers) 
 {
 	claimPhase(worldMap, nullptr);
 	buildPhase(currentEvent, rulerDetails);
 	recruitePhase(rulerDetails);
-	movePhase(worldMap, rulerDetails);
+	movePhase(worldMap, rulerDetails, rulers);
 }

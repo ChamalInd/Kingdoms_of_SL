@@ -1,5 +1,6 @@
 #pragma once
 #include "includes.h"
+#include "logger.h"
 #include "kingdom.h"
 #include "worldmap.h"
 #include "building.h"
@@ -35,7 +36,9 @@ class Ruler
 		void claimPhase(WorldMap& worldMap, Territory* territory);
 		void buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDetails> rd);
 		void recruitePhase(std::vector<RulerDetails> rd);
-		void movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails);
+		void movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers);
+		void initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy);
+		void endWar(Ruler* winner, Ruler* loser, Territory* territory);
 
 	public:
 		Ruler(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : rulerName(n), kingdom(std::move(k)), rulerEnum(r) {}
@@ -52,7 +55,7 @@ class Ruler
 		
 		void printRoundSummary();
 		int calculateScore();
-		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent);
+		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
 };
 

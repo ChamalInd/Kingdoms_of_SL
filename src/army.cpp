@@ -88,6 +88,12 @@ void Army::goBack()
 	previousPlace = nullptr;
 }
 		
+int Army::getArmyDamage(int defend) const
+{
+	int attack = getArmyAttack() * (rand() % 40 + 80) / 100;
+	return std::max(1, (attack - defend / 2));
+}
+		
 void Army::cleanTheArmy()
 {
 	for (size_t i = 0; i < units.size(); i++)

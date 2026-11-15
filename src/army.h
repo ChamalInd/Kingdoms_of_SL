@@ -10,12 +10,13 @@ class Army
 		std::vector<std::unique_ptr<Unit>> units;
 		Territory* stationedPlace = nullptr;
 		Territory* previousPlace = nullptr;
-		int getArmyDefenceBonus() const; 
 
 	public:
 		Army(int n, Territory* T) : armyNumber(n), stationedPlace(T) {}
 
 		int getArmyNumber() const { return armyNumber; }
+		int getArmyDefenceBonus() const; 
+		int getArmyDamage(int defend) const; 
 		void getArmy() const;
 		Territory* getStationedPlace() const { return stationedPlace; }
 		int getArmyStrength(int defenceBonus = 0) const;

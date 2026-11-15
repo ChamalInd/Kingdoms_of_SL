@@ -38,7 +38,8 @@ class Ruler
 		void recruitePhase(std::vector<RulerDetails> rd);
 		void movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers);
 		void initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy);
-		void endWar(Ruler* winner, Ruler* loser, Territory* territory);
+		void attackerWon(Ruler* winner, Ruler* loser, Territory* territory);
+		void defenderWon(Ruler* winner, Ruler* loser, int attackArmy);
 
 	public:
 		Ruler(std::string n, std::unique_ptr<Kingdom> k, RulerEnum r) : rulerName(n), kingdom(std::move(k)), rulerEnum(r) {}

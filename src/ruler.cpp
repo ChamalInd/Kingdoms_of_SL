@@ -389,7 +389,11 @@ void Ruler::defenderWon(Ruler* winner, Ruler* loser, int attackArmy)
 	{
 		std::cout << loser->getRulerName();
 		loser->getKingdom()->getOwnedArmies()[attackArmy]->goBack();
-	}	
+	}
+	else
+	{
+		loser->getKingdom()->removeAnArmy(nullptr, attackArmy);
+	}
 	std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
 	
 	loser->getKingdom()->setLastWarStatus(LOST);
@@ -554,6 +558,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 			{
 				unitTypes.erase(unitTypes.begin() + unitIndex);
 				selectedUnit = nullptr;
+				recruiteAmount = 0;
 				totalRecruitementCost = Resources({0, 0, 0, 0});
 				continue;
 			}
@@ -569,6 +574,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		if (recruiteBudget().getRiceStock() < (currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep()))
 		{
 			selectedUnit = nullptr;
+			recruiteAmount = 0;
 			totalRecruitementCost = Resources({0, 0, 0, 0});
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
@@ -580,6 +586,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		{
 			selectedUnit = nullptr;
 			totalRecruitementCost = Resources({0, 0, 0, 0});
+			recruiteAmount = 0;
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}

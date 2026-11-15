@@ -23,6 +23,5 @@ $(BUILD)/%.o: %.cpp
 
 clean:
 	rm -rf $(BUILD) $(DEBUG) $(TARGET) $(LOG)
-	clear
 
 -include $(DEPS)

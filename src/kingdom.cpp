@@ -70,7 +70,7 @@ void Kingdom::claimTerritory(Territory* territory, int claimCost)
 void Kingdom::abandonTerritory(int territoryIndex)
 {
 	destroyBuilding(ownedTerritories[territoryIndex]);
-	removeAnArmy(ownedTerritories[territoryIndex]);
+	removeAnArmy(ownedTerritories[territoryIndex], -1);
 	ownedTerritories[territoryIndex]->setTerritoryRuler(NEUTRAL);
 	ownedTerritories.erase(ownedTerritories.begin() + territoryIndex);
 }
@@ -164,15 +164,22 @@ void Kingdom::createAnArmy(Territory* territory)
 	}
 }
 		
-void Kingdom::removeAnArmy(Territory* territory) 
+void Kingdom::removeAnArmy(Territory* territory, int index) 
 {
-	for (size_t i = 0; i < ownedArmies.size(); i++)
+	if (territory != nullptr)
 	{
-		if (ownedArmies[i]->getStationedPlace() == territory)
+		for (size_t i = 0; i < ownedArmies.size(); i++)
 		{
-			ownedArmies.erase(ownedArmies.begin() + i);
-			break;
+			if (ownedArmies[i]->getStationedPlace() == territory)
+			{
+				ownedArmies.erase(ownedArmies.begin() + i);
+				break;
+			}
 		}
+	}
+	else
+	{
+		ownedArmies.erase(ownedArmies.begin() + index);
 	}
 }
 

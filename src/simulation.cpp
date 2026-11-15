@@ -100,19 +100,19 @@ void SimulationManager::gameLoop()
 {
 	while (gameRound < 200)
 	{
+		for (auto& R : rulers)
+		{
+			if (R->getEliminated()) activePlayers--; 
+		}
+		if (activePlayers == 1) break;
+		else activePlayers = NO_OF_KINGDOMS;
+		
 		std::cout << std::endl << std::string(MESSAGE_WIDTH, '=') << std::endl;
 		logger.printTitle(" Round " + std::to_string(gameRound + 1), ' ');
 		std::cout << std::string(MESSAGE_WIDTH, '=') << std::endl;
 
 		eventHandler();		
-
-		for (auto& R : rulers)
-		{
-			if (R->getEliminated()) activePlayers--; 
-		}
-
-		if (activePlayers == 1) break;
-		else activePlayers = NO_OF_KINGDOMS;
+		
 
 		for (auto& R : rulers)
 		{
@@ -129,8 +129,6 @@ void SimulationManager::gameLoop()
 			kingdom->updateStability(currentEvent);
 			kingdom->buildingUpkeep();
 			kingdom->armyUpkeep();
-			// event check
-			// to be implemented
 			// ruler turns
 			std::vector<RulerDetails> rd = calculateRulerDetails();
 			R->playTurn(worldMap, rd, currentEvent, rulers, gameRound);

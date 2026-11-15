@@ -43,7 +43,7 @@ class Drought : public Event
 	public:
 		Drought() : Event(3) {}
 		std::string getEventName() const override { return "Drought"; } 
-		std::string getEventEffect() const override { return "Rice production of every Dry Zone and Paddy Plain territory is halved."; }
+		std::string getEventEffect() const override { return "Rice production of every territory is halved."; }
 		std::string getEventOverMsg() const override { return "Drought has ended. Rice production restored."; }
 		EventType getEventType() const override { return DROUGHT; }
 		

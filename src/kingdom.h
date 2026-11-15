@@ -45,7 +45,7 @@ class Kingdom
 		void constructBuilding(Territory* territory, std::unique_ptr<Building>& building);
 		void destroyBuilding(Territory* territory);
 		void createAnArmy(Territory* territory);
-		void removeAnArmy(Territory* territory);
+		void removeAnArmy(Territory* territory, int index);
 		void recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost);
 		void desertUnits();
 		void clearArmies() { ownedArmies.clear(); }

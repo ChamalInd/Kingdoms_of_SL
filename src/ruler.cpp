@@ -286,6 +286,9 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	std::cout << std::endl << "Battle at " << territory->getTerritoryName() << " (" << terrainTypes[territory->getTerritoryType()] << ")!" << std::endl;
 	std::cout << "Attacker: " << attacker->getRulerName() << " (Strength: " << attacker->getKingdom()->getArmyStrength(0) << ")" << std::endl;
 	std::cout << "Defender: " << defender->getRulerName() << " (Strength: " << defender->getKingdom()->getArmyStrength(0) << ")" << std::endl;
+	
+	attacker->setKingdomState(AT_WAR);
+	defender->setKingdomState(AT_WAR);
 
 	int defendArmy = -1;
 	for (size_t i = 0; i < defender->getKingdom()->getOwnedArmies().size(); i++)
@@ -302,6 +305,12 @@ void Ruler::endWar(Ruler* winner, Ruler* loser, Territory* territory)
 {
 	std::cout << std::endl << loser->getRulerName() << "'s army has been destroyed." << std::endl;
 	std::cout << winner->getRulerName() << " captured " << territory->getTerritoryName() << "." << std::endl;
+	std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
+
+	loser->getKingdom()->setLastWarStatus(LOST);
+	winner->getKingdom()->setLastWarStatus(WON);
+	winner->setKingdomState(PEACE);
+	loser->setKingdomState(PEACE);
 	
 	auto loserTerritories = loser->getKingdom()->getOwnedTerritories();
 	auto found = std::find(loserTerritories.begin(), loserTerritories.end(), territory);

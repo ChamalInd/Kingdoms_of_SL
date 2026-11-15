@@ -46,6 +46,7 @@ class Ruler
 		
 		void setFirstDieValue(int dieValue) { firstDieValue = dieValue; }
 		void setPlaceChosen(bool chosen) { placeChosen = chosen; }
+		void setKingdomState(KingdomStatus newState) { kingdomState = newState; }
 		
 		std::unique_ptr<Kingdom>& getKingdom() { return kingdom; }
 		int getFirstDieValue() const { return firstDieValue; }

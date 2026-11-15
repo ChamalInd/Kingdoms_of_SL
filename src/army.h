@@ -14,6 +14,7 @@ class Army
 		Army(int n, Territory* T) : armyNumber(n), stationedPlace(T) {}
 
 		int getArmyNumber() const { return armyNumber; }
+		void getArmy() const;
 		Territory* getStationedPlace() const { return stationedPlace; }
 		int getArmyStrength(int defenceBonus = 0) const;
 		int getArmyAttack() const;

@@ -284,8 +284,6 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	std::cout << std::endl;
 	Logger::printTitle(" Ongoing War ", '*');
 	std::cout << std::endl << "Battle at " << territory->getTerritoryName() << " (" << terrainTypes[territory->getTerritoryType()] << ")!" << std::endl;
-	std::cout << "Attacker: " << attacker->getRulerName() << " (Strength: " << attacker->getKingdom()->getArmyStrength(0) << ")" << std::endl;
-	std::cout << "Defender: " << defender->getRulerName() << " (Strength: " << defender->getKingdom()->getArmyStrength(0) << ")" << std::endl;
 	
 	attacker->setKingdomState(AT_WAR);
 	defender->setKingdomState(AT_WAR);
@@ -294,11 +292,27 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	for (size_t i = 0; i < defender->getKingdom()->getOwnedArmies().size(); i++)
 	{
 		if (defender->getKingdom()->getOwnedArmies()[i]->getStationedPlace() != territory) continue;
+		if (defender->getKingdom()->getOwnedArmies()[i]->getUnitCount() == 0) continue;
 		defendArmy = i;
 		break;
 	}
 
-	if (defendArmy == -1) endWar(attacker, defender, territory);
+	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getArmyStrength(0) << ", Army : ";
+	attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmy();
+	std::cout << ")" << std::endl;
+	std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getArmyStrength(0) << ", ";
+
+	if (defendArmy == -1) 
+	{
+		std::cout << "Defender has no army defending the territory. )" << std::endl;
+		endWar(attacker, defender, territory);
+	}
+	else
+	{
+		std::cout << "Army : ";
+		defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmy();
+		std::cout << ")" << std::endl;
+	}
 }
 
 void Ruler::endWar(Ruler* winner, Ruler* loser, Territory* territory)

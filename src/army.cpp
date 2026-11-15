@@ -66,3 +66,17 @@ void Army::moveArmy(Territory* territory)
 	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << territory->getTerritoryName() << "." << std::endl;
 	stationedPlace = territory; 
 }
+		
+void Army::getArmy() const
+{
+	if (units.empty()) return;
+	std::vector<std::string> unitNames = {"Spearmen", "Archers", "Cavalries", "War Elephants"};
+	std::vector<int> armyCounts = {0, 0, 0, 0};
+
+	for (auto& U : units)
+	{
+		armyCounts[U->getUnitType()]++;
+	}
+
+	for (int i = 0; i < 4; i++) if (armyCounts[i] > 0) std::cout << armyCounts[i] << " of " << unitNames[i] << " ";
+}

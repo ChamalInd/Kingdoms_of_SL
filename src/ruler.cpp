@@ -114,7 +114,11 @@ bool Conqueror::hasPermissionToMove(Territory* territory, std::vector<RulerDetai
 	int opponentStrength = 0;
 	for (RulerDetails R : rulerDetails)
 	{
-		if (R.ruler == rulerEnum) myStrength = R.armyStrength;
+		if (R.ruler == rulerEnum) 
+		{
+			myStrength = R.armyStrength;
+			continue;
+		}
 		if (R.ruler != territory->getTerritoryRuler()) continue;
 		opponentStrength = R.armyStrength;
 		break;
@@ -136,7 +140,11 @@ bool MerchantPrince::hasPermissionToMove(Territory* territory, std::vector<Ruler
 	int opponentStrength = 0;
 	for (RulerDetails R : rulerDetails)
 	{
-		if (R.ruler == rulerEnum) myStrength = R.armyStrength;
+		if (R.ruler == rulerEnum) 
+		{
+			myStrength = R.armyStrength;
+			continue;
+		}
 		if (R.ruler != territory->getTerritoryRuler()) continue;
 		opponentStrength = R.armyStrength;
 		break;
@@ -160,6 +168,7 @@ bool Strategist::hasPermissionToMove(Territory* territory, std::vector<RulerDeta
 		{
 			myTerritoryCount = R.noOfTerritoriesOwn;
 			myStrength = R.armyStrength;
+			continue;
 		}
 		if (R.ruler != territory->getTerritoryRuler()) continue;
 		opponentTerritoryCount = R.noOfTerritoriesOwn;
@@ -308,7 +317,7 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	int defenderDefendBonus = territory->getTerritoryProduction()[DEFENCE];
 	if (territory->getTerritoryBuilding() != nullptr) defenderDefendBonus += territory->getTerritoryBuilding()->getDefendBonus();
 
-	int attackerDefendBonus = territory->getTerritoryProduction()[DEFENCE];
+	int attackerDefendBonus = 0;
 
 	std::cout << "Attacker: " << attacker->getRulerName()  << " (" << attacker->getKingdom()->getKingdomName() << ") ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(attackerDefendBonus) << ", Army : ";
 	attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmy();
@@ -346,7 +355,7 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 
 			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() <= 0) 
 			{
-				std::cout << attacker->getRulerName() << " won the war!" << std::endl;
+				std::cout << std::endl << attacker->getRulerName() << " won the war!" << std::endl;
 				attackerWon(attacker, defender, territory, gameRound);
 				return;
 			}
@@ -558,8 +567,6 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 			{
 				unitTypes.erase(unitTypes.begin() + unitIndex);
 				selectedUnit = nullptr;
-				recruiteAmount = 0;
-				totalRecruitementCost = Resources({0, 0, 0, 0});
 				continue;
 			}
 			selectedUnit = UnitFactory::createUnit(selected);
@@ -573,8 +580,8 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		int currentArmyUpkeep = kingdom->getArmyUpkeep();
 		if (recruiteBudget().getRiceStock() < (currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep()))
 		{
+			if (recruiteAmount > 0) break;
 			selectedUnit = nullptr;
-			recruiteAmount = 0;
 			totalRecruitementCost = Resources({0, 0, 0, 0});
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
@@ -584,9 +591,9 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 
 		if (!(recruiteBudget() >= totalRecruitementCost))
 		{
+			if (recruiteAmount > 0) break;
 			selectedUnit = nullptr;
 			totalRecruitementCost = Resources({0, 0, 0, 0});
-			recruiteAmount = 0;
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}

@@ -554,6 +554,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 			{
 				unitTypes.erase(unitTypes.begin() + unitIndex);
 				selectedUnit = nullptr;
+				totalRecruitementCost = Resources({0, 0, 0, 0});
 				continue;
 			}
 			selectedUnit = UnitFactory::createUnit(selected);
@@ -568,6 +569,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		if (recruiteBudget().getRiceStock() < (currentArmyUpkeep + recruiteAmount * selectedUnit->getUnitUpkeep()))
 		{
 			selectedUnit = nullptr;
+			totalRecruitementCost = Resources({0, 0, 0, 0});
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}
@@ -577,7 +579,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 		if (!(recruiteBudget() >= totalRecruitementCost))
 		{
 			selectedUnit = nullptr;
-			totalRecruitementCost -= unitCost;
+			totalRecruitementCost = Resources({0, 0, 0, 0});
 			unitTypes.erase(unitTypes.begin() + unitIndex);
 			continue;
 		}

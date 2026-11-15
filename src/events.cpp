@@ -65,6 +65,7 @@ void TradeCaravan::applyTradeCaravanEffect(std::vector<std::unique_ptr<Ruler>>& 
 	{
 		if (rulers[i]->getKingdom()->getNoOfTerritoriesOwned() <= minimum)
 		{
+			if (rulers[i]->getEliminated()) continue;
 			if (rulers[i]->getKingdom()->getNoOfTerritoriesOwned() < minimum) indices.clear();
 			indices.push_back(i);
 			minimum = rulers[i]->getKingdom()->getNoOfTerritoriesOwned();

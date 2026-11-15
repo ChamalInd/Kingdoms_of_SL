@@ -151,14 +151,22 @@ bool Strategist::hasPermissionToMove(Territory* territory, std::vector<RulerDeta
 	if (territory->getTerritoryRuler() == NEUTRAL || territory->getTerritoryRuler() == rulerEnum) return true;	
 	int myTerritoryCount = 0;
 	int opponentTerritoryCount = 0;
+	int myStrength = 0;
+	int opponentStrength = 0;
+
 	for (RulerDetails R : rulerDetails)
 	{
-		if (R.ruler == rulerEnum) myTerritoryCount = R.noOfTerritoriesOwn;
+		if (R.ruler == rulerEnum) 
+		{
+			myTerritoryCount = R.noOfTerritoriesOwn;
+			myStrength = R.armyStrength;
+		}
 		if (R.ruler != territory->getTerritoryRuler()) continue;
 		opponentTerritoryCount = R.noOfTerritoriesOwn;
+		opponentStrength = R.armyStrength;
 		break;
 	}
-	if (myTerritoryCount >= opponentTerritoryCount + 2 && kingdom->getStability() >= 60) return true;
+	if (myStrength >= opponentStrength && myTerritoryCount >= opponentTerritoryCount + 2 && kingdom->getStability() >= 60) return true;
 	return false;
 }
 
@@ -356,7 +364,6 @@ void Ruler::attackerWon(Ruler* winner, Ruler* loser, Territory* territory, int g
 	loser->getKingdom()->setLastWarStatus(LOST);
 	winner->getKingdom()->setLastWarStatus(WON);
 	winner->setKingdomState(PEACE);
-	loser->setKingdomState(PEACE);
 	
 	auto loserTerritories = loser->getKingdom()->getOwnedTerritories();
 	auto found = std::find(loserTerritories.begin(), loserTerritories.end(), territory);
@@ -387,7 +394,6 @@ void Ruler::defenderWon(Ruler* winner, Ruler* loser, int attackArmy)
 	
 	loser->getKingdom()->setLastWarStatus(LOST);
 	winner->getKingdom()->setLastWarStatus(WON);
-	loser->setKingdomState(PEACE);
 	winner->setKingdomState(PEACE);
 }
 		
@@ -395,10 +401,11 @@ void Ruler::eliminateRuler(int gameRound)
 {
 	eliminated = true;
 	eliminatedAt = gameRound;
-	for (size_t i = 0; i < kingdom->getNoOfTerritoriesOwned(); i++)
+	while (kingdom->getNoOfTerritoriesOwned() > 0)
 	{
 		kingdom->abandonTerritory(0);
 	}
+	kingdom->clearArmies();
 	kingdom->eliminate();
 }
 
@@ -637,8 +644,8 @@ void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails
 
 		if (goingToMove->getTerritoryRuler() != NEUTRAL && goingToMove->getTerritoryRuler() != rulerEnum)
 		{
-			Ruler* attacker;
-			Ruler* defender;
+			Ruler* attacker = nullptr;
+			Ruler* defender = nullptr;
 			for (auto& R : rulers)
 			{
 				if (goingToMove->getTerritoryRuler() == R->getRulerEnum()) defender = R.get();

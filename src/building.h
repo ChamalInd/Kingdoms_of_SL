@@ -9,7 +9,6 @@ class WorldMap;
 class Building
 {
 	protected:
-		int buildingHealth = 100;
 		BuildingStatus buildingStatus = OPEN;
 	
 	public:
@@ -24,7 +23,6 @@ class Building
 		virtual int getUpkeepCost() const = 0; 
 		virtual BuildingType getBuildingType() const = 0;
 		
-		int getBuildingHealth() const { return buildingHealth; }
 		BuildingStatus getBuildingStatus() const { return buildingStatus; }
 		
 		virtual Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const { return Resources({0, 0, 0, 0}); }

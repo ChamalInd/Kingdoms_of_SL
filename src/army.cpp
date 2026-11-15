@@ -90,7 +90,7 @@ void Army::goBack()
 		
 int Army::getArmyDamage(int defend, int turn) const
 {
-	int attack = getArmyAttack(turn) * (rand() % 40 + 80) / 100;
+	int attack = getArmyAttack(turn) * (rand() % 41 + 80) / 100;
 	return std::max(1, (attack - defend / 2));
 }
 		
@@ -99,13 +99,16 @@ void Army::dealsDamage(int damage, int turn)
 	if (units.empty()) return;
 	for (auto& U : units)
 	{
-		if (turn == 1 && U->getUnitType() == ARCHER) continue;
 		if (damage > U->getHP())
 		{
 			damage -= U->getHP();
-			U->dealsDamage(U->getHP());
+			if (!(turn == 1 && U->getUnitType() == ARCHER)) U->dealsDamage(U->getHP());
 		}
-		else if (damage > 0) U->dealsDamage(damage);
+		else if (damage > 0) 
+		{
+			U->dealsDamage(damage);
+			break;
+		}
 		else break;
 	}
 

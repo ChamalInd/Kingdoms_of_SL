@@ -48,6 +48,7 @@ class Kingdom
 		void removeAnArmy(Territory* territory);
 		void recruiteUnits(Territory* territory, UnitType unit, int amount, Resources totalRecruitementCost);
 		void desertUnits();
+		void clearArmies() { ownedArmies.clear(); }
 		void eliminate();
 		
 		void collectProductions(WorldMap& worldMap, RulerEnum ruler, std::unique_ptr<Event>& currentEvent);

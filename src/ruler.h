@@ -22,6 +22,8 @@ class Ruler
 		int firstDieValue = 0;
 		bool placeChosen = false;
 		int score = 0;
+		bool eliminated = false;
+		int eliminatedAt = 0;
 		KingdomStatus kingdomState = PEACE;
 
 		virtual int claimBudget() const = 0;
@@ -36,9 +38,9 @@ class Ruler
 		void claimPhase(WorldMap& worldMap, Territory* territory);
 		void buildPhase(std::unique_ptr<Event>& currentEvent, std::vector<RulerDetails> rd);
 		void recruitePhase(std::vector<RulerDetails> rd);
-		void movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers);
-		void initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy);
-		void attackerWon(Ruler* winner, Ruler* loser, Territory* territory);
+		void movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers, int gameRound);
+		void initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy, int gameRound);
+		void attackerWon(Ruler* winner, Ruler* loser, Territory* territory, int gameRound);
 		void defenderWon(Ruler* winner, Ruler* loser, int attackArmy);
 
 	public:
@@ -54,10 +56,12 @@ class Ruler
 		bool getPlaceChosen() const { return placeChosen; }
 		std::string getRulerName() const { return rulerName; }
 		RulerEnum getRulerEnum() const { return rulerEnum; }
+		bool getEliminated() const { return eliminated; }
 		
 		void printRoundSummary();
 		int calculateScore();
-		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers);
+		void eliminateRuler(int gameRound);
+		void playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers, int gameRound);
 		std::vector<Territory*> checkNeighbouringTerritory(WorldMap& worldMap);
 };
 

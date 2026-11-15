@@ -278,7 +278,7 @@ std::vector<Territory*> Ruler::checkNeighbouringTerritory(WorldMap& worldMap)
 	return potentialTerritories;
 }
 		
-void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy)
+void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, int attackArmy, int gameRound)
 {
 	std::string terrainTypes[] = {"Paddy Plain", "Hill Country", "Dry Zone", "Coast", "Jungle", "Lake"};
 	std::cout << std::endl;
@@ -302,18 +302,19 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 
 	int attackerDefendBonus = territory->getTerritoryProduction()[DEFENCE];
 
-	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(attackerDefendBonus) << ", Army : ";
+	std::cout << "Attacker: " << attacker->getRulerName()  << " (" << attacker->getKingdom()->getKingdomName() << ") ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(attackerDefendBonus) << ", Army : ";
 	attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmy();
 	std::cout << ")" << std::endl;
+	std::cout << "Defender: " << defender->getRulerName() << " (" << defender->getKingdom()->getKingdomName() << ")";
 
 	if (defendArmy == -1) 
 	{
-		std::cout << "Defender has no army defending the territory. )" << std::endl;
-		attackerWon(attacker, defender, territory);
+		std::cout << " Defender has no army defending the territory." << std::endl;
+		attackerWon(attacker, defender, territory, gameRound);
 	}
 	else
 	{
-		std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyStrength(defenderDefendBonus);
+		std::cout << " ( Strength: " << defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyStrength(defenderDefendBonus);
 		std::cout << ", Army : ";
 		defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmy();
 		std::cout << ")" << std::endl << std::endl;
@@ -338,7 +339,7 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() <= 0) 
 			{
 				std::cout << attacker->getRulerName() << " won the war!" << std::endl;
-				attackerWon(attacker, defender, territory);
+				attackerWon(attacker, defender, territory, gameRound);
 				return;
 			}
 			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() <= 0) break;
@@ -347,11 +348,10 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	}
 }
 
-void Ruler::attackerWon(Ruler* winner, Ruler* loser, Territory* territory)
+void Ruler::attackerWon(Ruler* winner, Ruler* loser, Territory* territory, int gameRound)
 {
 	std::cout << std::endl << loser->getRulerName() << "'s army has been destroyed." << std::endl;
 	std::cout << winner->getRulerName() << " captured " << territory->getTerritoryName() << "." << std::endl;
-	std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
 
 	loser->getKingdom()->setLastWarStatus(LOST);
 	winner->getKingdom()->setLastWarStatus(WON);
@@ -365,6 +365,14 @@ void Ruler::attackerWon(Ruler* winner, Ruler* loser, Territory* territory)
 
 	loser->getKingdom()->abandonTerritory(index);
 	winner->getKingdom()->claimTerritory(territory, 0);
+	
+	if (index == 0)
+	{
+		std::cout << std::endl << loser->getKingdom()->getKingdomName() << "'s capital (" << territory->getTerritoryName() << ") has been captured by " << winner->getKingdom()->getKingdomName() << ".";
+		std::cout << std::endl << loser->getKingdom()->getKingdomName() << " has been ELIMINATED." << std::endl;
+		loser->eliminateRuler(gameRound);
+	}
+	std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
 }
 
 void Ruler::defenderWon(Ruler* winner, Ruler* loser, int attackArmy)
@@ -381,6 +389,16 @@ void Ruler::defenderWon(Ruler* winner, Ruler* loser, int attackArmy)
 	winner->getKingdom()->setLastWarStatus(WON);
 	loser->setKingdomState(PEACE);
 	winner->setKingdomState(PEACE);
+}
+		
+void Ruler::eliminateRuler(int gameRound)
+{
+	eliminated = true;
+	eliminatedAt = gameRound;
+	for (size_t i = 0; i < kingdom->getNoOfTerritoriesOwned(); i++)
+	{
+		kingdom->abandonTerritory(0);
+	}
 }
 
 void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)
@@ -565,7 +583,7 @@ void Ruler::recruitePhase(std::vector<RulerDetails> rd)
 	kingdom->recruiteUnits(selectedTerritory, selected, recruiteAmount, totalRecruitementCost);
 }
 	
-void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers)
+void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::vector<std::unique_ptr<Ruler>>& rulers, int gameRound)
 {
 	std::vector<int> triedArmies;
 	int index = -1;
@@ -626,15 +644,15 @@ void Ruler::movePhase(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails
 				if (rulerEnum == R->getRulerEnum()) attacker = R.get();
 			}
 
-			initiateWar(attacker, defender, goingToMove, index);
+			initiateWar(attacker, defender, goingToMove, index, gameRound);
 		}
 	}
 }
 
-void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers) 
+void Ruler::playTurn(WorldMap& worldMap, std::vector<RulerDetails> rulerDetails, std::unique_ptr<Event>& currentEvent, std::vector<std::unique_ptr<Ruler>>& rulers, int gameRound) 
 {
 	claimPhase(worldMap, nullptr);
 	buildPhase(currentEvent, rulerDetails);
 	recruitePhase(rulerDetails);
-	movePhase(worldMap, rulerDetails, rulers);
+	movePhase(worldMap, rulerDetails, rulers, gameRound);
 }

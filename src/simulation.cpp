@@ -108,6 +108,8 @@ void SimulationManager::gameLoop()
 
 		for (auto& R : rulers)
 		{
+			if (R->getEliminated()) continue;
+
 			std::unique_ptr<Kingdom>& kingdom = R->getKingdom();
 			std::string title = " Round " + std::to_string(gameRound + 1) + " : " + kingdom->getKingdomName() + " ";
 			std::cout << std::endl;
@@ -123,7 +125,7 @@ void SimulationManager::gameLoop()
 			// to be implemented
 			// ruler turns
 			std::vector<RulerDetails> rd = calculateRulerDetails();
-			R->playTurn(worldMap, rd, currentEvent, rulers);
+			R->playTurn(worldMap, rd, currentEvent, rulers, gameRound);
 		}
 
 		logger.printRoundSummary(rulers, currentEvent, gameRound);	

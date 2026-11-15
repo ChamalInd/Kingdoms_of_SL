@@ -94,8 +94,20 @@ int Army::getArmyDamage(int defend) const
 	return std::max(1, (attack - defend / 2));
 }
 		
-void Army::cleanTheArmy()
+void Army::dealsDamage(int damage) 
 {
+	if (units.empty()) return;
+	for (auto& U : units)
+	{
+		if (damage > U->getHP())
+		{
+			damage -= U->getHP();
+			U->dealsDamage(U->getHP());
+		}
+		else if (damage > 0) U->dealsDamage(damage);
+		else break;
+	}
+
 	for (size_t i = 0; i < units.size(); i++)
 	{
 		if (units[i]->getHP() <= 0)

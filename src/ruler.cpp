@@ -332,22 +332,18 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 			std::cout << attacker->getRulerName() << " deals " << attackerDamage << " damage, ";
 			std::cout << defender->getRulerName() << " deals " << defenderDamage << " damage." << std::endl;
 
-			attacker->getKingdom()->getOwnedArmies()[attackArmy]->cleanTheArmy();
-			defender->getKingdom()->getOwnedArmies()[defendArmy]->cleanTheArmy();
+			attacker->getKingdom()->getOwnedArmies()[attackArmy]->dealsDamage(defenderDamage);
+			defender->getKingdom()->getOwnedArmies()[defendArmy]->dealsDamage(attackerDamage);
 
 			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() <= 0) 
 			{
 				std::cout << attacker->getRulerName() << " won the war!" << std::endl;
 				attackerWon(attacker, defender, territory);
-				break;
+				return;
 			}
-			else if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() <= 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() > 0)  
-			{
-				defenderWon(defender, attacker, attackArmy);
-				break;
-			}
+			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() <= 0) break;
 		}
-		if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() > 0) defenderWon(defender, attacker, attackArmy);
+		defenderWon(defender, attacker, attackArmy);
 	}
 }
 
@@ -374,8 +370,11 @@ void Ruler::attackerWon(Ruler* winner, Ruler* loser, Territory* territory)
 void Ruler::defenderWon(Ruler* winner, Ruler* loser, int attackArmy)
 {
 	std::cout << std::endl << loser->getRulerName() << " lost the war!" << std::endl;
-	std::cout << loser->getRulerName();
-	loser->getKingdom()->getOwnedArmies()[attackArmy]->goBack();
+	if (loser->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0)
+	{
+		std::cout << loser->getRulerName();
+		loser->getKingdom()->getOwnedArmies()[attackArmy]->goBack();
+	}	
 	std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
 	
 	loser->getKingdom()->setLastWarStatus(LOST);

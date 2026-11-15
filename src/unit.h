@@ -25,6 +25,7 @@ class Unit
 		int getMove() const { return move; } 
 		Resources getUnitCost() const { return unitCost; } 
 		int getUnitUpkeep() const { return unitUpkeep; } 
+		void dealsDamage(int damage) { hp -= damage; }
 
 		virtual int getDefenceBonus() const { return 0; }
 };

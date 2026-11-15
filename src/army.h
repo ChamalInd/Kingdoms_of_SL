@@ -17,6 +17,7 @@ class Army
 		int getArmyNumber() const { return armyNumber; }
 		int getArmyDefenceBonus() const; 
 		int getArmyDamage(int defend) const; 
+		void dealsDamage(int damage); 
 		void getArmy() const;
 		Territory* getStationedPlace() const { return stationedPlace; }
 		int getArmyStrength(int defenceBonus = 0) const;
@@ -28,7 +29,6 @@ class Army
 
 		void moveArmy(Territory* territory);
 		void goBack();
-		void cleanTheArmy();
 		void recruiteUnits(std::unique_ptr<Unit>& newUnit) { units.push_back(std::move(newUnit)); }
 		void desertUnit();
 };

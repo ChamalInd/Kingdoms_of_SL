@@ -158,36 +158,6 @@ Every 10 rounds one of these happens:
 | Royal Festival | +10 stability, but 50% more Rice is consumed for 2 rounds |
 | Famine of Iron Age | Iron production is halved for 3 rounds |
 
-## Sample output
-
-A round summary looks like this:
-
-```
-=============================== Round 10 Summary ===============================
-Kandy (The Strategist)
-Gold: 25 | Rice: 75 | Timber: 380 | Iron: 0
-Population: 1214 | Stability: 100
-Territories: 4 | Buildings: 3 | Units: 5
---------------------------------------------------------------------------------
-Ruhuna (The Agrarian Sage)
-Gold: 70 | Rice: 625 | Timber: 520 | Iron: 132
-Population: 1214 | Stability: 100
-Territories: 5 | Buildings: 4 | Units: 0
-```
-
-And the end of a game:
-
-```
-========================== Game Over after 200 rounds ==========================
-Winner : Ruhuna (The Agrarian Sage)
-
-Final Score
-1. Ruhuna       : 1283
-2. Kotte        : 123
-3. Kandy        : 32
-4. Anuradhapura : 31
-```
-
 ## Project structure
 
 ```

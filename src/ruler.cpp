@@ -297,10 +297,12 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 		break;
 	}
 
-	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getArmyStrength(0) << ", Army : ";
+	int defendBonus = territory->getTerritoryProduction()[DEFENCE];
+	if (territory->getTerritoryBuilding() != nullptr) defendBonus += territory->getTerritoryBuilding()->getDefendBonus();
+
+	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(0) << ", Army : ";
 	attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmy();
 	std::cout << ")" << std::endl;
-	std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getArmyStrength(0) << ", ";
 
 	if (defendArmy == -1) 
 	{
@@ -309,7 +311,8 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	}
 	else
 	{
-		std::cout << "Army : ";
+		std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyStrength(defendBonus);
+		std::cout << ", Army : ";
 		defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmy();
 		std::cout << ")" << std::endl;
 	}

@@ -9,7 +9,8 @@ class Army
 		int armyNumber;
 		std::vector<std::unique_ptr<Unit>> units;
 		Territory* stationedPlace = nullptr;
-	
+		int getArmyDefenceBonus() const; 
+
 	public:
 		Army(int n, Territory* T) : armyNumber(n), stationedPlace(T) {}
 

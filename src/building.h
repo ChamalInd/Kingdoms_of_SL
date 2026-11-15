@@ -29,6 +29,7 @@ class Building
 		
 		virtual Resources getResourceEffect(Territory*, WorldMap&, RulerEnum) const { return Resources({0, 0, 0, 0}); }
 		virtual int getStabilityEffect() const { return 0; }
+		virtual int getDefendBonus() const { return 0; }
 };
 
 class PaddyFarm : public Building
@@ -171,6 +172,7 @@ class Fort : public Building
 			auto found = std::find(allowedTerrains.begin(), allowedTerrains.end(), terrain);
 			return found != allowedTerrains.end();
 		}
+		int getDefendBonus() const override { return 30; }
 };
 
 class BuildingFactory

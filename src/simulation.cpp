@@ -181,7 +181,7 @@ std::vector<RulerDetails> SimulationManager::calculateRulerDetails()
 		RulerDetails rd;
 		rd.ruler = R->getRulerEnum();
 		rd.noOfTerritoriesOwn = R->getKingdom()->getNoOfTerritoriesOwned();
-		rd.armyStrength = R->getKingdom()->getArmyStrength(0);	
+		rd.armyStrength = R->getKingdom()->getArmyStrength();	
 
 		rulerDetails.push_back(rd);
 	}

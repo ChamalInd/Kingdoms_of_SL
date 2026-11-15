@@ -59,7 +59,7 @@ enum BuildingStatus
 
 enum ResourceType
 {
-	RICE, TIMBER, IRON, GOLD
+	RICE, TIMBER, IRON, GOLD, DEFENCE
 };
 
 enum TerrainType

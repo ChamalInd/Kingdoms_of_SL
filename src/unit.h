@@ -25,6 +25,8 @@ class Unit
 		int getMove() const { return move; } 
 		Resources getUnitCost() const { return unitCost; } 
 		int getUnitUpkeep() const { return unitUpkeep; } 
+
+		virtual int getDefenceBonus() const { return 0; }
 };
 
 class Spearman : public Unit
@@ -32,6 +34,7 @@ class Spearman : public Unit
 	public:
 		Spearman() : Unit("Spearman", 6, 8, 30, 1, Resources({0, 0, 10, 40}), 2) {}
 		UnitType getUnitType() const override { return SPEARMAN; }
+		int getDefenceBonus() const override { return 25; }
 };
 
 class Archer : public Unit

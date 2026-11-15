@@ -20,12 +20,14 @@ int Kingdom::getUnitCount() const
 	return unitCount;
 }
 
-int Kingdom::getArmyStrength(int defenceBonus) const
+int Kingdom::getArmyStrength() const
 {
 	int armyStrength = 0;
 	for (auto& A : ownedArmies)
 	{
-		armyStrength += A->getArmyStrength(defenceBonus);
+		int defendBonus = A->getStationedPlace()->getTerritoryProduction()[DEFENCE];
+		if (A->getStationedPlace()->getTerritoryBuilding() != nullptr) defendBonus += A->getStationedPlace()->getTerritoryBuilding()->getDefendBonus();
+		armyStrength += A->getArmyStrength(defendBonus);
 	}
 	return armyStrength;
 }

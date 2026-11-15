@@ -326,14 +326,14 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 			int defenderDefence = defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyDefenceBonus() * (100 + defenderDefendBonus) / 100;
 			int attackerDefence = attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyDefenceBonus() * (100 + attackerDefendBonus) / 100;
 
-			int attackerDamage = attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyDamage(defenderDefence);
-			int defenderDamage = defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyDamage(attackerDefence);
+			int attackerDamage = attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyDamage(defenderDefence, i);
+			int defenderDamage = defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyDamage(attackerDefence, i);
 
 			std::cout << attacker->getRulerName() << " deals " << attackerDamage << " damage, ";
 			std::cout << defender->getRulerName() << " deals " << defenderDamage << " damage." << std::endl;
 
-			attacker->getKingdom()->getOwnedArmies()[attackArmy]->dealsDamage(defenderDamage);
-			defender->getKingdom()->getOwnedArmies()[defendArmy]->dealsDamage(attackerDamage);
+			attacker->getKingdom()->getOwnedArmies()[attackArmy]->dealsDamage(defenderDamage, i);
+			defender->getKingdom()->getOwnedArmies()[defendArmy]->dealsDamage(attackerDamage, i);
 
 			if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() <= 0) 
 			{

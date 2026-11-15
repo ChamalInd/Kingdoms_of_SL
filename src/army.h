@@ -16,12 +16,12 @@ class Army
 
 		int getArmyNumber() const { return armyNumber; }
 		int getArmyDefenceBonus() const; 
-		int getArmyDamage(int defend) const; 
-		void dealsDamage(int damage); 
+		int getArmyDamage(int defend, int turn) const; 
+		void dealsDamage(int damage, int turn); 
 		void getArmy() const;
 		Territory* getStationedPlace() const { return stationedPlace; }
-		int getArmyStrength(int defenceBonus = 0) const;
-		int getArmyAttack() const;
+		int getArmyStrength(int defenceBonus) const;
+		int getArmyAttack(int turn) const;
 		int getArmyDefence() const; 
 		int getMove() const;
 		int getUpkeep() const;

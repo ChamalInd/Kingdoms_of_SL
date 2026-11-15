@@ -1,13 +1,13 @@
 #include "army.h"
 
-int Army::getArmyAttack() const 
+int Army::getArmyAttack(int turn) const 
 {
 	if (units.empty()) return 0;
 	int attackPoints = 0;
 	for (auto& u : units)
 	{
 		if (u->getHP() <= 0) continue;
-		attackPoints += u->getAttack();
+		attackPoints += u->getAttack(stationedPlace, turn);
 	}
 	return attackPoints;
 }
@@ -62,7 +62,7 @@ int Army::getArmyStrength(int defenceBonus) const
 {
 	defenceBonus += getArmyDefenceBonus();
 	if (units.empty()) return 0;
-	else return getArmyAttack() + getArmyDefence() * (100 + defenceBonus) / 100;
+	else return getArmyAttack(0) + getArmyDefence() * (100 + defenceBonus) / 100;
 }
 
 void Army::desertUnit()
@@ -88,17 +88,18 @@ void Army::goBack()
 	previousPlace = nullptr;
 }
 		
-int Army::getArmyDamage(int defend) const
+int Army::getArmyDamage(int defend, int turn) const
 {
-	int attack = getArmyAttack() * (rand() % 40 + 80) / 100;
+	int attack = getArmyAttack(turn) * (rand() % 40 + 80) / 100;
 	return std::max(1, (attack - defend / 2));
 }
 		
-void Army::dealsDamage(int damage) 
+void Army::dealsDamage(int damage, int turn) 
 {
 	if (units.empty()) return;
 	for (auto& U : units)
 	{
+		if (turn == 1 && U->getUnitType() == ARCHER) continue;
 		if (damage > U->getHP())
 		{
 			damage -= U->getHP();

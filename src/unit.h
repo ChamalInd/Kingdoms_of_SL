@@ -1,6 +1,7 @@
 #pragma once
 #include "includes.h"
 #include "resources.h"
+#include "territory.h"
 
 class Unit
 {
@@ -19,7 +20,7 @@ class Unit
 		
 		std::string getUnitName() const { return unitName; } 
 		virtual UnitType getUnitType() const = 0;
-		int getAttack() const { return attack; } 
+		virtual int getAttack(Territory*, int) const { return attack; } 
 		int getDefence() const { return defence; } 
 		int getHP() const { return hp; } 
 		int getMove() const { return move; } 
@@ -50,6 +51,7 @@ class Cavalry : public Unit
 	public:
 		Cavalry() : Unit("Cavalry", 12, 6, 30, 2, Resources({0, 0, 20, 90}), 4) {}
 		UnitType getUnitType() const override { return CAVALRY; }
+		int getAttack(Territory*, int turn) const override; 
 };
 
 class WarElephant : public Unit
@@ -57,6 +59,7 @@ class WarElephant : public Unit
 	public:
 		WarElephant() : Unit("War Elephant", 18, 12, 60, 1, Resources({0, 0, 40, 200}), 8) {}
 		UnitType getUnitType() const override { return WAR_ELEPHANT; }
+		int getAttack(Territory* territory, int) const override; 
 };
 
 class UnitFactory

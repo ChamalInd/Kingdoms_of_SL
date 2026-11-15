@@ -38,7 +38,9 @@ void Logger::printSimulationEnd(const int& gameRound, std::vector<std::unique_pt
 	std::cout << "Final Score" << std::endl;
 	for (int i = 0; i < NO_OF_KINGDOMS; i++)
 	{
-		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom()->getKingdomName() << " : " << rulers[i]->calculateScore() << std::endl;
+		std::cout << i + 1 << ". " << std::setw(12) << rulers[i]->getKingdom()->getKingdomName() << " : ";
+		if (rulers[i]->getEliminated()) std::cout << "ELIMINATED (round " << rulers[i]->getEliminatedAt() << ")" << std::endl;
+		else std::cout << rulers[i]->calculateScore() << std::endl;
 	}
 }
 

@@ -42,6 +42,16 @@ int Kingdom::getArmyUpkeep() const
 
 	return totalRiceUpkeep;
 }
+		
+void Kingdom::eliminate()
+{
+	population = 0;
+	resources.subFromStock(RICE, resources.getRiceStock());
+	resources.subFromStock(TIMBER, resources.getTimberStock());
+	resources.subFromStock(IRON, resources.getIronStock());
+	resources.subFromStock(GOLD, resources.getGoldStock());
+	stability = 0;
+}
 
 void Kingdom::claimTerritory(Territory* territory, int claimCost)
 {

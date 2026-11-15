@@ -12,6 +12,7 @@ class SimulationManager
 		Logger logger;
 		std::vector<std::unique_ptr<Ruler>> rulers;
 		int gameRound = 0;
+		int activePlayers = NO_OF_KINGDOMS;
 		std::unique_ptr<Event> currentEvent = nullptr;
 	
 	public:

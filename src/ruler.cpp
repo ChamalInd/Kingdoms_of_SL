@@ -399,6 +399,7 @@ void Ruler::eliminateRuler(int gameRound)
 	{
 		kingdom->abandonTerritory(0);
 	}
+	kingdom->eliminate();
 }
 
 void Ruler::claimPhase(WorldMap& worldMap, Territory* territory)

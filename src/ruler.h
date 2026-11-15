@@ -57,6 +57,7 @@ class Ruler
 		std::string getRulerName() const { return rulerName; }
 		RulerEnum getRulerEnum() const { return rulerEnum; }
 		bool getEliminated() const { return eliminated; }
+		int getEliminatedAt() const { return eliminatedAt; }
 		
 		void printRoundSummary();
 		int calculateScore();

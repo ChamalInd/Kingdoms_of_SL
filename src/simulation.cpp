@@ -108,6 +108,14 @@ void SimulationManager::gameLoop()
 
 		for (auto& R : rulers)
 		{
+			if (R->getEliminated()) activePlayers--; 
+		}
+
+		if (activePlayers == 1) break;
+		else activePlayers = NO_OF_KINGDOMS;
+
+		for (auto& R : rulers)
+		{
 			if (R->getEliminated()) continue;
 
 			std::unique_ptr<Kingdom>& kingdom = R->getKingdom();

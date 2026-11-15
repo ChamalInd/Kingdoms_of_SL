@@ -5,7 +5,6 @@
 Four historical kingdoms, each led by an AI ruler with a distinct personality, compete on a randomly generated 6×6 map for up to 200 rounds. There is no player input. You start the program and watch four rulers expand, build, recruit, fight, starve, rebel and survive random events, until one kingdom is left standing or time runs out.
 
 ![Kingdoms of SL](assets/demo.gif)
-```
 
 ## Highlights
 

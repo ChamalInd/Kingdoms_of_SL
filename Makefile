@@ -10,7 +10,7 @@ SRCS := $(wildcard src/*.cpp)
 OBJS := $(SRCS:%.cpp=$(BUILD)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-.PHONY: all clean
+.PHONY: all clean save
 
 all: $(TARGET)
 
@@ -23,5 +23,8 @@ $(BUILD)/%.o: %.cpp
 
 clean:
 	rm -rf $(BUILD) $(DEBUG) $(TARGET) $(LOG)
+
+save:
+	./$(TARGET) > $(LOG)
 
 -include $(DEPS)

@@ -6,5 +6,5 @@ references
 .tasks
 build
 kingdoms
-simulation_log.txt
+output.log
 kingdoms.dSYM

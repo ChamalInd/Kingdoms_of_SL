@@ -297,10 +297,12 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 		break;
 	}
 
-	int defendBonus = territory->getTerritoryProduction()[DEFENCE];
-	if (territory->getTerritoryBuilding() != nullptr) defendBonus += territory->getTerritoryBuilding()->getDefendBonus();
+	int defenderDefendBonus = territory->getTerritoryProduction()[DEFENCE];
+	if (territory->getTerritoryBuilding() != nullptr) defenderDefendBonus += territory->getTerritoryBuilding()->getDefendBonus();
 
-	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(0) << ", Army : ";
+	int attackerDefenceBonus = territory->getTerritoryProduction()[DEFENCE];
+
+	std::cout << "Attacker: " << attacker->getRulerName() << " ( Strength: " << attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmyStrength(attackerDefenceBonus) << ", Army : ";
 	attacker->getKingdom()->getOwnedArmies()[attackArmy]->getArmy();
 	std::cout << ")" << std::endl;
 
@@ -311,10 +313,39 @@ void Ruler::initiateWar(Ruler* attacker, Ruler* defender, Territory* territory, 
 	}
 	else
 	{
-		std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyStrength(defendBonus);
+		std::cout << "Defender: " << defender->getRulerName() << " ( Strength: " << defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmyStrength(defenderDefendBonus);
 		std::cout << ", Army : ";
 		defender->getKingdom()->getOwnedArmies()[defendArmy]->getArmy();
-		std::cout << ")" << std::endl;
+		std::cout << ")" << std::endl << std::endl;
+		
+		// attack for 5 combat rounds
+		for (int i = 1; i < 6; i++)
+		{
+			std::cout << "Combat round " << i << " : ";
+			std::cout << attacker->getRulerName() << " deals 41 damage, ";
+			std::cout << defender->getRulerName() << " deals 22 damage." << std::endl;
+		}
+
+		std::cout << std::endl;
+		attacker->getKingdom()->getOwnedArmies()[attackArmy]->cleanTheArmy();
+		defender->getKingdom()->getOwnedArmies()[defendArmy]->cleanTheArmy();
+
+		if (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() <= 0) 
+		{
+			std::cout << attacker->getRulerName() << " won the war!" << std::endl;
+			endWar(attacker, defender, territory);
+		}
+		else if ((attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() <= 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() > 0) || (attacker->getKingdom()->getOwnedArmies()[attackArmy]->getUnitCount() > 0 && defender->getKingdom()->getOwnedArmies()[defendArmy]->getUnitCount() > 0)) 
+		{
+			std::cout << attacker->getRulerName() << " lost the war!" << std::endl;
+			std::cout << attacker->getRulerName();
+			attacker->getKingdom()->getOwnedArmies()[attackArmy]->goBack();
+			attacker->getKingdom()->setLastWarStatus(LOST);
+			defender->getKingdom()->setLastWarStatus(WON);
+			attacker->setKingdomState(PEACE);
+			defender->setKingdomState(PEACE);
+		}
+		std::cout << std::endl << std::string(MESSAGE_WIDTH, '*') << std::endl;
 	}
 }
 

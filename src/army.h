@@ -9,6 +9,7 @@ class Army
 		int armyNumber;
 		std::vector<std::unique_ptr<Unit>> units;
 		Territory* stationedPlace = nullptr;
+		Territory* previousPlace = nullptr;
 		int getArmyDefenceBonus() const; 
 
 	public:
@@ -25,6 +26,8 @@ class Army
 		int getUnitCount() const { return units.size(); }
 
 		void moveArmy(Territory* territory);
+		void goBack();
+		void cleanTheArmy();
 		void recruiteUnits(std::unique_ptr<Unit>& newUnit) { units.push_back(std::move(newUnit)); }
 		void desertUnit();
 };

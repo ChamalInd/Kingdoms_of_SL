@@ -75,7 +75,29 @@ void Army::moveArmy(Territory* territory)
 {
 	std::cout << " moved Army #" << armyNumber;
 	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << territory->getTerritoryName() << "." << std::endl;
+	previousPlace = stationedPlace;
 	stationedPlace = territory; 
+}
+
+void Army::goBack()
+{
+	if (units.empty()) return;
+	std::cout << " moved Army #" << armyNumber;
+	std::cout << " from " << stationedPlace->getTerritoryName() << " to " << previousPlace->getTerritoryName() << "." << std::endl;
+	stationedPlace = previousPlace; 
+	previousPlace = nullptr;
+}
+		
+void Army::cleanTheArmy()
+{
+	for (size_t i = 0; i < units.size(); i++)
+	{
+		if (units[i]->getHP() <= 0)
+		{
+			units.erase(units.begin() + i);
+			i--;
+		}
+	}
 }
 		
 void Army::getArmy() const
